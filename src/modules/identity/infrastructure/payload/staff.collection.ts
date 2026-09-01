@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig } from 'payload'
+import type { CollectionConfig, PayloadRequest } from 'payload'
 
 import { can } from '../../application/can'
 import {
@@ -7,9 +7,9 @@ import {
   staffRoles,
 } from '../../domain/staff-role'
 
-const isSignedIn: Access = ({ req }) => Boolean(req.user)
+const isSignedIn = ({ req }: { req: PayloadRequest }) => Boolean(req.user)
 
-const canCreateStaff: Access = async ({ req }) => {
+const canCreateStaff = async ({ req }: { req: PayloadRequest }) => {
   if (can(getStaffRoles(req.user), 'staff.manage')) {
     return true
   }
@@ -22,9 +22,10 @@ const canCreateStaff: Access = async ({ req }) => {
   return totalDocs === 0
 }
 
-const canManageStaff: Access = ({ req }) => can(getStaffRoles(req.user), 'staff.manage')
+const canManageStaff = ({ req }: { req: PayloadRequest }) =>
+  can(getStaffRoles(req.user), 'staff.manage')
 
-const canUpdateStaff: Access = ({ req }) => {
+const canUpdateStaff: NonNullable<CollectionConfig['access']>['update'] = ({ req }) => {
   if (can(getStaffRoles(req.user), 'staff.manage')) {
     return true
   }
