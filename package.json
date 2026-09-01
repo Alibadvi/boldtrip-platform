@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@11.21.0",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=4096\" payload build",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=4096\" next build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "dev:clean": "rm -rf .next && pnpm dev",
     "format": "prettier --write .",
