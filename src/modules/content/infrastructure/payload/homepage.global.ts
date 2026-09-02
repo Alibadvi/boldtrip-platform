@@ -71,6 +71,7 @@ export const Homepage: GlobalConfig = {
               label: 'لینک دکمه اصلی',
               required: true,
               defaultValue: defaultHomepageContent.hero.primaryActionHref,
+              admin: { hidden: true },
             },
           ],
         },
@@ -90,6 +91,7 @@ export const Homepage: GlobalConfig = {
               label: 'لینک دکمه دوم',
               required: true,
               defaultValue: defaultHomepageContent.hero.secondaryActionHref,
+              admin: { hidden: true },
             },
           ],
         },
@@ -100,6 +102,7 @@ export const Homepage: GlobalConfig = {
           minRows: 1,
           maxRows: 4,
           defaultValue: defaultHomepageContent.hero.highlights,
+          admin: { initCollapsed: true },
           fields: [
             {
               name: 'label',
@@ -146,6 +149,7 @@ export const Homepage: GlobalConfig = {
       minRows: 1,
       maxRows: 4,
       defaultValue: defaultHomepageContent.destinations,
+      admin: { initCollapsed: true },
       fields: [
         {
           type: 'row',
@@ -159,17 +163,23 @@ export const Homepage: GlobalConfig = {
           type: 'row',
           fields: [
             { name: 'actionLabel', type: 'text', label: 'متن لینک', required: true },
-            { name: 'href', type: 'text', label: 'آدرس صفحه', required: true },
+            {
+              name: 'href',
+              type: 'text',
+              label: 'آدرس صفحه',
+              required: true,
+              admin: { hidden: true },
+            },
           ],
         },
         {
           type: 'row',
           fields: [
-            { name: 'flag', type: 'text', label: 'پرچم', required: true },
+            { name: 'flag', type: 'text', label: 'پرچم (ایموجی)', required: true },
             {
               name: 'theme',
               type: 'select',
-              label: 'تم رنگی',
+              label: 'رنگ کارت',
               required: true,
               options: destinationThemes.map((value) => ({
                 label: value === 'canada' ? 'کانادا' : 'اروپا',
@@ -213,13 +223,20 @@ export const Homepage: GlobalConfig = {
       type: 'array',
       label: 'کارت‌های خدمات',
       minRows: 1,
-      maxRows: 6,
+      maxRows: 3,
       defaultValue: defaultHomepageContent.services,
+      admin: { initCollapsed: true },
       fields: [
         {
           type: 'row',
           fields: [
-            { name: 'index', type: 'text', label: 'شماره', required: true },
+            {
+              name: 'index',
+              type: 'text',
+              label: 'شماره',
+              required: true,
+              admin: { hidden: true },
+            },
             { name: 'eyebrow', type: 'text', label: 'پیش‌عنوان', required: true },
             { name: 'title', type: 'text', label: 'عنوان', required: true },
           ],
@@ -229,7 +246,13 @@ export const Homepage: GlobalConfig = {
           type: 'row',
           fields: [
             { name: 'actionLabel', type: 'text', label: 'متن لینک', required: true },
-            { name: 'href', type: 'text', label: 'آدرس صفحه', required: true },
+            {
+              name: 'href',
+              type: 'text',
+              label: 'آدرس صفحه',
+              required: true,
+              admin: { hidden: true },
+            },
           ],
         },
       ],
@@ -267,6 +290,7 @@ export const Homepage: GlobalConfig = {
           minRows: 1,
           maxRows: 6,
           defaultValue: defaultHomepageContent.process.steps,
+          admin: { initCollapsed: true },
           fields: [
             {
               type: 'row',
@@ -322,6 +346,7 @@ export const Homepage: GlobalConfig = {
               label: 'آدرس صفحه',
               required: true,
               defaultValue: defaultHomepageContent.trust.actionHref,
+              admin: { hidden: true },
             },
           ],
         },
@@ -369,6 +394,7 @@ export const Homepage: GlobalConfig = {
               label: 'آدرس صفحه',
               required: true,
               defaultValue: defaultHomepageContent.consultation.actionHref,
+              admin: { hidden: true },
             },
           ],
         },
@@ -408,6 +434,7 @@ export const Homepage: GlobalConfig = {
       label: 'سوالات متداول',
       minRows: 1,
       defaultValue: defaultHomepageContent.faqs,
+      admin: { initCollapsed: true },
       fields: [
         { name: 'question', type: 'text', label: 'سوال', required: true },
         { name: 'answer', type: 'textarea', label: 'پاسخ', required: true },
