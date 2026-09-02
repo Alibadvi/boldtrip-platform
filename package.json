@@ -1,0 +1,61 @@
+{
+  "name": "boldtrip-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=4096\" next build",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "dev:clean": "rm -rf .next && pnpm dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "test": "pnpm test:unit",
+    "test:unit": "cross-env NODE_OPTIONS=--no-deprecation vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "3.88.0",
+    "@payloadcms/next": "3.88.0",
+    "@payloadcms/richtext-lexical": "3.88.0",
+    "@payloadcms/ui": "3.88.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cross-env": "10.1.0",
+    "graphql": "^16.11.0",
+    "next": "16.3.3",
+    "payload": "3.88.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "sharp": "0.34.2",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "16.3.0",
+    "@types/node": "24.12.3",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "4.5.2",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "16.3.3",
+    "jsdom": "28.0.0",
+    "prettier": "^3.4.2",
+    "tailwindcss": "4.3.3",
+    "tsx": "4.22.4",
+    "typescript": "6.0.3",
+    "vite-tsconfig-paths": "6.0.5",
+    "vitest": "4.1.6"
+  },
+  "engines": {
+    "node": ">=24.15.0",
+    "pnpm": "^11"
+  }
+}
