@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
 import { Staff } from '@/modules/identity'
 import { serverEnv } from '@/shared/config/server-env'
 
@@ -22,6 +23,7 @@ export default buildConfig({
     },
   },
   collections: [Staff],
+  globals: [Homepage],
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
   csrf: [serverEnv.NEXT_PUBLIC_SITE_URL],
   db: postgresAdapter({

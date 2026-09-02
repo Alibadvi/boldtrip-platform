@@ -1,82 +1,36 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import {
+  faqCategories,
+  getHomepageContent,
+  type FaqCategory,
+} from '@/modules/content'
 import { buttonVariants, Container } from '@/shared/ui'
 
-import { FaqList, type FaqItem } from '../_components/faq-list'
+import { FaqList } from '../_components/faq-list'
 
 export const metadata: Metadata = {
   title: 'سوالات متداول',
   description: 'پاسخ سوالات متداول درباره ویزا، وقت سفارت، مشاوره، مدارک و پرداخت در بلدتریپ.',
 }
 
-const faqGroups: Array<{ id: string; items: FaqItem[]; title: string }> = [
-  {
-    id: 'visa-services',
-    title: 'ویزا و خدمات سفارت',
-    items: [
-      {
-        question: 'آیا بلدتریپ صدور ویزا را تضمین می‌کند؟',
-        answer:
-          'خیر. نتیجه نهایی همیشه توسط سفارت یا مرجع رسمی مهاجرت تعیین می‌شود. ما اطلاعات و مسیر خدمت را شفاف ارائه می‌کنیم و از وعده تضمینی استفاده نمی‌کنیم.',
-      },
-      {
-        question: 'برای چه مقصدهایی اطلاعات و خدمات ارائه می‌شود؟',
-        answer:
-          'مقصدهای اولیه کانادا و حوزه شینگن هستند. برای شینگن باید کشور مقصد اصلی خود را هنگام ثبت درخواست مشخص کنید.',
-      },
-      {
-        question: 'خدمت وقت سفارت دقیقا شامل چه کاری است؟',
-        answer:
-          'پس از انتخاب کشور، اطلاعات و مدارک موردنیاز را ارسال می‌کنید. تیم پرونده درخواست را بررسی و مراحل هماهنگی وقت را انجام می‌دهد. این سامانه به‌صورت خودکار وارد وب‌سایت سفارت نمی‌شود.',
-      },
-    ],
-  },
-  {
-    id: 'documents',
-    title: 'مدارک و پرونده',
-    items: [
-      {
-        question: 'مدارک را کجا بارگذاری می‌کنم؟',
-        answer:
-          'مدارک اولیه در مرحله مدارکِ فرم درخواست بارگذاری می‌شوند. مدارک تکمیلی یا نسخه اصلاحی را بعدا در صفحه جزئیات همان پرونده ارسال می‌کنید.',
-      },
-      {
-        question: 'اگر یکی از مدارک من تایید نشود چه اتفاقی می‌افتد؟',
-        answer:
-          'دلیل نیاز به اصلاح در پرونده نمایش داده می‌شود. نسخه جدید را در همان بخش بارگذاری می‌کنید تا دوباره بررسی شود.',
-      },
-      {
-        question: 'چطور وضعیت درخواست را پیگیری کنم؟',
-        answer:
-          'پس از ورود به حساب کاربری، درخواست‌های فعال، وضعیت فعلی و اقدام بعدی را در بخش پرونده‌های من می‌بینید.',
-      },
-    ],
-  },
-  {
-    id: 'consultation-payment',
-    title: 'مشاوره و پرداخت',
-    items: [
-      {
-        question: 'رزرو مشاوره چگونه انجام می‌شود؟',
-        answer:
-          'موضوع و نوع جلسه را انتخاب می‌کنید، زمان‌های آزاد را می‌بینید و پس از انتخاب روز و ساعت، اطلاعات خود را تکمیل می‌کنید.',
-      },
-      {
-        question: 'پرداخت هزینه خدمات چگونه است؟',
-        answer:
-          'پس از ثبت درخواست یا انتخاب زمان مشاوره، مبلغ و اطلاعات انتقال نمایش داده می‌شود. رسید را بارگذاری می‌کنید و وضعیت آن پس از بررسی مالی اعلام می‌شود.',
-      },
-      {
-        question: 'آیا می‌توانم زمان مشاوره را تغییر دهم؟',
-        answer:
-          'امکان تغییر یا لغو بر اساس قوانین رزرو و بازه زمانی اعلام‌شده برای جلسه خواهد بود. جزئیات پیش از نهایی‌کردن رزرو نمایش داده می‌شود.',
-      },
-    ],
-  },
-]
+export const dynamic = 'force-dynamic'
 
-export default function FaqPage() {
+const faqGroupTitles: Record<FaqCategory, string> = {
+  'visa-services': 'ویزا و خدمات سفارت',
+  documents: 'مدارک و پرونده',
+  'consultation-payment': 'مشاوره و پرداخت',
+}
+
+export default async function FaqPage() {
+  const content = await getHomepageContent()
+  const faqGroups = faqCategories.map((category) => ({
+    id: category,
+    title: faqGroupTitles[category],
+    items: content.faqs.filter((faq) => faq.category === category),
+  }))
+
   return (
     <>
       <section className="relative overflow-hidden bg-brand-50 py-20 text-center sm:py-24">
