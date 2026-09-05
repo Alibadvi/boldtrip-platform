@@ -5,7 +5,7 @@ import { buttonVariants } from '@/shared/ui'
 import { BrandMark } from './brand-mark'
 
 const navigation = [
-  { href: '/visas', label: 'ویزاها' },
+  { href: '/countries', label: 'کشورها و ویزاها' },
   { href: '/embassy-appointments', label: 'وقت سفارت' },
   { href: '/services', label: 'خدمات' },
   { href: '/consultation', label: 'مشاوره' },
@@ -41,8 +41,12 @@ export function SiteHeader() {
 
         <details className="group relative lg:hidden">
           <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-border bg-white text-2xl font-light text-brand-950 [&::-webkit-details-marker]:hidden">
-            <span className="group-open:hidden" aria-hidden="true">☰</span>
-            <span className="hidden group-open:block" aria-hidden="true">×</span>
+            <span className="group-open:hidden" aria-hidden="true">
+              ☰
+            </span>
+            <span className="hidden group-open:block" aria-hidden="true">
+              ×
+            </span>
             <span className="sr-only">باز کردن منوی اصلی</span>
           </summary>
           <div className="fixed inset-x-0 top-[4.7rem] border-b border-border bg-white p-4 shadow-card">

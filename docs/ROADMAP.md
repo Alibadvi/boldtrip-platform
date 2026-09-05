@@ -2,7 +2,11 @@
 
 ## Current state
 
-Phase 0 architecture is documented. The foundation/design-system branch contains the first implementation work. Navbar, footer, production homepage, customer authentication, bookings, requests, documents, and payment workflows are not implemented.
+Phase 0 architecture and the Phase 1 foundation are implemented. The public shell includes the
+navbar, mobile navigation, footer, homepage, and FAQ. Countries and visa details are the first
+data-driven catalog slice: staff maintain them in Payload and the public routes render only
+published records. Customer authentication, bookings, requests, documents, payments, services,
+embassy appointments, and articles are not implemented.
 
 ## Phase 1 — Foundation
 
@@ -24,15 +28,17 @@ Exit:
 
 ## Phase 2 — Public shell
 
-- approved font and brand assets;
-- navbar, mobile navigation, footer;
-- homepage;
-- one representative country/service page;
-- responsive and accessibility review.
+- [ ] approved font and final brand assets;
+- [x] navbar, mobile navigation, and footer;
+- [x] homepage and FAQ;
+- [x] country index, country detail, and visa detail templates;
+- [ ] representative approved country/visa content;
+- [ ] responsive and accessibility review.
 
 ## Phase 3 — Catalog/content
 
-- countries, visa options, services, sources/review dates;
+- [x] countries, visa options, official sources, and review dates;
+- [ ] services and their relationship to countries/visas;
 - articles, FAQ, pages, SEO;
 - editor access and publish workflow.
 
