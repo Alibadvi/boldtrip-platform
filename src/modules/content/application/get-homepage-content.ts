@@ -1,14 +1,11 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
-import {
-  defaultHomepageContent,
-  type HomepageContent,
-} from '../domain/homepage-content'
+import { defaultHomepageContent, type HomepageContent } from '../domain/homepage-content'
 
 type StoredHomepage = Partial<HomepageContent>
 
-function useStoredItems<T>(stored: T[] | undefined, fallback: T[]): T[] {
+function storedItemsOr<T>(stored: T[] | undefined, fallback: T[]): T[] {
   return stored?.length ? stored : fallback
 }
 
@@ -17,31 +14,21 @@ function mergeWithDefaults(stored: StoredHomepage): HomepageContent {
     hero: {
       ...defaultHomepageContent.hero,
       ...stored.hero,
-      highlights: useStoredItems(
-        stored.hero?.highlights,
-        defaultHomepageContent.hero.highlights,
-      ),
+      highlights: storedItemsOr(stored.hero?.highlights, defaultHomepageContent.hero.highlights),
     },
     destinationIntro: {
       ...defaultHomepageContent.destinationIntro,
       ...stored.destinationIntro,
     },
-    destinations: useStoredItems(
-      stored.destinations,
-      defaultHomepageContent.destinations,
-    ),
     serviceIntro: {
       ...defaultHomepageContent.serviceIntro,
       ...stored.serviceIntro,
     },
-    services: useStoredItems(stored.services, defaultHomepageContent.services),
+    services: storedItemsOr(stored.services, defaultHomepageContent.services),
     process: {
       ...defaultHomepageContent.process,
       ...stored.process,
-      steps: useStoredItems(
-        stored.process?.steps,
-        defaultHomepageContent.process.steps,
-      ),
+      steps: storedItemsOr(stored.process?.steps, defaultHomepageContent.process.steps),
     },
     trust: {
       ...defaultHomepageContent.trust,
@@ -55,7 +42,7 @@ function mergeWithDefaults(stored: StoredHomepage): HomepageContent {
       ...defaultHomepageContent.faqIntro,
       ...stored.faqIntro,
     },
-    faqs: useStoredItems(stored.faqs, defaultHomepageContent.faqs),
+    faqs: storedItemsOr(stored.faqs, defaultHomepageContent.faqs),
   }
 }
 

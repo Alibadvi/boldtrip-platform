@@ -1,14 +1,6 @@
-export const faqCategories = [
-  'visa-services',
-  'documents',
-  'consultation-payment',
-] as const
+export const faqCategories = ['visa-services', 'documents', 'consultation-payment'] as const
 
 export type FaqCategory = (typeof faqCategories)[number]
-
-export const destinationThemes = ['canada', 'europe'] as const
-
-export type DestinationTheme = (typeof destinationThemes)[number]
 
 export type HomepageContent = {
   consultation: {
@@ -23,15 +15,6 @@ export type HomepageContent = {
     kicker: string
     title: string
   }
-  destinations: Array<{
-    actionLabel: string
-    description: string
-    eyebrow: string
-    flag: string
-    href: string
-    theme: DestinationTheme
-    title: string
-  }>
   faqIntro: {
     description: string
     kicker: string
@@ -94,7 +77,7 @@ export const defaultHomepageContent: HomepageContent = {
     description:
       'شرایط کانادا و شینگن را بررسی کنید، خدمت مناسب را انتخاب کنید و ادامه مسیر را مرحله‌به‌مرحله در حساب خود پیگیری کنید.',
     primaryActionLabel: 'مشاهده ویزاها',
-    primaryActionHref: '/visas',
+    primaryActionHref: '/countries',
     secondaryActionLabel: 'رزرو مشاوره',
     secondaryActionHref: '/consultation/book',
     highlights: [
@@ -106,29 +89,8 @@ export const defaultHomepageContent: HomepageContent = {
   destinationIntro: {
     kicker: 'مقصدهای شروع',
     title: 'شرایط مقصد را قبل از اقدام بشناسید',
-    description:
-      'توضیحات هر مقصد، مدارک پایه، مراحل اقدام و خدمات مرتبط را در یک صفحه ببینید.',
+    description: 'توضیحات هر مقصد، مدارک پایه، مراحل اقدام و خدمات مرتبط را در یک صفحه ببینید.',
   },
-  destinations: [
-    {
-      eyebrow: 'ویزای کانادا',
-      title: 'کانادا',
-      description: 'شرایط، مدارک و مسیر درخواست انواع خدمات ویزای کانادا.',
-      actionLabel: 'مشاهده اطلاعات کانادا',
-      href: '/visas/canada',
-      flag: '🇨🇦',
-      theme: 'canada',
-    },
-    {
-      eyebrow: 'ویزای کوتاه‌مدت اروپا',
-      title: 'حوزه شینگن',
-      description: 'آشنایی با مسیر شینگن و انتخاب کشور مقصد اصلی برای درخواست.',
-      actionLabel: 'مشاهده اطلاعات شینگن',
-      href: '/visas/schengen',
-      flag: '🇪🇺',
-      theme: 'europe',
-    },
-  ],
   serviceIntro: {
     kicker: 'چه کاری برای شما انجام می‌دهیم؟',
     title: 'از اطلاعات اولیه تا اقدام واقعی',
@@ -166,8 +128,7 @@ export const defaultHomepageContent: HomepageContent = {
   process: {
     kicker: 'روند کار',
     title: 'بدانید الان کجای مسیر هستید',
-    description:
-      'از اولین بررسی تا پایان خدمت، وضعیت پرونده و اقدام بعدی برای شما مشخص می‌ماند.',
+    description: 'از اولین بررسی تا پایان خدمت، وضعیت پرونده و اقدام بعدی برای شما مشخص می‌ماند.',
     steps: [
       {
         number: '۱',

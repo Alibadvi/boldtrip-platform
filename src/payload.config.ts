@@ -5,8 +5,10 @@ import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { Countries, Visas } from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
 import { Staff } from '@/modules/identity'
+import { migrations } from '@/migrations'
 import { serverEnv } from '@/shared/config/server-env'
 
 const filename = fileURLToPath(import.meta.url)
@@ -22,11 +24,12 @@ export default buildConfig({
       titleSuffix: ' — BoldTrip',
     },
   },
-  collections: [Staff],
+  collections: [Staff, Countries, Visas],
   globals: [Homepage],
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
   csrf: [serverEnv.NEXT_PUBLIC_SITE_URL],
   db: postgresAdapter({
+    prodMigrations: migrations,
     pool: {
       connectionString: serverEnv.DATABASE_URL,
     },

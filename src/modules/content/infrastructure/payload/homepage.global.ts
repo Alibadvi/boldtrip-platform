@@ -2,11 +2,7 @@ import type { GlobalConfig, PayloadRequest } from 'payload'
 
 import { can, getStaffRoles } from '@/modules/identity'
 
-import {
-  defaultHomepageContent,
-  destinationThemes,
-  faqCategories,
-} from '../../domain/homepage-content'
+import { defaultHomepageContent, faqCategories } from '../../domain/homepage-content'
 
 const canManageContent = ({ req }: { req: PayloadRequest }) =>
   can(getStaffRoles(req.user), 'content.manage')
@@ -139,54 +135,6 @@ export const Homepage: GlobalConfig = {
           label: 'توضیح',
           required: true,
           defaultValue: defaultHomepageContent.destinationIntro.description,
-        },
-      ],
-    },
-    {
-      name: 'destinations',
-      type: 'array',
-      label: 'کارت‌های مقصد',
-      minRows: 1,
-      maxRows: 4,
-      defaultValue: defaultHomepageContent.destinations,
-      admin: { initCollapsed: true },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            { name: 'title', type: 'text', label: 'نام مقصد', required: true },
-            { name: 'eyebrow', type: 'text', label: 'نوع ویزا', required: true },
-          ],
-        },
-        { name: 'description', type: 'textarea', label: 'توضیح', required: true },
-        {
-          type: 'row',
-          fields: [
-            { name: 'actionLabel', type: 'text', label: 'متن لینک', required: true },
-            {
-              name: 'href',
-              type: 'text',
-              label: 'آدرس صفحه',
-              required: true,
-              admin: { hidden: true },
-            },
-          ],
-        },
-        {
-          type: 'row',
-          fields: [
-            { name: 'flag', type: 'text', label: 'پرچم (ایموجی)', required: true },
-            {
-              name: 'theme',
-              type: 'select',
-              label: 'رنگ کارت',
-              required: true,
-              options: destinationThemes.map((value) => ({
-                label: value === 'canada' ? 'کانادا' : 'اروپا',
-                value,
-              })),
-            },
-          ],
         },
       ],
     },

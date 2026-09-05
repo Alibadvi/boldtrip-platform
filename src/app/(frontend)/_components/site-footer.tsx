@@ -8,7 +8,7 @@ const footerGroups = [
   {
     title: 'مسیرهای اصلی',
     links: [
-      { href: '/visas', label: 'ویزاها' },
+      { href: '/countries', label: 'کشورها و ویزاها' },
       { href: '/embassy-appointments', label: 'وقت سفارت' },
       { href: '/consultation', label: 'رزرو مشاوره' },
       { href: '/services', label: 'همه خدمات' },
@@ -42,8 +42,7 @@ export function SiteFooter() {
           <div className="sm:col-span-2 lg:col-span-1">
             <BrandMark inverse />
             <p className="mt-5 max-w-sm text-sm leading-8 text-white/60">
-              اطلاعات ویزا، رزرو مشاوره و درخواست خدمات سفارت؛ در یک مسیر مشخص و قابل
-              پیگیری.
+              اطلاعات ویزا، رزرو مشاوره و درخواست خدمات سفارت؛ در یک مسیر مشخص و قابل پیگیری.
             </p>
             <Link
               href="/consultation/book"
@@ -74,17 +73,26 @@ export function SiteFooter() {
 
         <div className="mt-14 rounded-xl border border-white/10 bg-white/5 px-5 py-4">
           <p className="m-0 text-xs leading-7 text-white/50">
-            بلدتریپ نتیجه صدور ویزا یا تصمیم سفارت را تضمین نمی‌کند؛ هدف ما ارائه اطلاعات
-            روشن و اجرای دقیق خدمات درخواستی است.
+            بلدتریپ نتیجه صدور ویزا یا تصمیم سفارت را تضمین نمی‌کند؛ هدف ما ارائه اطلاعات روشن و
+            اجرای دقیق خدمات درخواستی است.
           </p>
         </div>
 
-        <div className="mt-6 flex flex-col-reverse items-start justify-between gap-4 text-xs text-white/40 sm:flex-row sm:items-center" dir="ltr">
+        <div
+          className="mt-6 flex flex-col-reverse items-start justify-between gap-4 text-xs text-white/40 sm:flex-row sm:items-center"
+          dir="ltr"
+        >
           <span>© {new Date().getFullYear()} BoldTrip</span>
           <div className="flex flex-wrap gap-5" dir="rtl">
-            <Link href="/privacy" className="hover:text-white">حریم خصوصی</Link>
-            <Link href="/terms" className="hover:text-white">شرایط استفاده</Link>
-            <Link href="/cancellation-policy" className="hover:text-white">قوانین لغو</Link>
+            <Link href="/privacy" className="hover:text-white">
+              حریم خصوصی
+            </Link>
+            <Link href="/terms" className="hover:text-white">
+              شرایط استفاده
+            </Link>
+            <Link href="/cancellation-policy" className="hover:text-white">
+              قوانین لغو
+            </Link>
           </div>
         </div>
       </Container>
