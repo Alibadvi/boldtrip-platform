@@ -2,7 +2,9 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 import { getCustomerServiceRequests } from '@/modules/cases'
+import { getCustomerDocuments } from '@/modules/documents'
 import { requireCurrentCustomer } from '@/modules/identity'
+import { getCustomerConsultationBookings } from '@/modules/scheduling'
 import {
   buttonVariants,
   Card,
@@ -18,8 +20,12 @@ export default async function AccountPage() {
   const customer =
     await requireCurrentCustomer('/account')
 
-  const requests =
-    await getCustomerServiceRequests(customer.id)
+  const [requests, bookings, documents] =
+    await Promise.all([
+      getCustomerServiceRequests(customer.id),
+      getCustomerConsultationBookings(customer.id),
+      getCustomerDocuments(customer.id),
+    ])
 
   const summaries = [
     {
@@ -31,16 +37,20 @@ export default async function AccountPage() {
       ),
     },
     {
-      description: 'رزرو پیش رو',
+      description: 'رزرو ثبت‌شده',
       href: '/account/bookings',
       label: 'رزرو مشاوره',
-      value: '۰',
+      value: new Intl.NumberFormat('fa-IR').format(
+        bookings.length,
+      ),
     },
     {
       description: 'مدرک بارگذاری‌شده',
       href: '/account/documents',
       label: 'مدارک',
-      value: '۰',
+      value: new Intl.NumberFormat('fa-IR').format(
+        documents.length,
+      ),
     },
   ]
 
@@ -69,11 +79,9 @@ export default async function AccountPage() {
               <p className="text-sm font-bold text-ink-500">
                 {item.label}
               </p>
-
               <p className="mt-3 text-4xl font-black text-brand-950">
                 {item.value}
               </p>
-
               <p className="mt-2 text-sm text-ink-700">
                 {item.description}
               </p>
@@ -86,13 +94,11 @@ export default async function AccountPage() {
         <h2 className="text-xl font-black text-brand-950">
           شروع یک مسیر جدید
         </h2>
-
         <p className="mt-2 leading-8 text-ink-700">
           خدمت موردنظر را انتخاب کنید. پس از تکمیل
           فرم، درخواست در همین حساب نمایش داده خواهد
           شد.
         </p>
-
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/services"
@@ -100,7 +106,6 @@ export default async function AccountPage() {
           >
             مشاهده خدمات
           </Link>
-
           <Link
             href="/embassy-appointments"
             className={buttonVariants({
@@ -109,9 +114,8 @@ export default async function AccountPage() {
           >
             درخواست وقت سفارت
           </Link>
-
           <Link
-            href="/consultation"
+            href="/consultation/book"
             className={buttonVariants({
               variant: 'quiet',
             })}

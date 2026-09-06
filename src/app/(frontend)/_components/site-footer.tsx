@@ -26,7 +26,7 @@ const footerGroups = [
   {
     title: 'حساب کاربری',
     links: [
-      { href: '/auth', label: 'ورود به حساب' },
+      { href: '/sign-in', label: 'ورود به حساب' },
       { href: '/account/requests', label: 'پیگیری درخواست' },
       { href: '/account/bookings', label: 'رزروهای من' },
       { href: '/account/documents', label: 'مدارک من' },

@@ -74,6 +74,19 @@ export const Customers: CollectionConfig = {
     maxLoginAttempts: 5,
     minPasswordLength: 8,
     tokenExpiration: 60 * 60 * 24 * 7,
+    forgotPassword: {
+      generateEmailSubject: () =>
+        'بازیابی رمز عبور BoldTrip',
+      generateEmailHTML: ({ token }) => {
+        const siteURL =
+          process.env.NEXT_PUBLIC_SITE_URL ??
+          'http://localhost:3000'
+        const resetURL =
+          `${siteURL}/reset-password?token=${token}`
+
+        return `<p dir="rtl">برای انتخاب رمز عبور جدید روی لینک زیر کلیک کنید:</p><p><a href="${resetURL}">${resetURL}</a></p>`
+      },
+    },
   },
   access: {
     admin: canAccessCustomerAdmin,

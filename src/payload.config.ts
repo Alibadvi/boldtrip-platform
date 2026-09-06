@@ -12,9 +12,18 @@ import {
   Visas,
 } from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
+import { CustomerDocuments } from '@/modules/documents'
 import { Customers, Staff } from '@/modules/identity'
 import { migrations } from '@/migrations'
-import { ConsultationPage } from '@/modules/scheduling'
+import {
+  PaymentReceipts,
+  PaymentSettings,
+} from '@/modules/payments'
+import {
+  ConsultationBookings,
+  ConsultationPage,
+  ConsultationSlots,
+} from '@/modules/scheduling'
 import { serverEnv } from '@/shared/config/server-env'
 
 const filename = fileURLToPath(import.meta.url)
@@ -38,11 +47,16 @@ export default buildConfig({
     Visas,
     Services,
     ServiceRequests,
+    CustomerDocuments,
+    ConsultationSlots,
+    ConsultationBookings,
+    PaymentReceipts,
   ],
 
   globals: [
     Homepage,
     ConsultationPage,
+    PaymentSettings,
   ],
 
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
