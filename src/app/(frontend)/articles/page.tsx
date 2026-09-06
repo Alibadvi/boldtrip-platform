@@ -18,10 +18,10 @@ export default function ArticlesPage() {
       title="مقالات ویزا"
     >
       <div className="rounded-3xl border border-dashed border-border bg-canvas p-8 text-center">
-        <h2 className="text-xl font-black text-ink">
+        <h2 className="text-xl font-black text-brand-950">
           مقاله‌ای منتشر نشده است
         </h2>
-        <p className="mx-auto mt-3 max-w-xl leading-8 text-muted">
+        <p className="mx-auto mt-3 max-w-xl leading-8 text-ink-500">
           تا آماده‌شدن مقالات تخصصی، اطلاعات
           بازبینی‌شده هر مقصد و نوع ویزا را در بخش
           کشورها مطالعه کنید.
