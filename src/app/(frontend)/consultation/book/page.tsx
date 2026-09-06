@@ -35,13 +35,13 @@ export default async function ConsultationBookPage() {
         </Link>
 
         <Card className="mt-5 border-border bg-white p-7 shadow-card sm:p-9">
-          <p className="text-sm font-extrabold text-primary">
+          <p className="text-sm font-extrabold text-brand-700">
             رزرو آنلاین
           </p>
-          <h1 className="mt-2 text-3xl font-black text-ink">
+          <h1 className="mt-2 text-3xl font-black text-brand-950">
             انتخاب زمان مشاوره
           </h1>
-          <p className="mt-3 leading-8 text-muted">
+          <p className="mt-3 leading-8 text-ink-500">
             پس از ثبت رزرو، اطلاعات پرداخت نمایش
             داده می‌شود. رزرو با تأیید رسید قطعی خواهد
             شد.
