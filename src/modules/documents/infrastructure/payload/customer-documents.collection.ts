@@ -36,24 +36,6 @@ const readDocuments: NonNullable<
   }
 }
 
-const deleteDocuments: NonNullable<
-  CollectionConfig['access']
->['delete'] = ({ req }) => {
-  if (staffCanManageDocuments(req)) {
-    return true
-  }
-
-  if (!isCustomerAuthUser(req.user)) {
-    return false
-  }
-
-  return {
-    customer: {
-      equals: req.user.id,
-    },
-  }
-}
-
 export const CustomerDocuments: CollectionConfig = {
   slug: 'customer-documents',
   labels: {
@@ -81,7 +63,7 @@ export const CustomerDocuments: CollectionConfig = {
       isCustomerAuthUser(req.user),
     read: readDocuments,
     update: ({ req }) => staffCanManageDocuments(req),
-    delete: deleteDocuments,
+    delete: ({ req }) => staffCanManageDocuments(req),
   },
   upload: {
     staticDir: path.resolve(
@@ -103,6 +85,18 @@ export const CustomerDocuments: CollectionConfig = {
         }
 
         const nextData = { ...(data ?? {}) }
+        const uploadedFile = req.file as
+          | { size?: number }
+          | undefined
+
+        if (
+          uploadedFile?.size &&
+          uploadedFile.size > 10 * 1024 * 1024
+        ) {
+          throw new Error(
+            'حجم فایل نباید بیشتر از ۱۰ مگابایت باشد.',
+          )
+        }
 
         if (isCustomerAuthUser(req.user)) {
           nextData.customer = req.user.id
