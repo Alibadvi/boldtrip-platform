@@ -53,13 +53,13 @@ export default async function RequestDocumentsPage({
     <div className="grid gap-6 lg:grid-cols-[1fr_24rem]">
       <div className="space-y-5">
         <Card className="border-border bg-white p-7 shadow-card">
-          <p className="text-sm font-bold text-muted">
+          <p className="text-sm font-bold text-ink-500">
             درخواست {request.reference}
           </p>
-          <h1 className="mt-2 text-2xl font-black text-ink">
+          <h1 className="mt-2 text-2xl font-black text-brand-950">
             مدارک این درخواست
           </h1>
-          <p className="mt-3 leading-8 text-muted">
+          <p className="mt-3 leading-8 text-ink-500">
             فقط مدارک مربوط به همین درخواست را
             بارگذاری کنید. فایل‌ها در صفحه عمومی
             قابل مشاهده نیستند.
@@ -75,10 +75,10 @@ export default async function RequestDocumentsPage({
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <h2 className="font-black text-ink">
+                    <h2 className="font-black text-brand-950">
                       {document.label}
                     </h2>
-                    <p className="mt-1 text-sm text-muted">
+                    <p className="mt-1 text-sm text-ink-500">
                       {
                         documentKindLabels[
                           document.kind
@@ -87,7 +87,7 @@ export default async function RequestDocumentsPage({
                       · {document.filename}
                     </p>
                     {document.reviewerNote ? (
-                      <p className="mt-3 text-sm leading-7 text-muted">
+                      <p className="mt-3 text-sm leading-7 text-ink-500">
                         {document.reviewerNote}
                       </p>
                     ) : null}
@@ -110,7 +110,7 @@ export default async function RequestDocumentsPage({
             ))}
           </div>
         ) : (
-          <Card className="border-dashed border-border bg-canvas p-6 text-center text-muted">
+          <Card className="border-dashed border-border bg-canvas p-6 text-center text-ink-500">
             هنوز مدرکی برای این درخواست ارسال نشده
             است.
           </Card>
