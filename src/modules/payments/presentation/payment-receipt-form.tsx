@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { Button, Input } from '@/shared/ui'
+import { Button } from '@/shared/ui'
 
 type PaymentReceiptFormProps = {
   amount: number
@@ -97,8 +97,9 @@ export function PaymentReceiptForm({
         </p>
       </div>
 
-      <Input
+      <input
         accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+        className="block w-full rounded-2xl border border-dashed border-brand-200 bg-brand-50 px-4 py-5 text-sm text-ink-700 file:ml-4 file:rounded-lg file:border-0 file:bg-brand-600 file:px-4 file:py-2 file:font-bold file:text-white"
         name="file"
         required
         type="file"
