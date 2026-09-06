@@ -31,7 +31,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-4 lg:flex">
-          <Link href="/auth" className="text-sm font-bold text-ink-700 hover:text-brand-700">
+          <Link
+            href="/sign-in"
+            className="text-sm font-bold text-ink-700 hover:text-brand-700"
+          >
             ورود و پیگیری
           </Link>
           <Link href="/consultation/book" className={buttonVariants({ size: 'small' })}>
@@ -67,7 +70,7 @@ export function SiteHeader() {
                 رزرو مشاوره
               </Link>
               <Link
-                href="/auth"
+                href="/sign-in"
                 className={buttonVariants({ fullWidth: true, variant: 'secondary' })}
               >
                 ورود و پیگیری پرونده

@@ -3,13 +3,13 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
-import { ConsultationPage } from '@/modules/scheduling'
 import sharp from 'sharp'
 
 import { Countries, Services, Visas } from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
-import { Staff } from '@/modules/identity'
+import { Customers, Staff } from '@/modules/identity'
 import { migrations } from '@/migrations'
+import { ConsultationPage } from '@/modules/scheduling'
 import { serverEnv } from '@/shared/config/server-env'
 
 const filename = fileURLToPath(import.meta.url)
@@ -25,8 +25,17 @@ export default buildConfig({
       titleSuffix: ' — BoldTrip',
     },
   },
-  collections: [Staff, Countries, Visas, Services],
-  globals: [Homepage, ConsultationPage],
+  collections: [
+    Staff,
+    Customers,
+    Countries,
+    Visas,
+    Services,
+  ],
+  globals: [
+    Homepage,
+    ConsultationPage,
+  ],
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
   csrf: [serverEnv.NEXT_PUBLIC_SITE_URL],
   db: postgresAdapter({

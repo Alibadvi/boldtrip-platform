@@ -64,10 +64,12 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     staff: StaffAuthOperations;
+    customers: CustomerAuthOperations;
   };
   blocks: {};
   collections: {
     staff: Staff;
+    customers: Customer;
     countries: Country;
     visas: Visa;
     services: Service;
@@ -79,6 +81,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     staff: StaffSelect<false> | StaffSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
     countries: CountriesSelect<false> | CountriesSelect<true>;
     visas: VisasSelect<false> | VisasSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
@@ -103,13 +106,31 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: Staff;
+  user: Staff | Customer;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
 export interface StaffAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface CustomerAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -154,6 +175,38 @@ export interface Staff {
     | null;
   password?: string | null;
   collection: 'staff';
+}
+/**
+ * حساب مشتریان سایت برای رزرو و پیگیری خدمات.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  name: string;
+  /**
+   * مانند 09121234567 یا +989121234567
+   */
+  mobile: string;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'customers';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -333,6 +386,10 @@ export interface PayloadLockedDocument {
         value: number | Staff;
       } | null)
     | ({
+        relationTo: 'customers';
+        value: number | Customer;
+      } | null)
+    | ({
         relationTo: 'countries';
         value: number | Country;
       } | null)
@@ -345,10 +402,15 @@ export interface PayloadLockedDocument {
         value: number | Service;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'staff';
-    value: number | Staff;
-  };
+  user:
+    | {
+        relationTo: 'staff';
+        value: number | Staff;
+      }
+    | {
+        relationTo: 'customers';
+        value: number | Customer;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -358,10 +420,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'staff';
-    value: number | Staff;
-  };
+  user:
+    | {
+        relationTo: 'staff';
+        value: number | Staff;
+      }
+    | {
+        relationTo: 'customers';
+        value: number | Customer;
+      };
   key?: string | null;
   value?:
     | {
@@ -394,6 +461,30 @@ export interface StaffSelect<T extends boolean = true> {
   name?: T;
   roles?: T;
   accountStatus?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  name?: T;
+  mobile?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
