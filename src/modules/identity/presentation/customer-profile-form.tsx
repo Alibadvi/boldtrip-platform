@@ -67,7 +67,7 @@ export function CustomerProfileForm({
   }
 
   const fieldClass =
-    'min-h-12 w-full rounded-2xl border border-border bg-white px-4 outline-none transition focus:border-primary'
+    'min-h-12 w-full rounded-2xl border border-border bg-white px-4 outline-none transition focus:border-brand-600'
 
   return (
     <form
@@ -75,7 +75,7 @@ export function CustomerProfileForm({
       onSubmit={submit}
     >
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           نام و نام خانوادگی
         </span>
         <input
@@ -91,7 +91,7 @@ export function CustomerProfileForm({
       </label>
 
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           شماره موبایل
         </span>
         <input
@@ -107,7 +107,7 @@ export function CustomerProfileForm({
       </label>
 
       <label className="grid gap-2 sm:col-span-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           ایمیل
         </span>
         <input
@@ -116,7 +116,7 @@ export function CustomerProfileForm({
           disabled
           value={customer.email}
         />
-        <span className="text-xs text-muted">
+        <span className="text-xs text-ink-500">
           ایمیل شناسه ورود شماست و از این صفحه تغییر
           نمی‌کند.
         </span>
