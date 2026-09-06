@@ -49,13 +49,13 @@ export default async function RequestPaymentPage({
   return (
     <div className="space-y-6">
       <Card className="border-border bg-white p-7 shadow-card">
-        <p className="text-sm font-bold text-muted">
+        <p className="text-sm font-bold text-ink-500">
           درخواست {request.reference}
         </p>
-        <h1 className="mt-2 text-2xl font-black text-ink">
+        <h1 className="mt-2 text-2xl font-black text-brand-950">
           پرداخت و ارسال رسید
         </h1>
-        <p className="mt-3 leading-8 text-muted">
+        <p className="mt-3 leading-8 text-ink-500">
           مبلغ اعلام‌شده را به اطلاعات حساب زیر
           واریز کنید و رسید را برای بررسی بفرستید.
         </p>
