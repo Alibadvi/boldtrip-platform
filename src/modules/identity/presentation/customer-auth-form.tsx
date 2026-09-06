@@ -194,6 +194,17 @@ export function CustomerAuthForm({ mode, nextPath }: CustomerAuthFormProps) {
         />
       </label>
 
+      {!isSignUp ? (
+        <div className="-mt-2 text-left">
+          <Link
+            className="text-sm font-bold text-brand-700 hover:text-brand-800"
+            href="/forgot-password"
+          >
+            رمز عبور را فراموش کرده‌اید؟
+          </Link>
+        </div>
+      ) : null}
+
       {isSignUp ? (
         <label className="block">
           <span className="mb-2 block text-sm font-bold text-ink-700">
