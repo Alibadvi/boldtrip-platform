@@ -210,6 +210,18 @@ export default async function AccountRequestPage({
         </Card>
       ) : null}
 
+      {request.staffNote ? (
+        <Card className="border-blue-200 bg-blue-50 p-7 shadow-card">
+          <h2 className="text-xl font-black text-blue-950">
+            پیام کارشناس
+          </h2>
+
+          <p className="mt-4 whitespace-pre-line leading-8 text-blue-950/75">
+            {request.staffNote}
+          </p>
+        </Card>
+      ) : null}
+
       <Card className="border-brand-100 bg-brand-50 p-6">
         <h2 className="font-black text-brand-950">
           ادامه این درخواست
