@@ -12,13 +12,13 @@ export default function ResetPasswordPage() {
   return (
     <Container className="py-16">
       <Card className="mx-auto max-w-lg border-border bg-white p-7 shadow-raised sm:p-9">
-        <p className="text-sm font-extrabold text-primary">
+        <p className="text-sm font-extrabold text-brand-700">
           حساب مشتری
         </p>
-        <h1 className="mt-2 text-3xl font-black text-ink">
+        <h1 className="mt-2 text-3xl font-black text-brand-950">
           رمز عبور جدید
         </h1>
-        <p className="mt-3 leading-8 text-muted">
+        <p className="mt-3 leading-8 text-ink-500">
           یک رمز امن با حداقل ۸ کاراکتر انتخاب کنید.
         </p>
         <div className="mt-7">
