@@ -81,6 +81,16 @@ export const ConsultationBookings: CollectionConfig = {
   hooks: {
     beforeValidate: [
       async ({ data, operation, req }) => {
+        if (
+          operation === 'update' &&
+          data?.status === 'cancelled'
+        ) {
+          return {
+            ...data,
+            reservationKey: null,
+          }
+        }
+
         if (operation !== 'create') {
           return data
         }
@@ -132,6 +142,7 @@ export const ConsultationBookings: CollectionConfig = {
         nextData.durationMinutes =
           slot.durationMinutes ?? 45
         nextData.startsAt = slot.startsAt
+        nextData.reservationKey = String(slotId)
 
         return nextData
       },
@@ -164,8 +175,16 @@ export const ConsultationBookings: CollectionConfig = {
         'consultation-slots' as 'service-requests',
       label: 'زمان انتخاب‌شده',
       required: true,
+      index: true,
+    },
+    {
+      name: 'reservationKey',
+      type: 'text',
       unique: true,
       index: true,
+      admin: {
+        hidden: true,
+      },
     },
     {
       name: 'startsAt',
