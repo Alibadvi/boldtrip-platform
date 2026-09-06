@@ -86,10 +86,10 @@ export function ConsultationBookingForm({
   if (slots.length === 0) {
     return (
       <div className="rounded-3xl border border-border bg-white p-7 text-center shadow-card">
-        <h2 className="text-xl font-black text-ink">
+        <h2 className="text-xl font-black text-brand-950">
           زمان آزادی وجود ندارد
         </h2>
-        <p className="mt-3 leading-8 text-muted">
+        <p className="mt-3 leading-8 text-ink-500">
           زمان‌های جدید توسط مدیریت ثبت می‌شوند. کمی
           بعد دوباره بررسی کنید.
         </p>
@@ -103,7 +103,7 @@ export function ConsultationBookingForm({
       onSubmit={submit}
     >
       <fieldset>
-        <legend className="text-lg font-black text-ink">
+        <legend className="text-lg font-black text-brand-950">
           زمان مناسب را انتخاب کنید
         </legend>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -111,8 +111,8 @@ export function ConsultationBookingForm({
             <label
               className={
                 slotId === String(slot.id)
-                  ? 'cursor-pointer rounded-2xl border-2 border-primary bg-primary-soft p-4'
-                  : 'cursor-pointer rounded-2xl border border-border bg-white p-4 transition hover:border-primary/50'
+                  ? 'cursor-pointer rounded-2xl border-2 border-brand-600 bg-brand-50 p-4'
+                  : 'cursor-pointer rounded-2xl border border-border bg-white p-4 transition hover:border-brand-300'
               }
               key={slot.id}
             >
@@ -128,10 +128,10 @@ export function ConsultationBookingForm({
                 type="radio"
                 value={slot.id}
               />
-              <span className="block font-black text-ink">
+              <span className="block font-black text-brand-950">
                 {formatDate(slot.startsAt)}
               </span>
-              <span className="mt-2 block text-sm text-muted">
+              <span className="mt-2 block text-sm text-ink-500">
                 {
                   consultationDeliveryMethodLabels[
                     slot.deliveryMethod
@@ -139,7 +139,7 @@ export function ConsultationBookingForm({
                 }{' '}
                 · {slot.durationMinutes} دقیقه
               </span>
-              <span className="mt-2 block font-bold text-primary">
+              <span className="mt-2 block font-bold text-brand-700">
                 {formatConsultationPrice(
                   slot.priceAmount,
                 )}
@@ -150,11 +150,11 @@ export function ConsultationBookingForm({
       </fieldset>
 
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           موضوع مشاوره
         </span>
         <input
-          className="min-h-12 rounded-2xl border border-border px-4 outline-none transition focus:border-primary"
+          className="min-h-12 rounded-2xl border border-border px-4 outline-none transition focus:border-brand-600"
           maxLength={200}
           name="topic"
           placeholder="مثلاً بررسی مسیر ویزای تحصیلی کانادا"
@@ -163,11 +163,11 @@ export function ConsultationBookingForm({
       </label>
 
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           توضیحات تکمیلی
         </span>
         <textarea
-          className="min-h-28 rounded-2xl border border-border px-4 py-3 outline-none transition focus:border-primary"
+          className="min-h-28 rounded-2xl border border-border px-4 py-3 outline-none transition focus:border-brand-600"
           maxLength={2000}
           name="customerNote"
           placeholder="شرایط یا پرسش‌های اصلی خود را کوتاه بنویسید."
