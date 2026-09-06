@@ -89,10 +89,10 @@ export function PaymentReceiptForm({
       onSubmit={submit}
     >
       <div>
-        <h3 className="text-lg font-black text-ink">
+        <h3 className="text-lg font-black text-brand-950">
           ارسال رسید بانکی
         </h3>
-        <p className="mt-1 text-sm leading-7 text-muted">
+        <p className="mt-1 text-sm leading-7 text-ink-500">
           فرمت PDF، JPG یا PNG تا سقف ۱۰ مگابایت
         </p>
       </div>
@@ -105,7 +105,7 @@ export function PaymentReceiptForm({
       />
 
       <textarea
-        className="min-h-24 rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary"
+        className="min-h-24 rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-600"
         name="note"
         placeholder="توضیح اختیاری درباره واریز"
       />
