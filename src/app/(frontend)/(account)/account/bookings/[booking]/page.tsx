@@ -94,18 +94,18 @@ export default async function BookingDetailPage({
       <Card className="border-border bg-white p-6">
         <dl className="grid gap-5 sm:grid-cols-3">
           <div>
-            <dt className="text-sm text-muted">
+            <dt className="text-sm text-ink-500">
               زمان جلسه
             </dt>
-            <dd className="mt-1 font-black text-ink">
+            <dd className="mt-1 font-black text-brand-950">
               {formatDate(booking.startsAt)}
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-muted">
+            <dt className="text-sm text-ink-500">
               روش برگزاری
             </dt>
-            <dd className="mt-1 font-black text-ink">
+            <dd className="mt-1 font-black text-brand-950">
               {
                 consultationDeliveryMethodLabels[
                   booking.deliveryMethod
@@ -114,10 +114,10 @@ export default async function BookingDetailPage({
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-muted">
+            <dt className="text-sm text-ink-500">
               مدت جلسه
             </dt>
-            <dd className="mt-1 font-black text-ink">
+            <dd className="mt-1 font-black text-brand-950">
               {booking.durationMinutes} دقیقه
             </dd>
           </div>
