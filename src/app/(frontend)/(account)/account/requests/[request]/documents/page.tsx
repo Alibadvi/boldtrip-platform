@@ -126,9 +126,14 @@ export default async function RequestDocumentsPage({
         </Link>
       </div>
 
-      <DocumentUploadForm
-        serviceRequestId={request.id}
-      />
+      <Card className="h-fit border-border bg-white p-6 shadow-card">
+        <h2 className="mb-5 text-lg font-black text-brand-950">
+          بارگذاری مدرک جدید
+        </h2>
+        <DocumentUploadForm
+          serviceRequestId={request.id}
+        />
+      </Card>
     </div>
   )
 }
