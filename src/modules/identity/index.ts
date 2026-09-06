@@ -31,3 +31,8 @@ export type { StaffRole } from './domain/staff-role'
 export { Customers } from './infrastructure/payload/customers.collection'
 export { Staff } from './infrastructure/payload/staff.collection'
 export { CustomerAuthForm } from './presentation/customer-auth-form'
+export { CustomerProfileForm } from './presentation/customer-profile-form'
+export {
+  ForgotPasswordForm,
+  ResetPasswordForm,
+} from './presentation/password-recovery-form'
