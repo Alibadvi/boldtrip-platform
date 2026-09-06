@@ -41,10 +41,10 @@ export default async function AccountDocumentsPage() {
   return (
     <div className="space-y-6">
       <Card className="border-border bg-white p-7 shadow-card">
-        <h1 className="text-2xl font-black text-ink">
+        <h1 className="text-2xl font-black text-brand-950">
           مدارک من
         </h1>
-        <p className="mt-2 leading-8 text-muted">
+        <p className="mt-2 leading-8 text-ink-500">
           نتیجه بررسی مدارک ارسال‌شده برای همه
           درخواست‌ها را اینجا ببینید.
         </p>
@@ -56,13 +56,13 @@ export default async function AccountDocumentsPage() {
             href={`/account/requests/${document.serviceRequestId}/documents`}
             key={document.id}
           >
-            <Card className="border-border bg-white p-5 transition hover:border-primary/40 hover:shadow-card">
+            <Card className="border-border bg-white p-5 transition hover:border-brand-300 hover:shadow-card">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <h2 className="font-black text-ink">
+                  <h2 className="font-black text-brand-950">
                     {document.label}
                   </h2>
-                  <p className="mt-2 text-sm text-muted">
+                  <p className="mt-2 text-sm text-ink-500">
                     {
                       documentKindLabels[
                         document.kind
@@ -73,7 +73,7 @@ export default async function AccountDocumentsPage() {
                       document.serviceRequestId}
                   </p>
                   {document.reviewerNote ? (
-                    <p className="mt-2 text-sm leading-7 text-muted">
+                    <p className="mt-2 text-sm leading-7 text-ink-500">
                       {document.reviewerNote}
                     </p>
                   ) : null}
