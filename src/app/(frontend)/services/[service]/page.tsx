@@ -36,10 +36,10 @@ function getServiceAction(service: ServiceDetail) {
       }
 
     default:
-      return {
-        label: 'شروع درخواست خدمت',
-        href: `/account/requests/new?service=${service.slug}`,
-      }
+  return {
+    label: 'شروع درخواست خدمت',
+    href: `/services/${service.slug}/apply`,
+  }
   }
 }
 

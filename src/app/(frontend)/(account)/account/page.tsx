@@ -1,50 +1,64 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
+import { getCustomerServiceRequests } from '@/modules/cases'
 import { requireCurrentCustomer } from '@/modules/identity'
-import { buttonVariants, Card } from '@/shared/ui'
+import {
+  buttonVariants,
+  Card,
+} from '@/shared/ui'
 
 export const metadata: Metadata = {
   title: 'حساب کاربری',
-  description: 'مدیریت درخواست‌ها و رزروهای BoldTrip.',
+  description:
+    'مدیریت درخواست‌ها و رزروهای BoldTrip.',
 }
 
-const summaries = [
-  {
-    description: 'درخواست فعال',
-    href: '/account/requests',
-    label: 'درخواست‌ها',
-    value: '۰',
-  },
-  {
-    description: 'رزرو پیش رو',
-    href: '/account/bookings',
-    label: 'رزرو مشاوره',
-    value: '۰',
-  },
-  {
-    description: 'مدرک بارگذاری‌شده',
-    href: '/account/documents',
-    label: 'مدارک',
-    value: '۰',
-  },
-]
-
 export default async function AccountPage() {
-  const customer = await requireCurrentCustomer('/account')
+  const customer =
+    await requireCurrentCustomer('/account')
+
+  const requests =
+    await getCustomerServiceRequests(customer.id)
+
+  const summaries = [
+    {
+      description: 'درخواست ثبت‌شده',
+      href: '/account/requests',
+      label: 'درخواست‌ها',
+      value: new Intl.NumberFormat('fa-IR').format(
+        requests.length,
+      ),
+    },
+    {
+      description: 'رزرو پیش رو',
+      href: '/account/bookings',
+      label: 'رزرو مشاوره',
+      value: '۰',
+    },
+    {
+      description: 'مدرک بارگذاری‌شده',
+      href: '/account/documents',
+      label: 'مدارک',
+      value: '۰',
+    },
+  ]
 
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden border-brand-100 bg-brand-950 p-7 text-white shadow-raised sm:p-9">
-        <p className="text-sm font-bold text-brand-200">حساب مشتری</p>
+        <p className="text-sm font-bold text-brand-200">
+          حساب مشتری
+        </p>
 
         <h1 className="mt-2 text-3xl font-black">
           سلام {customer.name}
         </h1>
 
         <p className="mt-3 max-w-2xl leading-8 text-brand-100">
-          از این بخش می‌توانید وضعیت درخواست‌ها، رزروها، مدارک و پرداخت‌های
-          خود را پیگیری کنید.
+          از این بخش می‌توانید وضعیت درخواست‌ها،
+          رزروها، مدارک و پرداخت‌های خود را پیگیری
+          کنید.
         </p>
       </Card>
 
@@ -52,10 +66,14 @@ export default async function AccountPage() {
         {summaries.map((item) => (
           <Link href={item.href} key={item.href}>
             <Card className="h-full border-border bg-white p-6 transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-card">
-              <p className="text-sm font-bold text-ink-500">{item.label}</p>
+              <p className="text-sm font-bold text-ink-500">
+                {item.label}
+              </p>
+
               <p className="mt-3 text-4xl font-black text-brand-950">
                 {item.value}
               </p>
+
               <p className="mt-2 text-sm text-ink-700">
                 {item.description}
               </p>
@@ -70,25 +88,33 @@ export default async function AccountPage() {
         </h2>
 
         <p className="mt-2 leading-8 text-ink-700">
-          خدمت موردنظر خود را انتخاب کنید. پس از تکمیل فرم، درخواست در همین
-          حساب نمایش داده خواهد شد.
+          خدمت موردنظر را انتخاب کنید. پس از تکمیل
+          فرم، درخواست در همین حساب نمایش داده خواهد
+          شد.
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/services" className={buttonVariants()}>
+          <Link
+            href="/services"
+            className={buttonVariants()}
+          >
             مشاهده خدمات
           </Link>
 
           <Link
             href="/embassy-appointments"
-            className={buttonVariants({ variant: 'secondary' })}
+            className={buttonVariants({
+              variant: 'secondary',
+            })}
           >
             درخواست وقت سفارت
           </Link>
 
           <Link
             href="/consultation"
-            className={buttonVariants({ variant: 'quiet' })}
+            className={buttonVariants({
+              variant: 'quiet',
+            })}
           >
             رزرو مشاوره
           </Link>

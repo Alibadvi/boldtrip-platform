@@ -321,17 +321,29 @@ export default async function EmbassyCountryPage({
                     </dd>
                   </div>
 
-                  <div
-                    aria-disabled="true"
-                    className="flex min-h-12 cursor-not-allowed items-center justify-center rounded-control bg-ink-200 px-5 text-center text-sm font-bold text-ink-500"
-                  >
-                    ثبت درخواست آنلاین — مرحله بعد
-                  </div>
+                  {guide.acceptingRequests ? (
+  <Link
+    href={`/embassy-appointments/${country.slug}/apply`}
+    className={cn(
+      'flex min-h-12 items-center justify-center rounded-control px-5 text-center text-sm font-bold transition',
+      theme.button,
+    )}
+  >
+    شروع درخواست وقت سفارت
+  </Link>
+) : (
+  <div
+    aria-disabled="true"
+    className="flex min-h-12 cursor-not-allowed items-center justify-center rounded-control bg-ink-200 px-5 text-center text-sm font-bold text-ink-500"
+  >
+    پذیرش درخواست موقتاً متوقف است
+  </div>
+)}
 
-                  <p className="text-center text-xs leading-6 text-ink-500">
-                    فرم ثبت درخواست و آپلود خصوصی مدارک در مرحله
-                    بعد ساخته می‌شود.
-                  </p>
+<p className="text-center text-xs leading-6 text-ink-500">
+  پس از ثبت درخواست، شماره پیگیری در حساب
+  کاربری شما نمایش داده می‌شود.
+</p>
                 </dl>
               </Card>
 

@@ -73,6 +73,7 @@ export interface Config {
     countries: Country;
     visas: Visa;
     services: Service;
+    'service-requests': ServiceRequest;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -85,6 +86,7 @@ export interface Config {
     countries: CountriesSelect<false> | CountriesSelect<true>;
     visas: VisasSelect<false> | VisasSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
+    'service-requests': ServiceRequestsSelect<false> | ServiceRequestsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -358,6 +360,54 @@ export interface Service {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * درخواست‌های خدمات و وقت سفارت ثبت‌شده توسط مشتریان.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-requests".
+ */
+export interface ServiceRequest {
+  id: number;
+  reference: string;
+  customer: number | Customer;
+  requestType: 'service' | 'embassyAppointment';
+  service?: (number | null) | Service;
+  country?: (number | null) | Country;
+  status:
+    | 'submitted'
+    | 'needsDocuments'
+    | 'underReview'
+    | 'quoted'
+    | 'awaitingPayment'
+    | 'paymentReview'
+    | 'inProgress'
+    | 'completed'
+    | 'rejected'
+    | 'cancelled';
+  submittedAt: string;
+  applicant: {
+    fullName: string;
+    mobile: string;
+    email: string;
+    nationality: string;
+    /**
+     * در صورت آماده بودن پاسپورت وارد شود.
+     */
+    passportNumber?: string | null;
+    applicantsCount: number;
+  };
+  customerMessage?: string | null;
+  /**
+   * برای خدماتی که قیمت آن‌ها پس از بررسی اعلام می‌شود.
+   */
+  quotedAmount?: number | null;
+  /**
+   * این متن فعلاً فقط در پنل مدیریت نمایش داده می‌شود.
+   */
+  staffNote?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -400,6 +450,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'services';
         value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'service-requests';
+        value: number | ServiceRequest;
       } | null);
   globalSlug?: string | null;
   user:
@@ -622,6 +676,34 @@ export interface ServicesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-requests_select".
+ */
+export interface ServiceRequestsSelect<T extends boolean = true> {
+  reference?: T;
+  customer?: T;
+  requestType?: T;
+  service?: T;
+  country?: T;
+  status?: T;
+  submittedAt?: T;
+  applicant?:
+    | T
+    | {
+        fullName?: T;
+        mobile?: T;
+        email?: T;
+        nationality?: T;
+        passportNumber?: T;
+        applicantsCount?: T;
+      };
+  customerMessage?: T;
+  quotedAmount?: T;
+  staffNote?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

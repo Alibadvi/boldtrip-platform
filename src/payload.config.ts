@@ -5,7 +5,12 @@ import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
-import { Countries, Services, Visas } from '@/modules/catalog'
+import { ServiceRequests } from '@/modules/cases'
+import {
+  Countries,
+  Services,
+  Visas,
+} from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
 import { Customers, Staff } from '@/modules/identity'
 import { migrations } from '@/migrations'
@@ -25,19 +30,24 @@ export default buildConfig({
       titleSuffix: ' — BoldTrip',
     },
   },
+
   collections: [
     Staff,
     Customers,
     Countries,
     Visas,
     Services,
+    ServiceRequests,
   ],
+
   globals: [
     Homepage,
     ConsultationPage,
   ],
+
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
   csrf: [serverEnv.NEXT_PUBLIC_SITE_URL],
+
   db: postgresAdapter({
     prodMigrations: migrations,
     pool: {
@@ -45,12 +55,17 @@ export default buildConfig({
     },
     push: process.env.NODE_ENV !== 'production',
   }),
+
   editor: lexicalEditor(),
   secret: serverEnv.PAYLOAD_SECRET,
   serverURL: serverEnv.NEXT_PUBLIC_SITE_URL,
   sharp,
   telemetry: false,
+
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    outputFile: path.resolve(
+      dirname,
+      'payload-types.ts',
+    ),
   },
 })
