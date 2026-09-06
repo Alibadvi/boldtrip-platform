@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 import {
   consultationDeliveryMethodLabels,
@@ -125,20 +126,18 @@ export default async function ConsultationPageRoute() {
                 </p>
               </div>
 
-              <button
-                type="button"
-                disabled
+              <Link
+                href="/consultation/book"
                 className={buttonVariants({
                   className: 'w-full',
                   size: 'large',
                 })}
               >
-                رزرو آنلاین — مرحله بعد
-              </button>
+                مشاهده زمان‌های آزاد
+              </Link>
 
               <p className="text-center text-xs leading-6 text-ink-500">
-                بعد از ساخت حساب مشتری و سیستم زمان‌بندی فعال
-                می‌شود.
+                برای ثبت رزرو وارد حساب مشتری می‌شوید.
               </p>
             </div>
           </Card>
