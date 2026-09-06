@@ -212,14 +212,31 @@ export default async function AccountRequestPage({
 
       <Card className="border-brand-100 bg-brand-50 p-6">
         <h2 className="font-black text-brand-950">
-          مرحله بعدی
+          ادامه این درخواست
         </h2>
 
         <p className="mt-2 leading-8 text-brand-800">
-          کارشناس درخواست را بررسی می‌کند. بخش
-          بارگذاری مدارک و پرداخت در مرحله بعدی به
-          همین درخواست متصل خواهد شد.
+          مدارک را فقط در پرونده همین درخواست
+          بارگذاری کنید. پس از اعلام مبلغ نیز رسید
+          پرداخت از همین حساب ارسال می‌شود.
         </p>
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            href={`/account/requests/${request.id}/documents`}
+            className={buttonVariants()}
+          >
+            مدیریت مدارک
+          </Link>
+          <Link
+            href={`/account/requests/${request.id}/payment`}
+            className={buttonVariants({
+              variant: 'secondary',
+            })}
+          >
+            پرداخت و ارسال رسید
+          </Link>
+        </div>
       </Card>
 
       <Link
