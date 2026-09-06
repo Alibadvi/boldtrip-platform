@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { Button } from '@/shared/ui'
 
 function fieldClass(): string {
-  return 'min-h-12 w-full rounded-2xl border border-border bg-white px-4 text-left outline-none transition focus:border-primary'
+  return 'min-h-12 w-full rounded-2xl border border-border bg-white px-4 text-left outline-none transition focus:border-brand-600'
 }
 
 export function ForgotPasswordForm() {
@@ -65,7 +65,7 @@ export function ForgotPasswordForm() {
   return (
     <form className="grid gap-5" onSubmit={submit}>
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           ایمیل حساب
         </span>
         <input
@@ -165,7 +165,7 @@ export function ResetPasswordForm() {
           رمز عبور با موفقیت تغییر کرد.
         </p>
         <Link
-          className="font-bold text-primary"
+          className="font-bold text-brand-700"
           href="/sign-in"
         >
           ورود با رمز جدید
@@ -177,7 +177,7 @@ export function ResetPasswordForm() {
   return (
     <form className="grid gap-5" onSubmit={submit}>
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           رمز عبور جدید
         </span>
         <input
@@ -195,7 +195,7 @@ export function ResetPasswordForm() {
       </label>
 
       <label className="grid gap-2">
-        <span className="font-bold text-ink">
+        <span className="font-bold text-brand-950">
           تکرار رمز عبور
         </span>
         <input
