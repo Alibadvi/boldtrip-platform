@@ -43,10 +43,10 @@ export default async function AccountBookingsPage() {
   return (
     <div className="space-y-6">
       <Card className="border-border bg-white p-7 shadow-card">
-        <h1 className="text-2xl font-black text-ink">
+        <h1 className="text-2xl font-black text-brand-950">
           رزروهای مشاوره
         </h1>
-        <p className="mt-2 leading-8 text-muted">
+        <p className="mt-2 leading-8 text-ink-500">
           زمان جلسه و وضعیت پرداخت هر رزرو را از
           اینجا پیگیری کنید.
         </p>
@@ -58,16 +58,16 @@ export default async function AccountBookingsPage() {
             href={`/account/bookings/${booking.id}`}
             key={booking.id}
           >
-            <Card className="border-border bg-white p-6 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card">
+            <Card className="border-border bg-white p-6 transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-card">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h2 className="font-black text-ink">
+                  <h2 className="font-black text-brand-950">
                     {booking.topic}
                   </h2>
-                  <p className="mt-2 text-sm text-muted">
+                  <p className="mt-2 text-sm text-ink-500">
                     {formatDate(booking.startsAt)}
                   </p>
-                  <p className="mt-1 font-mono text-xs text-muted" dir="ltr">
+                  <p className="mt-1 font-mono text-xs text-ink-500" dir="ltr">
                     {booking.reference}
                   </p>
                 </div>
