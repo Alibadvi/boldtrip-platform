@@ -25,6 +25,7 @@ next-env.d.ts
 
 # Payload generated and local uploads
 /media
+/private-uploads
 src/payload-generated-schema.ts
 
 # Editors and operating systems
