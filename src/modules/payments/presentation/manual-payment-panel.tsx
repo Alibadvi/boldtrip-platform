@@ -25,10 +25,10 @@ export function ManualPaymentPanel({
   if (!amount || amount <= 0) {
     return (
       <div className="rounded-3xl border border-border bg-white p-6">
-        <h2 className="text-xl font-black text-ink">
+        <h2 className="text-xl font-black text-brand-950">
           پرداخت
         </h2>
-        <p className="mt-3 leading-8 text-muted">
+        <p className="mt-3 leading-8 text-ink-500">
           مبلغ این مورد هنوز توسط کارشناس اعلام نشده است.
         </p>
       </div>
@@ -41,7 +41,7 @@ export function ManualPaymentPanel({
 
   return (
     <div className="grid gap-5">
-      <section className="rounded-3xl bg-ink p-6 text-white">
+      <section className="rounded-3xl bg-brand-950 p-6 text-white">
         <p className="text-sm text-white/65">
           مبلغ قابل پرداخت
         </p>
@@ -109,7 +109,7 @@ export function ManualPaymentPanel({
 
       {receipts.length ? (
         <section className="rounded-3xl border border-border bg-white p-6">
-          <h2 className="text-lg font-black text-ink">
+          <h2 className="text-lg font-black text-brand-950">
             رسیدهای ارسال‌شده
           </h2>
           <div className="mt-4 grid gap-3">
@@ -119,16 +119,16 @@ export function ManualPaymentPanel({
                 key={receipt.id}
               >
                 <div>
-                  <p className="font-bold text-ink">
+                  <p className="font-bold text-brand-950">
                     {formatAmount(receipt.amount)} تومان
                   </p>
                   {receipt.reviewerNote ? (
-                    <p className="mt-1 text-sm text-muted">
+                    <p className="mt-1 text-sm text-ink-500">
                       {receipt.reviewerNote}
                     </p>
                   ) : null}
                 </div>
-                <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
+                <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">
                   {
                     paymentReceiptStatusLabels[
                       receipt.status
