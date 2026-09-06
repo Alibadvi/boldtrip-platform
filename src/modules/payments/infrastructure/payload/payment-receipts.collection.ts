@@ -58,6 +58,7 @@ export const PaymentReceipts: CollectionConfig = {
       'رسیدهای بانکی مشتریان را بررسی و تأیید یا رد کنید.',
   },
   upload: {
+    filesRequiredOnCreate: true,
     staticDir: path.resolve(
       process.cwd(),
       'private-uploads/receipts',
