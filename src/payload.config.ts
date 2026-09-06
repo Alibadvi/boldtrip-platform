@@ -7,7 +7,7 @@ import sharp from 'sharp'
 
 import { Countries, Visas } from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
-import { Staff } from '@/modules/identity'
+import { Customers, Staff } from '@/modules/identity'
 import { migrations } from '@/migrations'
 import { serverEnv } from '@/shared/config/server-env'
 
@@ -24,7 +24,7 @@ export default buildConfig({
       titleSuffix: ' — BoldTrip',
     },
   },
-  collections: [Staff, Countries, Visas],
+  collections: [Staff, Customers, Countries, Visas],
   globals: [Homepage],
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
   csrf: [serverEnv.NEXT_PUBLIC_SITE_URL],
