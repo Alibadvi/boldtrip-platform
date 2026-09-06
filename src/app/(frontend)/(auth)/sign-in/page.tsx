@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const query = await searchParams
-  const nextPath = getSafeNextPath(query.next)
+  const nextPath = getSafeNextPath(query.next, '/account')
 
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-canvas py-16 sm:py-24">

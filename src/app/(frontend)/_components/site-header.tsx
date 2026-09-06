@@ -32,7 +32,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-4 lg:flex">
           <Link
-            href="/sign-in"
+            href="/account"
             className="text-sm font-bold text-ink-700 hover:text-brand-700"
           >
             ورود و پیگیری
@@ -70,7 +70,7 @@ export function SiteHeader() {
                 رزرو مشاوره
               </Link>
               <Link
-                href="/sign-in"
+                href="/account"
                 className={buttonVariants({ fullWidth: true, variant: 'secondary' })}
               >
                 ورود و پیگیری پرونده

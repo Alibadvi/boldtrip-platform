@@ -2,7 +2,17 @@ export type CustomerId = number | string
 
 export type CustomerAuthUser = {
   collection: 'customers'
+  email?: null | string
   id: CustomerId
+  mobile?: null | string
+  name?: null | string
+}
+
+export type CurrentCustomer = {
+  email: string
+  id: CustomerId
+  mobile: string
+  name: string
 }
 
 export function isCustomerAuthUser(user: unknown): user is CustomerAuthUser {
