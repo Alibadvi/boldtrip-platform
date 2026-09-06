@@ -84,6 +84,18 @@ export const PaymentReceipts: CollectionConfig = {
         }
 
         const nextData = { ...(data ?? {}) }
+        const uploadedFile = req.file as
+          | { size?: number }
+          | undefined
+
+        if (
+          uploadedFile?.size &&
+          uploadedFile.size > 10 * 1024 * 1024
+        ) {
+          throw new Error(
+            'حجم فایل نباید بیشتر از ۱۰ مگابایت باشد.',
+          )
+        }
 
         if (isCustomerAuthUser(req.user)) {
           nextData.customer = req.user.id
@@ -108,12 +120,31 @@ export const PaymentReceipts: CollectionConfig = {
               ? 'consultation-bookings'
               : 'service-requests'
 
-          await req.payload.findByID({
+          const payable = await req.payload.findByID({
             collection: collection as 'service-requests',
             id: relationId,
             overrideAccess: false,
             req,
-          })
+          }) as unknown as {
+            amount?: number
+            quotedAmount?: number
+          }
+
+          const payableAmount =
+            payableType === 'consultation'
+              ? payable.amount
+              : payable.quotedAmount
+
+          if (
+            typeof payableAmount !== 'number' ||
+            payableAmount <= 0
+          ) {
+            throw new Error(
+              'مبلغ این مورد هنوز قابل پرداخت نیست.',
+            )
+          }
+
+          nextData.amount = payableAmount
         }
 
         return nextData
@@ -122,8 +153,9 @@ export const PaymentReceipts: CollectionConfig = {
     afterChange: [
       async ({ doc, operation, previousDoc, req }) => {
         if (
-          operation !== 'update' ||
-          doc.status === previousDoc?.status
+          !['create', 'update'].includes(operation) ||
+          (operation === 'update' &&
+            doc.status === previousDoc?.status)
         ) {
           return doc
         }
