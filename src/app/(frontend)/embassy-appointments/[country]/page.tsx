@@ -106,12 +106,12 @@ export default async function EmbassyCountryPage({
               </span>
 
               <h1 className="mt-6 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
-                {guide.title ??
+                {guide.title ||
                   `دریافت وقت سفارت ${country.name}`}
               </h1>
 
               <p className="mt-6 text-lg leading-9 text-white/80">
-                {guide.summary ??
+                {guide.summary ||
                   `شرایط، مدارک و مراحل دریافت وقت سفارت ${country.name}`}
               </p>
             </div>
