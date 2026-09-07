@@ -127,7 +127,11 @@ Public marketing media uses a separate policy.
 
 ## Authentication and authorization
 
-Current foundation implements named staff accounts and roles. Customer OTP/account implementation comes later.
+Staff and customers are separate Payload auth collections using email/password. Customer browser
+requests use `/api/customer/*` and the `boldtrip-customer-token` HTTP-only cookie. Payload admin
+uses `boldtrip-admin-token`. Customer requests strip browser admin credentials, verify the
+customer session and run Payload's existing endpoints/access rules. Mutations enforce an
+origin check before forwarding the customer cookie as a JWT. Logging out affects one session.
 
 Roles:
 
@@ -185,3 +189,8 @@ A database-backed idempotent worker is sufficient initially. Do not add a messag
 - Database-backed outbox/worker when the first background job is implemented.
 
 Record future architecture changes in this section with date, reason, and consequences.
+
+- 2026-09-07: Separate staff/customer browser sessions. A shared Payload cookie caused customer
+  login to block admin login. The API adapter preserves Payload authentication, validation and
+  ownership checks; existing account records are retained. The new cookie names require one
+  fresh login for each account after pulling this change.

@@ -15,7 +15,7 @@ export function LogoutButton() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/customers/logout', {
+      const response = await fetch('/api/customer/customers/logout', {
         method: 'POST',
         credentials: 'include',
       })

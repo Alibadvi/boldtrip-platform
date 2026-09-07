@@ -151,12 +151,15 @@ export default async function EmbassyCountryPage({
               guide.importantNotes.length === 0 ? (
                 <Card className="border-amber-200 bg-amber-50 p-7 sm:p-9">
                   <h2 className="text-xl font-black text-amber-950">
-                    محتوای این راهنما هنوز کامل نشده است
+                    راهنمای این مقصد در حال تکمیل است
                   </h2>
                   <p className="mt-3 leading-8 text-amber-950/75">
-                    مدیریت باید مدارک، مراحل و نکات مهم این
-                    کشور را در Payload تکمیل و دوباره منتشر کند.
+                    جزئیات مدارک و مراحل این مقصد به‌زودی اضافه می‌شود.
+                    برای بررسی شرایط درخواست خود با ما تماس بگیرید.
                   </p>
+                  <Link className="mt-4 inline-block font-bold underline" href="/contact">
+                    ارتباط با ما
+                  </Link>
                 </Card>
               ) : null}
 

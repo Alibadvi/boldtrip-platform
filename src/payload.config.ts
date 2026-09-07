@@ -14,6 +14,7 @@ import {
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
 import { CustomerDocuments } from '@/modules/documents'
 import { Customers, Staff } from '@/modules/identity'
+import { staffCookiePrefix } from '@/modules/identity/domain/session'
 import { migrations } from '@/migrations'
 import {
   PaymentReceipts,
@@ -30,6 +31,7 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  cookiePrefix: staffCookiePrefix,
   admin: {
     user: Staff.slug,
     importMap: {

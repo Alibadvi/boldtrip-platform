@@ -126,7 +126,7 @@ export function ServiceRequestForm({
       }
 
       const response = await fetch(
-        '/api/service-requests',
+        '/api/customer/service-requests',
         {
           method: 'POST',
           credentials: 'include',

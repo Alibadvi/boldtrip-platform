@@ -63,7 +63,7 @@ export function DocumentUploadForm({
         }),
       )
 
-      const response = await fetch('/api/customer-documents', {
+      const response = await fetch('/api/customer/customer-documents', {
         method: 'POST',
         credentials: 'include',
         body: formData,

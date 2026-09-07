@@ -7,7 +7,8 @@ import {
   staffRoles,
 } from '../../domain/staff-role'
 
-const isSignedIn = ({ req }: { req: PayloadRequest }) => Boolean(req.user)
+const isSignedIn = ({ req }: { req: PayloadRequest }) =>
+  req.user?.collection === 'staff' && req.user.accountStatus === 'active'
 
 const canCreateStaff = async ({ req }: { req: PayloadRequest }) => {
   if (can(getStaffRoles(req.user), 'staff.manage')) {
@@ -30,7 +31,7 @@ const canUpdateStaff: NonNullable<CollectionConfig['access']>['update'] = ({ req
     return true
   }
 
-  if (!req.user) {
+  if (!isSignedIn({ req }) || !req.user) {
     return false
   }
 

@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 
 import type { CurrentCustomer } from '../domain/customer'
 import { isCustomerAuthUser } from '../domain/customer'
+import { customerSessionHeaders } from './customer-session'
 
 export const getCurrentCustomer = cache(
   async (): Promise<CurrentCustomer | null> => {
@@ -13,7 +14,7 @@ export const getCurrentCustomer = cache(
       config: configPromise,
     })
 
-    const headers = await getHeaders()
+    const headers = customerSessionHeaders(new Headers(await getHeaders()))
     const { user } = await payload.auth({ headers })
 
     if (!isCustomerAuthUser(user)) {

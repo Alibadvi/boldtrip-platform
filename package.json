@@ -18,7 +18,8 @@
     "test": "pnpm test:unit",
     "test:unit": "cross-env NODE_OPTIONS=--no-deprecation vitest run",
     "typecheck": "tsc --noEmit",
-    "seed:demo": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-demo.ts"
+    "seed:demo": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-demo.ts",
+    "seed:demo:content": "pnpm seed:demo --content-only"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

@@ -33,7 +33,7 @@ export function CustomerProfileForm({
     setLoading(true)
 
     const response = await fetch(
-      `/api/customers/${customer.id}`,
+      `/api/customer/customers/${customer.id}`,
       {
         method: 'PATCH',
         credentials: 'include',
