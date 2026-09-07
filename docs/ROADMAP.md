@@ -24,6 +24,16 @@ workspace; the local database needs the corrected seed command.
   resetting customer accounts or operational records. Run it locally; a GitHub merge does not
   populate the database. No test suite or application run was performed for this change.
 
+## Admin usability — 2026-09-07
+
+- Persian translations and RTL admin layout, with a locally hosted Vazirmatn font.
+- BoldTrip branding and Tailwind styling for navigation, forms, tables and login.
+- Dashboard queues for pending receipts, new requests, pending documents and confirmed
+  consultations in the next seven days; links open the record or its filtered list.
+- Reads use the current staff request and Payload access rules. Shortcuts follow visible
+  collections/globals. Database errors display an unavailable state rather than a zero count.
+- No schema or authentication changes. Source review only; no tests, build or application run.
+
 ## Phase 1 — Foundation
 
 Current work:

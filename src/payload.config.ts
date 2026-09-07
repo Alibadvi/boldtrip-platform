@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { fa } from '@payloadcms/translations/languages/fa'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
@@ -34,12 +35,30 @@ export default buildConfig({
   cookiePrefix: staffCookiePrefix,
   admin: {
     user: Staff.slug,
+    theme: 'light',
+    components: {
+      graphics: {
+        Icon: '/app/(payload)/_components/admin-brand#AdminIcon',
+        Logo: '/app/(payload)/_components/admin-brand#AdminLogo',
+      },
+      beforeNavLinks: ['/app/(payload)/_components/admin-brand#AdminNavIntro'],
+      views: {
+        dashboard: {
+          Component: '/app/(payload)/_components/admin-dashboard#AdminDashboard',
+        },
+      },
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
     meta: {
       titleSuffix: ' — BoldTrip',
     },
+  },
+
+  i18n: {
+    supportedLanguages: { fa },
+    fallbackLanguage: 'fa',
   },
 
   collections: [

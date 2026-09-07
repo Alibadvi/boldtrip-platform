@@ -1,1 +1,132 @@
-/* Payload admin customizations belong here. Keep public design tokens isolated from admin CSS. */
+@layer payload-default, payload, boldtrip-theme, boldtrip-utilities;
+@import 'tailwindcss/theme.css' layer(boldtrip-theme) prefix(bt);
+@import 'tailwindcss/utilities.css' layer(boldtrip-utilities) prefix(bt) source(none);
+@source './_components';
+
+/* No Preflight: Payload owns the form, modal and editor resets. */
+@font-face {
+  font-family: 'BoldTrip Vazirmatn';
+  src: url('/fonts/vazirmatn-variable.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@layer payload {
+  :root {
+    --font-body: 'BoldTrip Vazirmatn', Tahoma, Arial, sans-serif;
+    --font-serif: var(--font-body);
+    --theme-bg: #f8f7fb;
+    --theme-input-bg: #fff;
+    --theme-text: #332e3a;
+    --style-radius-s: 8px;
+    --style-radius-m: 12px;
+    --style-radius-l: 16px;
+    --accessibility-outline: 2px solid #5b34c4;
+  }
+
+  html {
+    @apply bt:text-[14px] bt:leading-relaxed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-body);
+    @apply bt:font-bold bt:leading-relaxed bt:text-[#24133f];
+  }
+
+  .nav {
+    @apply bt:bg-white;
+  }
+
+  .nav-group {
+    @apply bt:mb-5;
+  }
+
+  .nav-group__toggle {
+    @apply bt:mb-2 bt:text-start bt:text-xs bt:font-semibold bt:leading-6 bt:text-slate-500;
+  }
+
+  .nav__link {
+    @apply bt:my-1 bt:rounded-lg bt:px-3 bt:py-2 bt:font-medium bt:leading-6 bt:text-slate-700;
+  }
+
+  .nav__link:hover,
+  .nav__link:focus-visible,
+  .nav__link--active {
+    @apply bt:bg-violet-50 bt:text-[#5b34c4];
+  }
+
+  .app-header, .doc-controls {
+    @apply bt:bg-white;
+  }
+
+  .field-label {
+    @apply bt:mb-2 bt:font-semibold bt:leading-7 bt:text-slate-700;
+  }
+
+  .field-description {
+    @apply bt:text-xs bt:leading-7 bt:text-slate-500;
+  }
+
+  .field-type.text input,
+  .field-type.email input,
+  .field-type.password input,
+  .field-type.number input,
+  .field-type.textarea textarea,
+  .react-select .rs__control {
+    @apply bt:min-h-11 bt:rounded-lg bt:border-slate-300 bt:shadow-none;
+  }
+
+  .field-type.text input:focus,
+  .field-type.email input:focus,
+  .field-type.password input:focus,
+  .field-type.number input:focus,
+  .field-type.textarea textarea:focus,
+  .react-select .rs__control--is-focused {
+    @apply bt:border-violet-600 bt:ring-2 bt:ring-violet-100;
+  }
+
+  input[type='email'], input[type='url'], input[type='password'] {
+    direction: ltr;
+    @apply bt:text-left;
+  }
+
+  .btn {
+    @apply bt:rounded-lg bt:font-medium;
+  }
+
+  .btn--style-primary:not(.btn--disabled) {
+    --bg-color: #5b34c4;
+    --color: #fff;
+    --hover-bg: #4d2a96;
+    --hover-color: #fff;
+  }
+
+  .table {
+    @apply bt:rounded-xl bt:bg-white;
+  }
+
+  .table th {
+    @apply bt:bg-slate-50 bt:py-4 bt:font-semibold bt:text-slate-500;
+  }
+
+  .table td {
+    @apply bt:py-4;
+  }
+
+  .table tbody tr:hover {
+    @apply bt:bg-violet-50;
+  }
+
+  .tabs-field__tab-button {
+    @apply bt:font-semibold bt:leading-7;
+  }
+
+  .login {
+    @apply bt:rounded-2xl bt:border bt:border-solid bt:border-slate-200 bt:bg-white bt:p-7 bt:shadow-sm;
+  }
+
+  .boldtrip-dashboard a {
+    @apply bt:motion-safe:transition-colors;
+  }
+}
