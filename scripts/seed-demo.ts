@@ -395,7 +395,7 @@ async function seed() {
     serviceRequest: request.id,
     label: 'تصویر پاسپورت نمایشی',
     kind: 'passport',
-    status: 'approved',
+    status: 'accepted',
     reviewerNote: 'فایل نمونه است و اطلاعات واقعی ندارد.',
   })
 
