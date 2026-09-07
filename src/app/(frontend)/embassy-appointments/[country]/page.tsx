@@ -50,10 +50,10 @@ export async function generateMetadata({
 
   return {
     title:
-      guide.title ??
+      guide.title ||
       `دریافت وقت سفارت ${country.name} | BoldTrip`,
     description:
-      guide.summary ??
+      guide.summary ||
       `شرایط و مدارک دریافت وقت سفارت ${country.name}`,
   }
 }
@@ -141,10 +141,24 @@ export default async function EmbassyCountryPage({
                 </h2>
 
                 <p className="mt-6 whitespace-pre-line leading-9 text-ink-600">
-                  {guide.introduction ??
+                  {guide.introduction ||
                     `اطلاعات تکمیلی وقت سفارت ${country.name} هنوز ثبت نشده است.`}
                 </p>
               </Card>
+
+              {guide.requiredDocuments.length === 0 &&
+              guide.steps.length === 0 &&
+              guide.importantNotes.length === 0 ? (
+                <Card className="border-amber-200 bg-amber-50 p-7 sm:p-9">
+                  <h2 className="text-xl font-black text-amber-950">
+                    محتوای این راهنما هنوز کامل نشده است
+                  </h2>
+                  <p className="mt-3 leading-8 text-amber-950/75">
+                    مدیریت باید مدارک، مراحل و نکات مهم این
+                    کشور را در Payload تکمیل و دوباره منتشر کند.
+                  </p>
+                </Card>
+              ) : null}
 
               {guide.requiredDocuments.length > 0 ? (
                 <Card className="border-border bg-white p-7 sm:p-9">
@@ -297,7 +311,7 @@ export default async function EmbassyCountryPage({
                       زمان تقریبی
                     </dt>
                     <dd className="mt-1 font-black text-brand-950">
-                      {guide.estimatedTime ??
+                      {guide.estimatedTime ||
                         'وابسته به ظرفیت سفارت'}
                     </dd>
                   </div>
@@ -307,7 +321,7 @@ export default async function EmbassyCountryPage({
                       هزینه خدمت
                     </dt>
                     <dd className="mt-1 font-black text-brand-950">
-                      {guide.feeNote ??
+                      {guide.feeNote ||
                         'پس از بررسی اعلام می‌شود'}
                     </dd>
                   </div>
