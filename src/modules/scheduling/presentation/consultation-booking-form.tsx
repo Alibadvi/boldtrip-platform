@@ -38,6 +38,15 @@ export function ConsultationBookingForm({
     setLoading(true)
 
     const form = new FormData(event.currentTarget)
+    const selectedSlot = slots.find(
+      (slot) => String(slot.id) === slotId,
+    )
+
+    if (!selectedSlot) {
+      setError('یک زمان معتبر انتخاب کنید.')
+      setLoading(false)
+      return
+    }
 
     const response = await fetch(
       '/api/consultation-bookings',
@@ -51,7 +60,7 @@ export function ConsultationBookingForm({
           customerNote: String(
             form.get('customerNote') ?? '',
           ),
-          slot: slotId,
+          slot: selectedSlot.id,
           topic: String(form.get('topic') ?? ''),
         }),
       },
