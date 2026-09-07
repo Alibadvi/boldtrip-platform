@@ -37,10 +37,94 @@
   --color-danger-soft: #ffebe9;
   --color-info: #175cd3;
   --color-info-soft: #eaf2ff;
-  --font-sans: Vazirmatn, Tahoma, Arial, sans-serif;
+  --font-sans: var(--font-vazirmatn), Tahoma, Arial, sans-serif;
   --radius-control: 0.75rem;
   --radius-card: 1.25rem;
   --radius-panel: 1.75rem;
   --shadow-card: 0 18px 48px rgb(36 19 63 / 8%);
   --shadow-raised: 0 28px 70px rgb(36 19 63 / 14%);
+}
+
+@theme {
+  --animate-page-enter: page-enter 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  --animate-plane-arrive: plane-arrive 1200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  --animate-orbit: orbit 6s linear infinite;
+  --animate-loader-float: loader-float 1.8s ease-in-out infinite;
+
+  @keyframes page-enter {
+    from {
+      opacity: 0.35;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes plane-arrive {
+    from {
+      opacity: 0;
+      transform: translate(-32px, 24px) rotate(-15deg);
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0) rotate(0);
+    }
+  }
+
+  @keyframes orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes loader-float {
+    0%,
+    100% {
+      transform: translateY(3px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply font-sans text-base leading-8;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-sans font-bold leading-relaxed tracking-normal text-balance;
+  }
+  h4,
+  h5,
+  h6 {
+    @apply font-sans font-semibold leading-relaxed tracking-normal;
+  }
+  p,
+  li {
+    @apply leading-8;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    @apply font-sans;
+  }
+  input,
+  select,
+  textarea {
+    @apply text-base leading-7;
+  }
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-2 outline-offset-4 outline-brand-500;
+  }
 }

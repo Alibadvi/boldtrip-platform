@@ -34,6 +34,21 @@ workspace; the local database needs the corrected seed command.
   collections/globals. Database errors display an unavailable state rather than a zero count.
 - No schema or authentication changes. Source review only; no tests, build or application run.
 
+## Frontend brand and motion — 2026-09-07
+
+- Homepage redesign preserves Payload content and published featured destinations. Country
+  accents use country codes. Service, consultation and account links retain existing routes.
+- The supplied standalone logo is served locally as-is. A compact SVG favicon adapts its
+  orbit/star-pin motif. The reference visa poster and its personal data are not published.
+- Frontend Vazirmatn now uses `next/font/local` and the existing licensed font asset. Font
+  loading requires no Google/CDN connection; this does not add offline page or API caching.
+- Floating navigation, current-route indication, native modal mobile menu with Escape/focus
+  behavior, skip link, clearer FAQs/footer, route loader and short page entrances.
+- Scroll reveals are progressive enhancement; parallax is bounded and desktop-only. Motion
+  respects the system reduced-motion setting, with no artificial loading delay or scroll hijack.
+- No dependencies or schema changes. No tests, builds or app runs were performed; browser
+  verification, accessibility review and production workflow/security gates remain outstanding.
+
 ## Phase 1 — Foundation
 
 Current work:
@@ -107,3 +122,4 @@ A realistic solo-developer range remains approximately 12–16 full-time weeks a
 ## Work discipline
 
 One issue is one testable vertical slice. Use short branches and natural commits. Each task states goal, files, constraints, and done criteria. Update this file after meaningful progress.
+
