@@ -434,3 +434,6 @@ await seed().catch((error) => {
   console.error(error)
   process.exit(1)
 })
+
+// This standalone CLI must exit after cleanup; adapters may retain open handles.
+process.exit(0)
