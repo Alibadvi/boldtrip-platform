@@ -6,76 +6,84 @@ import { getHomepageContent } from '@/modules/content'
 import { buttonVariants, Container } from '@/shared/ui'
 
 import { FaqList } from './_components/faq-list'
+import { Parallax, Reveal } from './_components/scroll-motion'
+import { TravelIcon } from './_components/travel-icon'
 
 export const dynamic = 'force-dynamic'
 
-const destinationThemeClasses = [
-  {
-    card: 'border-[#ffd9de] bg-linear-to-br from-white via-white to-canada-soft text-canada hover:shadow-[0_24px_55px_rgba(214,39,60,0.13)]',
-    flag: 'shadow-card',
-  },
-  {
-    card: 'border-[#d9e4ff] bg-linear-to-br from-white via-white to-europe-soft text-europe hover:shadow-[0_24px_55px_rgba(20,62,159,0.13)]',
-    flag: 'shadow-[inset_0_-0.35rem_0_#f6c744,0_16px_35px_rgba(20,62,159,0.09)]',
-  },
-]
-
-const sectionTitle =
-  'm-0 text-[clamp(2rem,4vw,2.75rem)] leading-[1.35] font-black tracking-[-0.035em] text-brand-950'
-const sectionKicker = 'mb-3 inline-block text-sm font-extrabold text-brand-600'
+const sectionTitle = 'text-balance text-3xl font-extrabold leading-[1.5] text-brand-950 sm:text-4xl'
+const kicker =
+  'mb-4 flex items-center gap-3 text-sm font-bold text-brand-600 before:h-px before:w-8 before:bg-current'
+const countryStripes: Record<string, string> = {
+  CA: 'bg-linear-to-r from-red-600 from-30% via-white via-30% to-red-600 to-70%',
+  DE: 'bg-linear-to-b from-black from-33% via-red-600 via-33% to-yellow-400 to-66%',
+  FR: 'bg-linear-to-r from-blue-700 from-33% via-white via-33% to-red-600 to-66%',
+  IT: 'bg-linear-to-r from-green-700 from-33% via-white via-33% to-red-600 to-66%',
+  ES: 'bg-linear-to-b from-red-700 from-25% via-yellow-400 via-25% to-red-700 to-75%',
+  NL: 'bg-linear-to-b from-red-600 from-33% via-white via-33% to-blue-800 to-66%',
+  EU: 'bg-europe',
+}
 
 export default async function HomePage() {
-  const [content, featuredCountries] = await Promise.all([
-    getHomepageContent(),
-    getFeaturedCountries(),
-  ])
-  const featuredDestination = featuredCountries[0]
-  const homepageFaqs = content.faqs.filter((faq) => faq.showOnHomepage).slice(0, 5)
+  const [content, countries] = await Promise.all([getHomepageContent(), getFeaturedCountries()])
+  const destination = countries[0]
+  const faqs = content.faqs.filter((faq) => faq.showOnHomepage).slice(0, 5)
 
   return (
     <>
-      <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-canvas py-14 sm:py-20 lg:py-24">
-        <div className="pointer-events-none absolute -top-20 -right-28 size-96 rounded-full bg-brand-300/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-28 -left-24 size-80 rounded-full bg-accent-300/25 blur-3xl" />
-
-        <Container className="relative z-10 grid items-center gap-12 lg:grid-cols-[0.94fr_1.06fr]">
-          <div className="py-4">
-            <div className="mb-4 inline-flex items-center gap-2 text-sm font-extrabold text-brand-700">
-              <span className="h-2 w-8 rounded-full bg-accent-500" aria-hidden="true" />
+      <section className="relative isolate overflow-hidden pt-7 pb-20 sm:pt-12 lg:pb-28">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[85%] bg-linear-to-b from-[#f0e9ff] via-[#f9f6ff] to-canvas"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-20 -right-24 -z-10 size-96 rounded-full bg-brand-100/60 blur-3xl"
+        />
+        <Container className="grid items-center gap-10 lg:grid-cols-[1.04fr_1fr] lg:gap-14">
+          <div className="relative z-10 py-5">
+            <span className="mb-7 inline-flex items-center gap-3 rounded-full border border-brand-200 bg-white/75 px-4 py-2 text-xs font-bold text-brand-700 sm:text-sm">
+              <TravelIcon name="plane" className="size-4" />
               {content.hero.kicker}
-            </div>
-            <h1 className="m-0 max-w-2xl text-[clamp(2.65rem,5.6vw,4.55rem)] leading-[1.24] font-black tracking-[-0.06em] text-brand-950">
+            </span>
+            <h1 className="max-w-2xl text-[clamp(2.4rem,4.6vw,4.3rem)] font-black leading-[1.45] text-brand-950">
               {content.hero.title}
-              <span className="relative text-brand-600 after:absolute after:inset-x-0 after:bottom-1 after:-z-10 after:h-3 after:rounded-full after:bg-accent-100">
-                {' '}
-                {content.hero.accent}
-              </span>
+              <span className="mt-1 block text-brand-600">{content.hero.accent}</span>
             </h1>
             <p className="mt-6 max-w-xl text-base leading-9 text-ink-700 sm:text-lg">
               {content.hero.description}
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href={content.hero.primaryActionHref}
-                className={buttonVariants({ size: 'large' })}
+                className={buttonVariants({
+                  size: 'large',
+                  className:
+                    'gap-4 rounded-2xl shadow-[0_10px_25px_#5b34c426] motion-safe:transition-transform motion-safe:hover:-translate-y-1',
+                })}
               >
-                {content.hero.primaryActionLabel} <span aria-hidden="true">←</span>
+                {content.hero.primaryActionLabel}
+                <TravelIcon name="arrow" className="size-5" />
               </Link>
               <Link
                 href={content.hero.secondaryActionHref}
-                className={buttonVariants({ size: 'large', variant: 'secondary' })}
+                className={buttonVariants({
+                  size: 'large',
+                  variant: 'secondary',
+                  className: 'rounded-2xl bg-white/70',
+                })}
               >
                 {content.hero.secondaryActionLabel}
               </Link>
             </div>
-            <ul className="mt-7 grid list-none gap-2 p-0 text-sm font-bold text-ink-700 sm:flex sm:flex-wrap sm:gap-5">
+            <ul className="mt-8 flex list-none flex-wrap gap-x-5 gap-y-2 p-0">
               {content.hero.highlights.map((item) => (
-                <li className="inline-flex items-center gap-2" key={item.label}>
-                  <span
-                    className="grid size-5 place-items-center rounded-full bg-success-soft text-xs text-success"
-                    aria-hidden="true"
-                  >
-                    ✓
+                <li
+                  key={item.label}
+                  className="flex items-center gap-2 text-xs font-medium text-ink-700"
+                >
+                  <span aria-hidden="true" className="text-brand-600">
+                    ✦
                   </span>
                   {item.label}
                 </li>
@@ -83,324 +91,406 @@ export default async function HomePage() {
             </ul>
           </div>
 
-          <div className="relative mx-auto w-full max-w-2xl px-1 pb-8 sm:px-6">
-            <div className="relative grid min-h-[23rem] place-items-center overflow-hidden rounded-[2rem_2rem_2rem_0.75rem] border border-white/60 bg-linear-to-br from-[#e8ddff] via-[#7250cf] to-brand-800 shadow-raised sm:min-h-[30rem] lg:min-h-[32rem]">
-              <div className="pointer-events-none absolute inset-5 rounded-3xl border border-white/20" />
-              <div className="pointer-events-none absolute top-0 left-0 size-56 rounded-full bg-accent-300/30 blur-3xl" />
-              <Image
-                src="/assets/boldtrip-hero.webp"
-                alt="چمدان، گذرنامه و مسیر سفر در رنگ‌های بنفش و طلایی"
-                width={1536}
-                height={1024}
-                priority
-                className="relative z-10 w-[125%] max-w-none translate-y-2 drop-shadow-2xl sm:w-[116%]"
+          <Parallax className="relative mx-auto w-full max-w-xl px-3 pb-6 sm:px-5">
+            <div className="group relative isolate aspect-square rounded-[2.5rem] border border-brand-300/40 bg-[#170b28] shadow-[0_24px_80px_#7048d733] sm:rounded-[3rem]">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-6 rounded-full border border-white/10"
               />
-            </div>
-
-            <div className="absolute top-0 left-0 z-20 flex min-w-40 items-center gap-3 rounded-2xl border border-white/80 bg-white/90 p-3 shadow-[0_18px_35px_rgba(36,19,63,0.16)] backdrop-blur-xl">
-              <span
-                className="grid size-10 place-items-center rounded-xl bg-canada-soft text-xl"
+              <div
                 aria-hidden="true"
-              >
-                {featuredDestination?.flag ?? '🌍'}
-              </span>
-              <span className="flex flex-col leading-5">
-                <small className="text-[0.68rem] text-ink-500">مقصد منتخب</small>
-                <strong className="text-sm text-brand-950">
-                  {featuredDestination?.name ?? 'انتخاب مقصد'}
-                </strong>
-              </span>
-            </div>
-
-            <div className="absolute right-0 bottom-0 z-20 flex min-w-44 items-center gap-3 rounded-2xl border border-white/80 bg-white/90 p-3 shadow-[0_18px_35px_rgba(36,19,63,0.16)] backdrop-blur-xl">
+                className="pointer-events-none absolute inset-14 rotate-[-20deg] rounded-[50%] border border-dashed border-brand-300/30"
+              />
+              <Image
+                src="/assets/boldtrip-logo.jpg"
+                alt="لوگوی اصلی بولدتریپ؛ کره زمین بنفش، هواپیما و نشان مقصد"
+                width={1024}
+                height={1024}
+                sizes="(min-width: 1024px) 560px, 90vw"
+                priority
+                className="relative z-10 h-full w-full rounded-[inherit] object-contain mix-blend-screen motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-[1.025]"
+              />
               <span
-                className="grid size-10 place-items-center rounded-xl bg-brand-100"
-                aria-hidden="true"
+                className="absolute top-6 right-7 z-20 text-[0.6rem] font-semibold tracking-[0.18em] text-white/60 sm:text-xs"
+                dir="ltr"
               >
-                <i className="size-5 rounded-full border-[3px] border-brand-300 border-r-brand-700 not-italic" />
+                VISA & IMMIGRATION
               </span>
-              <span className="flex flex-col leading-5">
-                <small className="text-[0.68rem] text-ink-500">مسیر پرونده</small>
-                <strong className="text-sm text-brand-950">مرحله‌به‌مرحله</strong>
+              <span
+                aria-hidden="true"
+                className="absolute -top-4 left-9 z-20 grid size-12 rotate-12 place-items-center rounded-2xl bg-accent-300 text-brand-950 shadow-card motion-safe:animate-plane-arrive"
+              >
+                <TravelIcon name="plane" />
               </span>
+              <div className="absolute bottom-6 left-6 z-20 flex items-center gap-2 rounded-full border border-white/20 bg-brand-950/80 px-4 py-2 text-xs text-white backdrop-blur-md">
+                <TravelIcon name="globe" className="size-4 text-accent-300" />
+                یک شروع روشن، یک مسیر تازه
+              </div>
             </div>
+            {destination && (
+              <Link
+                href={`/countries/${destination.slug}`}
+                className="group absolute -right-1 -bottom-4 z-20 flex w-[78%] items-center gap-4 rounded-2xl border border-border bg-white p-4 shadow-card sm:p-5"
+              >
+                <span
+                  aria-hidden="true"
+                  className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-3xl"
+                >
+                  {destination.flag}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-xs text-ink-500">از این مقصد شروع کنید</span>
+                  <strong className="mt-1 block truncate text-base font-bold text-brand-950">
+                    {destination.name}
+                  </strong>
+                </span>
+                <TravelIcon
+                  name="arrow"
+                  className="ms-auto size-5 shrink-0 text-brand-600 motion-safe:transition-transform motion-safe:group-hover:-translate-x-1"
+                />
+              </Link>
+            )}
+          </Parallax>
+        </Container>
+      </section>
+
+      <section aria-label="انتخاب مسیر" className="relative z-10 pb-10">
+        <Container>
+          <div className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border shadow-[0_8px_24px_#24133f06] md:grid-cols-3">
+            {[
+              {
+                href: '/countries',
+                icon: 'globe' as const,
+                title: 'مقصدتان مشخص است؟',
+                detail: 'شرایط کشورها و مسیرهای ویزا',
+              },
+              {
+                href: '/consultation',
+                icon: 'calendar' as const,
+                title: 'برای انتخاب مسیر کمک می‌خواهید؟',
+                detail: 'مشاوره و زمان‌های قابل رزرو',
+              },
+              {
+                href: '/account',
+                icon: 'document' as const,
+                title: 'قبلاً درخواست ثبت کرده‌اید؟',
+                detail: 'ورود و پیگیری پرونده',
+              },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex items-center gap-4 bg-white px-6 py-6 transition-colors hover:bg-brand-50"
+              >
+                <TravelIcon name={item.icon} className="size-6 shrink-0 text-brand-500" />
+                <span>
+                  <strong className="block text-sm font-bold text-brand-950">{item.title}</strong>
+                  <span className="mt-1 block text-xs text-ink-500">{item.detail}</span>
+                </span>
+                <TravelIcon name="arrow" className="ms-auto size-4 shrink-0 text-brand-600" />
+              </Link>
+            ))}
           </div>
         </Container>
       </section>
 
-      <section className="bg-white py-20 sm:py-24 lg:py-28" aria-labelledby="destination-title">
+      <section className="py-14 sm:py-22" aria-labelledby="destination-title">
         <Container>
-          <div className="mb-10 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              <span className={sectionKicker}>{content.destinationIntro.kicker}</span>
+          <Reveal className="mb-9 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+            <div className="max-w-2xl">
+              <span className={kicker}>{content.destinationIntro.kicker}</span>
               <h2 id="destination-title" className={sectionTitle}>
                 {content.destinationIntro.title}
               </h2>
             </div>
-            <p className="m-0 max-w-lg text-base leading-8 text-ink-700">
-              {content.destinationIntro.description}
-            </p>
-          </div>
-
-          {featuredCountries.length ? (
-            <div className="grid gap-5 lg:grid-cols-2">
-              {featuredCountries.map((country, index) => {
-                const theme = destinationThemeClasses[index % destinationThemeClasses.length]
-
-                return (
+            <Link
+              href="/countries"
+              className="inline-flex shrink-0 items-center gap-3 rounded-xl py-2 text-sm font-bold text-brand-700"
+            >
+              همه مقصدها
+              <TravelIcon name="arrow" className="size-5" />
+            </Link>
+          </Reveal>
+          <p className="mb-8 max-w-2xl text-base leading-8 text-ink-700">
+            {content.destinationIntro.description}
+          </p>
+          {countries.length ? (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {countries.map((country) => (
+                <Reveal key={country.id} className="h-full">
                   <Link
                     href={`/countries/${country.slug}`}
-                    className={`group relative flex min-h-88 items-end overflow-hidden rounded-panel border p-7 transition hover:-translate-y-1 sm:p-9 ${theme.card}`}
-                    key={country.id}
+                    className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border bg-white shadow-[0_5px_20px_#24133f04] motion-safe:transition-all motion-safe:duration-300 motion-safe:hover:-translate-y-2 hover:border-brand-200 hover:shadow-card"
                   >
-                    <div className="pointer-events-none absolute -top-24 -left-16 size-72 rounded-full border border-current opacity-10" />
-                    <span
-                      className={`absolute top-7 left-7 grid size-22 place-items-center rounded-[1.5rem_1.5rem_1.5rem_0.6rem] border border-white/80 bg-white/75 text-4xl sm:size-26 sm:text-5xl ${theme.flag}`}
+                    <div
                       aria-hidden="true"
-                    >
-                      {country.flag}
-                    </span>
-                    <div className="relative z-10 max-w-sm">
-                      <span className="mb-3 inline-flex rounded-full bg-white/80 px-3 py-1 text-xs font-extrabold">
-                        اطلاعات ویزا
-                      </span>
-                      <h3 className="m-0 text-4xl font-black tracking-[-0.05em] text-ink-950 sm:text-5xl">
-                        {country.name}
-                      </h3>
-                      <p className="mt-3 text-sm leading-8 text-ink-700">{country.summary}</p>
-                      <span className="mt-7 inline-flex items-center gap-2 text-sm font-extrabold">
-                        مشاهده اطلاعات {country.name}
-                        <i
-                          className="not-italic transition-transform group-hover:-translate-x-1"
-                          aria-hidden="true"
+                      className={`h-2 ${countryStripes[country.code.toUpperCase()] ?? 'bg-brand-500'}`}
+                    />
+                    <div className="relative flex-1 p-7">
+                      <div className="mb-10 flex items-center justify-between">
+                        <span aria-hidden="true" className="text-5xl">
+                          {country.flag}
+                        </span>
+                        <span
+                          dir="ltr"
+                          className="rounded-full border border-border px-3 py-1 text-xs font-semibold tracking-widest text-ink-500"
                         >
-                          ←
-                        </i>
-                      </span>
+                          {country.code}
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-extrabold text-brand-950">{country.name}</h3>
+                      <p className="mt-3 text-sm leading-8 text-ink-700">{country.summary}</p>
+                    </div>
+                    <div className="relative flex items-center justify-between border-t border-dashed border-border bg-brand-50/50 px-7 py-5 text-sm font-bold text-brand-700 before:absolute before:top-0 before:-right-2 before:size-4 before:-translate-y-1/2 before:rounded-full before:border before:border-border before:bg-canvas after:absolute after:top-0 after:-left-2 after:size-4 after:-translate-y-1/2 after:rounded-full after:border after:border-border after:bg-canvas">
+                      کشف مسیرهای ویزا
+                      <TravelIcon
+                        name="arrow"
+                        className="size-5 motion-safe:transition-transform motion-safe:group-hover:-translate-x-1"
+                      />
                     </div>
                   </Link>
-                )
-              })}
+                </Reveal>
+              ))}
             </div>
           ) : (
-            <div className="rounded-panel border border-dashed border-brand-100 bg-brand-50 p-8 text-center">
-              <h3 className="text-lg font-black text-brand-950">مقصدهای در حال بررسی هستند</h3>
-              <p className="mt-2 text-sm leading-8 text-ink-700">
-                پس از تأیید منبع رسمی، اطلاعات مقصدها در این بخش منتشر می‌شود.
-              </p>
+            <div className="rounded-2xl border border-dashed border-brand-200 bg-white p-8">
+              <p className="text-ink-700">راهنمای مقصدها در حال تکمیل است.</p>
               <Link
-                href="/countries"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-brand-700"
+                href="/consultation"
+                className="mt-3 inline-flex text-sm font-bold text-brand-700"
               >
-                مشاهده همه مقصدها <span aria-hidden="true">←</span>
+                برای انتخاب مقصد، مشاوره بگیرید ←
               </Link>
             </div>
           )}
         </Container>
       </section>
 
-      <section
-        className="relative overflow-hidden bg-canvas py-20 sm:py-24 lg:py-28"
-        aria-labelledby="services-title"
-      >
-        <div className="pointer-events-none absolute top-0 right-0 size-80 rounded-full bg-brand-100/50 blur-3xl" />
-        <Container className="relative z-10">
-          <div className="mx-auto mb-10 max-w-2xl text-center">
-            <span className={sectionKicker}>{content.serviceIntro.kicker}</span>
+      <section className="py-14 sm:py-22" aria-labelledby="services-title">
+        <Container>
+          <Reveal className="mb-10 max-w-2xl">
+            <span className={kicker}>{content.serviceIntro.kicker}</span>
             <h2 id="services-title" className={sectionTitle}>
               {content.serviceIntro.title}
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-base leading-8 text-ink-700">
-              {content.serviceIntro.description}
-            </p>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-3">
-            {content.services.map((service) => (
-              <article
-                className="group relative flex min-h-80 flex-col overflow-hidden rounded-card border border-border bg-white p-7 shadow-[0_12px_35px_rgba(36,19,63,0.04)] transition hover:-translate-y-1 hover:border-brand-100 hover:shadow-card lg:min-h-92"
-                key={service.title}
-              >
-                <div className="absolute -top-14 -right-8 size-32 rounded-full bg-brand-50" />
-                <div className="relative z-10 flex items-center justify-between gap-4">
-                  <span className="text-xs font-extrabold text-brand-600">{service.eyebrow}</span>
-                  <i
-                    className="text-4xl leading-none font-black tracking-[-0.08em] text-brand-100 not-italic"
-                    dir="ltr"
-                  >
-                    {service.index}
-                  </i>
-                </div>
-                <h3 className="mt-14 text-2xl font-black tracking-[-0.025em] text-brand-950">
-                  {service.title}
-                </h3>
-                <p className="mt-3 text-[0.94rem] leading-8 text-ink-700">{service.description}</p>
-                <Link
-                  href={service.href}
-                  className="mt-auto inline-flex items-center gap-2 pt-7 text-sm font-extrabold text-brand-700"
+            <p className="mt-4 text-ink-700">{content.serviceIntro.description}</p>
+          </Reveal>
+          <div className="grid gap-5 lg:grid-cols-3">
+            {content.services.map((service, index) => (
+              <Reveal key={service.href + service.title} className="h-full">
+                <article
+                  className={`group relative flex h-full min-h-90 flex-col overflow-hidden rounded-[1.75rem] border p-7 sm:p-8 ${index === 0 ? 'border-brand-800 bg-brand-950 text-white' : 'border-border bg-white text-brand-950'}`}
                 >
-                  {service.actionLabel}
-                  <span
-                    className="transition-transform group-hover:-translate-x-1"
+                  <div
                     aria-hidden="true"
+                    className={`absolute -top-18 -left-18 size-52 rounded-full border ${index === 0 ? 'border-white/10' : 'border-brand-100'}`}
+                  />
+                  <div className="relative flex items-center justify-between">
+                    <span
+                      className={`grid size-14 place-items-center rounded-2xl ${index === 0 ? 'bg-white/10 text-accent-300' : 'bg-brand-50 text-brand-600'}`}
+                    >
+                      <TravelIcon
+                        name={
+                          service.href.includes('consultation')
+                            ? 'calendar'
+                            : service.href.includes('embassy')
+                              ? 'globe'
+                              : 'document'
+                        }
+                        className="size-7"
+                      />
+                    </span>
+                    <span
+                      dir="ltr"
+                      className={`text-sm ${index === 0 ? 'text-white/50' : 'text-ink-500'}`}
+                    >
+                      {service.index}
+                    </span>
+                  </div>
+                  <p
+                    className={`mt-8 text-xs font-semibold ${index === 0 ? 'text-accent-300' : 'text-brand-600'}`}
                   >
-                    ←
-                  </span>
-                </Link>
-              </article>
+                    {service.eyebrow}
+                  </p>
+                  <h3 className="mt-3 text-2xl font-extrabold">{service.title}</h3>
+                  <p
+                    className={`mt-4 mb-8 text-sm leading-8 ${index === 0 ? 'text-white/75' : 'text-ink-700'}`}
+                  >
+                    {service.description}
+                  </p>
+                  <Link
+                    href={service.href}
+                    className={`mt-auto flex min-h-12 items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-colors ${index === 0 ? 'bg-accent-300 text-brand-950 hover:bg-accent-100' : 'bg-brand-50 text-brand-700 hover:bg-brand-100'}`}
+                  >
+                    {service.actionLabel}
+                    <TravelIcon name="arrow" className="size-5 shrink-0" />
+                  </Link>
+                </article>
+              </Reveal>
             ))}
           </div>
         </Container>
       </section>
 
       <section
-        className="relative overflow-hidden bg-brand-950 py-20 text-white sm:py-24 lg:py-28"
         aria-labelledby="process-title"
+        className="my-10 overflow-hidden bg-[#201035] py-20 text-white sm:py-26"
       >
-        <div className="pointer-events-none absolute -top-20 right-0 size-80 rounded-full bg-accent-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-0 size-96 rounded-full bg-brand-300/15 blur-3xl" />
-        <Container className="relative z-10">
-          <div className="mb-12 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              <span className="mb-3 inline-block text-sm font-extrabold text-accent-300">
-                {content.process.kicker}
-              </span>
-              <h2
-                id="process-title"
-                className="m-0 max-w-2xl text-[clamp(2rem,4vw,2.75rem)] leading-[1.35] font-black tracking-[-0.035em] text-white"
-              >
-                {content.process.title}
-              </h2>
+        <Container className="grid items-start gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
+          <div className="lg:sticky lg:top-36">
+            <span className="mb-5 block text-sm font-bold text-accent-300">
+              {content.process.kicker}
+            </span>
+            <h2 id="process-title" className="text-3xl font-extrabold leading-[1.5] sm:text-4xl">
+              {content.process.title}
+            </h2>
+            <p className="mt-5 text-base leading-9 text-white/70">{content.process.description}</p>
+            <div aria-hidden="true" className="relative mt-10 hidden h-28 items-center lg:flex">
+              <span className="w-2/3 rotate-[-12deg] border-t border-dashed border-white/30" />
+              <TravelIcon name="plane" className="size-12 -rotate-12 text-accent-300" />
             </div>
-            <p className="m-0 max-w-lg text-base leading-8 text-white/60">
-              {content.process.description}
-            </p>
           </div>
-
-          <ol className="grid list-none overflow-hidden rounded-panel border border-white/10 bg-white/10 p-0 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="m-0 grid list-none gap-5 p-0">
             {content.process.steps.map((step) => (
-              <li
-                className="min-h-64 border-b border-white/10 bg-brand-900/90 p-6 last:border-b-0 sm:min-h-72 sm:border-l sm:[&:nth-child(2)]:border-l-0 lg:border-b-0 lg:[&:nth-child(2)]:border-l lg:last:border-l-0"
-                key={step.number}
-              >
-                <span className="grid size-12 place-items-center rounded-[1rem_1rem_1rem_0.3rem] border border-white/15 bg-white/5 font-black text-accent-300">
-                  {step.number}
-                </span>
-                <h3 className="mt-10 text-lg leading-7 font-extrabold text-white">{step.title}</h3>
-                <p className="mt-3 text-sm leading-8 text-white/55">{step.description}</p>
+              <li key={step.number}>
+                <Reveal className="group flex gap-5 rounded-2xl border border-white/15 bg-white/5 p-6 transition-colors hover:bg-white/10 sm:p-7">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-accent-300/25 bg-accent-300/10 text-lg font-bold text-accent-300">
+                    {step.number}
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-bold leading-8">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-8 text-white/70">{step.description}</p>
+                  </div>
+                </Reveal>
               </li>
             ))}
           </ol>
         </Container>
       </section>
 
-      <section className="bg-white py-20 sm:py-24 lg:py-28" aria-labelledby="trust-title">
-        <Container className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <div>
-            <span className={sectionKicker}>{content.trust.kicker}</span>
+      <section className="py-16 sm:py-24" aria-labelledby="trust-title">
+        <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <Reveal>
+            <span className={kicker}>{content.trust.kicker}</span>
             <h2 id="trust-title" className={sectionTitle}>
               {content.trust.title}
             </h2>
-            <p className="mt-5 max-w-xl text-base leading-9 text-ink-700">
-              {content.trust.description}
-            </p>
+            <p className="mt-5 leading-9 text-ink-700">{content.trust.description}</p>
             <Link
               href={content.trust.actionHref}
-              className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold text-brand-700"
+              className="mt-7 inline-flex items-center gap-3 rounded-lg text-sm font-bold text-brand-700"
             >
-              {content.trust.actionLabel} <span aria-hidden="true">←</span>
+              {content.trust.actionLabel}
+              <TravelIcon name="arrow" className="size-5" />
             </Link>
-          </div>
-
-          <div className="relative rounded-panel border border-border bg-canvas p-4 shadow-raised before:absolute before:-bottom-6 before:-right-6 before:-z-10 before:size-32 before:rounded-full before:bg-accent-100">
-            <div className="flex items-center gap-3 border-b border-border px-1 pb-4">
-              <span
-                className="grid size-11 place-items-center rounded-xl bg-brand-600 text-xs font-black text-white"
-                dir="ltr"
-                aria-hidden="true"
-              >
-                BT
+          </Reveal>
+          <Reveal className="relative rounded-[2rem] border border-brand-100 bg-linear-to-br from-white to-brand-50 p-6 sm:p-9">
+            <div className="mb-6 flex items-center gap-4">
+              <span className="grid size-12 place-items-center rounded-2xl bg-brand-600 text-white">
+                <TravelIcon name="shield" />
               </span>
-              <div className="flex flex-1 flex-col leading-5">
-                <small className="text-xs text-ink-500">درخواست وقت سفارت</small>
-                <strong className="text-sm text-ink-950">فهرست مدارک شما</strong>
+              <div>
+                <strong className="block text-base font-bold text-brand-950">
+                  هر مرحله، یک اقدام روشن
+                </strong>
+                <span className="text-xs text-ink-500">نمونه نمایش روند پیگیری در حساب کاربری</span>
               </div>
-              <i className="rounded-full bg-brand-100 px-3 py-1 text-xs font-extrabold text-brand-700 not-italic">
-                ۳ از ۴
-              </i>
             </div>
-            <ul className="mt-4 grid list-none gap-3 p-0">
-              {[
-                ['✓', 'اسکن صفحه اول گذرنامه', 'بارگذاری شده', true],
-                ['✓', 'عکس پرسنلی', 'بارگذاری شده', true],
-                ['✓', 'فرم اطلاعات متقاضی', 'تکمیل شده', true],
-                ['↑', 'مدرک تکمیلی', 'نیاز به اقدام شما', false],
-              ].map(([icon, title, status, complete]) => (
-                <li
-                  className="flex items-center gap-3 rounded-xl border border-border bg-white p-3"
-                  key={String(title)}
+            {[
+              {
+                icon: 'document' as const,
+                title: 'اطلاعات و مدارک درخواست',
+                detail: 'فایل‌ها در کنار پرونده مرتبط',
+                tone: 'bg-brand-50 text-brand-600',
+              },
+              {
+                icon: 'shield' as const,
+                title: 'بررسی و اعلام نتیجه',
+                detail: 'وضعیت مدرک و توضیح کارشناس',
+                tone: 'bg-success-soft text-success',
+              },
+              {
+                icon: 'calendar' as const,
+                title: 'قدم بعدی شما',
+                detail: 'پیگیری درخواست و رزرو از یک حساب',
+                tone: 'bg-accent-100 text-warning',
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="mt-3 flex items-center gap-4 rounded-2xl border border-border bg-white p-4"
+              >
+                <span
+                  className={`grid size-10 shrink-0 place-items-center rounded-xl ${item.tone}`}
                 >
-                  <span
-                    className={
-                      complete
-                        ? 'grid size-9 shrink-0 place-items-center rounded-lg bg-success-soft font-black text-success'
-                        : 'grid size-9 shrink-0 place-items-center rounded-lg bg-warning-soft font-black text-warning'
-                    }
-                    aria-hidden="true"
-                  >
-                    {String(icon)}
-                  </span>
-                  <span className="flex flex-col leading-6">
-                    <strong className="text-sm text-ink-950">{String(title)}</strong>
-                    <small className="text-xs text-ink-500">{String(status)}</small>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+                  <TravelIcon name={item.icon} className="size-5" />
+                </span>
+                <div>
+                  <strong className="block text-sm font-bold text-brand-950">{item.title}</strong>
+                  <p className="mt-1 text-xs text-ink-500">{item.detail}</p>
+                </div>
+              </div>
+            ))}
+          </Reveal>
         </Container>
       </section>
 
-      <section className="bg-white pb-8">
+      <section className="py-8">
         <Container>
-          <div className="relative flex flex-col items-start justify-between gap-8 overflow-hidden rounded-panel bg-linear-to-br from-accent-100 via-[#fff7de] to-brand-100 p-8 sm:p-12 lg:min-h-72 lg:flex-row lg:items-center">
-            <div className="pointer-events-none absolute -bottom-24 left-1/3 size-72 rounded-full border border-brand-600/10" />
-            <div className="relative z-10 max-w-2xl">
-              <span className={sectionKicker}>{content.consultation.kicker}</span>
-              <h2 className={sectionTitle}>{content.consultation.title}</h2>
-              <p className="mt-3 text-base leading-8 text-ink-700">
-                {content.consultation.description}
-              </p>
+          <Reveal className="relative overflow-hidden rounded-[2rem] border border-accent-300/50 bg-[#fff4d7] p-8 sm:p-12">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-28 -left-10 size-96 rounded-full border border-brand-600/10"
+            />
+            <div className="relative flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
+              <div className="max-w-2xl">
+                <span className={kicker}>{content.consultation.kicker}</span>
+                <h2 className={sectionTitle}>{content.consultation.title}</h2>
+                <p className="mt-4 text-ink-700">{content.consultation.description}</p>
+              </div>
+              <Link
+                href={content.consultation.actionHref}
+                className={buttonVariants({
+                  size: 'large',
+                  className: 'shrink-0 gap-4 rounded-2xl',
+                })}
+              >
+                {content.consultation.actionLabel}
+                <TravelIcon name="arrow" className="size-5" />
+              </Link>
             </div>
-            <Link
-              href={content.consultation.actionHref}
-              className={buttonVariants({
-                className: 'relative z-10 w-full shrink-0 sm:w-auto',
-                size: 'large',
-              })}
-            >
-              {content.consultation.actionLabel} <span aria-hidden="true">←</span>
-            </Link>
-          </div>
+          </Reveal>
         </Container>
       </section>
 
-      <section className="bg-canvas py-20 sm:py-24 lg:py-28" aria-labelledby="faq-title">
-        <Container className="grid items-start gap-10 lg:grid-cols-[0.62fr_1.38fr] lg:gap-20">
-          <div className="lg:sticky lg:top-28">
-            <span className={sectionKicker}>{content.faqIntro.kicker}</span>
+      <section className="py-18 sm:py-26" aria-labelledby="faq-title">
+        <Container className="grid items-start gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+          <div className="lg:sticky lg:top-36">
+            <span className={kicker}>{content.faqIntro.kicker}</span>
             <h2 id="faq-title" className={sectionTitle}>
               {content.faqIntro.title}
             </h2>
-            <p className="mt-3 text-base leading-8 text-ink-700">{content.faqIntro.description}</p>
+            <p className="mt-4 text-ink-700">{content.faqIntro.description}</p>
             <Link
               href="/faq"
-              className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold text-brand-700"
+              className="mt-6 inline-flex items-center gap-3 rounded-lg text-sm font-bold text-brand-700"
             >
-              مشاهده همه سوالات <span aria-hidden="true">←</span>
+              همه پرسش‌ها و پاسخ‌ها
+              <TravelIcon name="arrow" className="size-5" />
             </Link>
           </div>
-          <FaqList items={homepageFaqs} />
+          <Reveal>
+            {faqs.length ? (
+              <FaqList items={faqs} />
+            ) : (
+              <Link
+                href="/contact"
+                className="block rounded-2xl border border-border bg-white p-7 text-brand-700"
+              >
+                سوالی دارید؟ با ما در تماس باشید ←
+              </Link>
+            )}
+          </Reveal>
         </Container>
       </section>
     </>

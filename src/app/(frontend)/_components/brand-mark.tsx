@@ -1,33 +1,37 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
-export function BrandMark({ inverse = false }: { inverse?: boolean }) {
+export function BrandMark({
+  inverse = false,
+  onNavigate,
+}: {
+  inverse?: boolean
+  onNavigate?: () => void
+}) {
   return (
     <Link
       href="/"
-      className="inline-flex shrink-0 items-center gap-3"
-      aria-label="بلدتریپ؛ صفحه اصلی"
+      onClick={onNavigate}
+      className="group inline-flex shrink-0 items-center gap-3 rounded-2xl"
+      aria-label="بولدتریپ؛ صفحه اصلی"
     >
-      <span
-        className={`relative grid size-11 place-items-center overflow-hidden rounded-[0.9rem_0.9rem_0.9rem_0.25rem] bg-linear-to-br text-[0.72rem] font-black tracking-[-0.07em] text-white shadow-[0_10px_22px_rgba(91,52,196,0.24)] before:absolute before:-top-2 before:-left-1.5 before:size-5 before:rounded-full before:bg-accent-500 ${
-          inverse ? 'from-brand-300 to-brand-500' : 'from-brand-500 to-brand-800'
-        }`}
-        dir="ltr"
-        aria-hidden="true"
-      >
-        BT
+      <span className="relative block h-16 w-21 shrink-0 overflow-hidden rounded-2xl bg-[#170b28] ring-1 ring-white/15 sm:h-18 sm:w-24">
+        <Image
+          src="/assets/boldtrip-logo.jpg"
+          alt=""
+          width={112}
+          height={112}
+          sizes="112px"
+          className="absolute top-1/2 left-1/2 w-28 max-w-none -translate-x-1/2 -translate-y-1/2 mix-blend-screen motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105"
+        />
       </span>
-      <span className="flex flex-col leading-tight">
+      <span className="flex flex-col gap-1 max-[380px]:hidden">
         <strong
-          className={`text-lg font-black tracking-[-0.04em] ${inverse ? 'text-white' : 'text-brand-950'}`}
-          dir="ltr"
+          className={`text-base font-extrabold sm:text-lg ${inverse ? 'text-white' : 'text-brand-950'}`}
         >
-          BoldTrip
+          بولدتریپ
         </strong>
-        <small
-          className={`mt-1 text-[0.625rem] font-semibold max-sm:hidden ${
-            inverse ? 'text-white/55' : 'text-ink-500'
-          }`}
-        >
+        <small className={`text-[0.65rem] ${inverse ? 'text-white/65' : 'text-ink-500'}`}>
           ویزای روشن، مسیر مطمئن
         </small>
       </span>
