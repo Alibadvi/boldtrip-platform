@@ -49,7 +49,7 @@ export function ConsultationBookingForm({
     }
 
     const response = await fetch(
-      '/api/consultation-bookings',
+      '/api/customer/consultation-bookings',
       {
         method: 'POST',
         credentials: 'include',

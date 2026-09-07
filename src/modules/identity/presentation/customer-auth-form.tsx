@@ -50,7 +50,7 @@ export function CustomerAuthForm({ mode, nextPath }: CustomerAuthFormProps) {
   }
 
   const login = async () => {
-    const response = await fetch('/api/customers/login', {
+    const response = await fetch('/api/customer/customers/login', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -85,7 +85,7 @@ export function CustomerAuthForm({ mode, nextPath }: CustomerAuthFormProps) {
 
     try {
       if (isSignUp) {
-        const response = await fetch('/api/customers', {
+        const response = await fetch('/api/customer/customers', {
           method: 'POST',
           credentials: 'include',
           headers: {

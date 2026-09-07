@@ -70,6 +70,10 @@ export const Customers: CollectionConfig = {
     description: 'حساب مشتریان سایت برای رزرو و پیگیری خدمات.',
   },
   auth: {
+    cookies: {
+      sameSite: 'Lax',
+      secure: process.env.NODE_ENV === 'production',
+    },
     lockTime: 15 * 60 * 1000,
     maxLoginAttempts: 5,
     minPasswordLength: 8,

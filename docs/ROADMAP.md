@@ -5,8 +5,24 @@
 Phase 0 architecture and the Phase 1 foundation are implemented. The public shell includes the
 navbar, mobile navigation, footer, homepage, and FAQ. Countries and visa details are the first
 data-driven catalog slice: staff maintain them in Payload and the public routes render only
-published records. Customer authentication, bookings, requests, documents, payments, services,
-embassy appointments, and articles are not implemented.
+published records. Customer authentication/account views, services, embassy requests, basic
+consultation booking, private local uploads and manual receipt review are implemented for the
+demo. Article publishing and the production hardening described below are still outstanding.
+
+## Session and demo-content fixes — 2026-09-07
+
+Branch: `fix/customer-admin-sessions`. Code reviewed against the installed Payload 3.88.0
+authentication and endpoint implementation. Runtime verification is still outstanding: log
+in/out of both accounts in either order, try an expired customer session, and exercise customer
+uploads and bookings with both accounts signed in. No database was populated from this
+workspace; the local database needs the corrected seed command.
+
+- Separate customer/admin cookies and route customer mutations through `/api/customer/*`.
+- Preserve Payload ownership checks; restrict staff access to active staff identities.
+- Demo seeding loads `.env*` before config evaluation and explicitly publishes catalog records.
+- `pnpm seed:demo:content` refreshes public demo content and fake payment settings without
+  resetting customer accounts or operational records. Run it locally; a GitHub merge does not
+  populate the database. No test suite or application run was performed for this change.
 
 ## Phase 1 — Foundation
 

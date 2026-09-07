@@ -57,7 +57,7 @@ export function PaymentReceiptForm({
     form.delete('note')
     form.set('_payload', JSON.stringify(payload))
 
-    const response = await fetch('/api/payment-receipts', {
+    const response = await fetch('/api/customer/payment-receipts', {
       body: form,
       credentials: 'include',
       method: 'POST',

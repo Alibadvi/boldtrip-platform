@@ -1,7 +1,10 @@
 import { getPayload } from 'payload'
+import { loadEnv } from 'payload/node'
 
-import config from '../src/payload.config'
 import { defaultHomepageContent } from '../src/modules/content/domain/homepage-content'
+
+// Match Next.js environment loading before evaluating server-env in the config.
+loadEnv()
 
 type ID = number | string
 type DemoRecord = Record<string, unknown> & { id: ID }
@@ -104,6 +107,7 @@ async function upsert(
     where: { [key]: { equals: value } },
     limit: 1,
     depth: 0,
+    draft: false,
     overrideAccess: true,
     pagination: false,
   })
@@ -115,6 +119,7 @@ async function upsert(
       collection: collection as never,
       id: current.id,
       data: data as never,
+      draft: false,
       overrideAccess: true,
     }) as unknown as DemoRecord
   }
@@ -122,6 +127,7 @@ async function upsert(
   return await payload.create({
     collection: collection as never,
     data: data as never,
+    draft: false,
     overrideAccess: true,
   }) as unknown as DemoRecord
 }
@@ -134,6 +140,7 @@ function futureSlot(daysFromNow: number, hour: number): string {
 }
 
 async function seed() {
+  const { default: config } = await import('../src/payload.config')
   const payload = await getPayload({ config })
   payload.logger.info('Seeding BoldTrip showcase data...')
 
@@ -188,7 +195,7 @@ async function seed() {
   const countryRecords = new Map<string, DemoRecord>()
 
   for (const [index, country] of countries.entries()) {
-    const record = await upsert(payload, 'countries', 'slug', country.slug, {
+    const record = await upsert(payload, 'countries', 'code', country.code, {
       _status: 'published',
       name: country.name,
       slug: country.slug,
@@ -287,6 +294,14 @@ async function seed() {
     serviceRecords.set(service.slug, record)
   }
 
+  payload.logger.info('Published 6 country/embassy guides, 18 visa pages and 5 services. Demo embassy requests are enabled.')
+
+  if (process.argv.includes('--content-only')) {
+    payload.logger.info('Demo content complete. Restart the app and open /embassy-appointments/canada.')
+    await payload.destroy()
+    return
+  }
+
   const customer = await upsert(payload, 'customers', 'email', 'customer.demo@boldtrip.local', {
     email: 'customer.demo@boldtrip.local',
     password: 'DemoCustomer123!',
@@ -349,7 +364,7 @@ async function seed() {
     reference: 'BC-DEMO-001',
     customer: customer.id,
     slot: slots[0].id,
-    reservationKey: `demo-${slots[0].id}`,
+    reservationKey: String(slots[0].id),
     startsAt: slots[0].startsAt,
     durationMinutes: 45,
     deliveryMethod: 'video',
@@ -412,10 +427,10 @@ async function seed() {
 
   payload.logger.info('Demo seed complete.')
   payload.logger.info('Customer: customer.demo@boldtrip.local / DemoCustomer123!')
-  process.exit(0)
+  await payload.destroy()
 }
 
-seed().catch((error) => {
+await seed().catch((error) => {
   console.error(error)
   process.exit(1)
 })

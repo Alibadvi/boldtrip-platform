@@ -24,7 +24,7 @@ export function ForgotPasswordForm() {
     setLoading(true)
 
     const response = await fetch(
-      '/api/customers/forgot-password',
+      '/api/customer/customers/forgot-password',
       {
         method: 'POST',
         headers: {
@@ -136,7 +136,7 @@ export function ResetPasswordForm() {
     setLoading(true)
 
     const response = await fetch(
-      '/api/customers/reset-password',
+      '/api/customer/customers/reset-password',
       {
         method: 'POST',
         headers: {
