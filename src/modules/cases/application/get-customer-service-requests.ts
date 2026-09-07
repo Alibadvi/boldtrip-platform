@@ -62,11 +62,13 @@ function toSummary(
   record: ServiceRequestRecord,
 ): ServiceRequestSummary {
   const serviceTitle =
+    record.service &&
     typeof record.service === 'object'
       ? record.service.title
       : undefined
 
   const countryName =
+    record.country &&
     typeof record.country === 'object'
       ? record.country.name
       : undefined
