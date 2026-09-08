@@ -21,18 +21,11 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
-export default async function RequestPaymentPage({
-  params,
-}: PageProps) {
-  const customer = await requireCurrentCustomer(
-    '/account/requests',
-  )
+export default async function RequestPaymentPage({ params }: PageProps) {
+  const customer = await requireCurrentCustomer('/account/requests')
   const { request: requestId } = await params
 
-  const request = await getCustomerServiceRequest(
-    customer.id,
-    requestId,
-  )
+  const request = await getCustomerServiceRequest(customer.id, requestId)
 
   if (!request) {
     notFound()
@@ -49,15 +42,11 @@ export default async function RequestPaymentPage({
   return (
     <div className="space-y-6">
       <Card className="border-border bg-white p-7 shadow-card">
-        <p className="text-sm font-bold text-ink-500">
-          درخواست {request.reference}
-        </p>
-        <h1 className="mt-2 text-2xl font-black text-brand-950">
-          پرداخت و ارسال رسید
-        </h1>
+        <p className="text-sm font-bold text-ink-500">درخواست {request.reference}</p>
+        <h1 className="mt-2 text-2xl font-black text-brand-950">پرداخت و ارسال رسید</h1>
         <p className="mt-3 leading-8 text-ink-500">
-          مبلغ اعلام‌شده را به اطلاعات حساب زیر
-          واریز کنید و رسید را برای بررسی بفرستید.
+          وضعیت پرداخت و رسیدهای این درخواست را اینجا پیگیری کنید. راهنمای زیر اقدام بعدی را مشخص
+          می‌کند.
         </p>
       </Card>
 
@@ -66,6 +55,7 @@ export default async function RequestPaymentPage({
         receipts={receipts}
         serviceRequestId={request.id}
         settings={settings}
+        status={request.status}
       />
 
       <Link

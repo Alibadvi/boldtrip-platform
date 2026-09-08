@@ -21,7 +21,15 @@ export function isStaffRole(value: unknown): value is StaffRole {
 }
 
 export function getStaffRoles(user: unknown): StaffRole[] {
-  if (!user || typeof user !== 'object' || !('roles' in user)) {
+  if (
+    !user ||
+    typeof user !== 'object' ||
+    !('collection' in user) ||
+    user.collection !== 'staff' ||
+    !('accountStatus' in user) ||
+    user.accountStatus !== 'active' ||
+    !('roles' in user)
+  ) {
     return []
   }
 

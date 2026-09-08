@@ -14,11 +14,7 @@ import {
   consultationDeliveryMethodLabels,
   getCustomerConsultationBooking,
 } from '@/modules/scheduling'
-import {
-  buttonVariants,
-  Card,
-  StatusBadge,
-} from '@/shared/ui'
+import { buttonVariants, Card, StatusBadge } from '@/shared/ui'
 
 type PageProps = {
   params: Promise<{ booking: string }>
@@ -37,19 +33,11 @@ function formatDate(value: string): string {
   }).format(new Date(value))
 }
 
-export default async function BookingDetailPage({
-  params,
-}: PageProps) {
-  const customer = await requireCurrentCustomer(
-    '/account/bookings',
-  )
+export default async function BookingDetailPage({ params }: PageProps) {
+  const customer = await requireCurrentCustomer('/account/bookings')
   const { booking: bookingId } = await params
 
-  const booking =
-    await getCustomerConsultationBooking(
-      customer.id,
-      bookingId,
-    )
+  const booking = await getCustomerConsultationBooking(customer.id, bookingId)
 
   if (!booking) {
     notFound()
@@ -71,22 +59,10 @@ export default async function BookingDetailPage({
             <p className="font-mono text-sm text-white/65" dir="ltr">
               {booking.reference}
             </p>
-            <h1 className="mt-3 text-2xl font-black">
-              {booking.topic}
-            </h1>
+            <h1 className="mt-3 text-2xl font-black">{booking.topic}</h1>
           </div>
-          <StatusBadge
-            tone={
-              consultationBookingStatusTones[
-                booking.status
-              ]
-            }
-          >
-            {
-              consultationBookingStatusLabels[
-                booking.status
-              ]
-            }
+          <StatusBadge tone={consultationBookingStatusTones[booking.status]}>
+            {consultationBookingStatusLabels[booking.status]}
           </StatusBadge>
         </div>
       </Card>
@@ -94,32 +70,18 @@ export default async function BookingDetailPage({
       <Card className="border-border bg-white p-6">
         <dl className="grid gap-5 sm:grid-cols-3">
           <div>
-            <dt className="text-sm text-ink-500">
-              زمان جلسه
-            </dt>
+            <dt className="text-sm text-ink-500">زمان جلسه</dt>
+            <dd className="mt-1 font-black text-brand-950">{formatDate(booking.startsAt)}</dd>
+          </div>
+          <div>
+            <dt className="text-sm text-ink-500">روش برگزاری</dt>
             <dd className="mt-1 font-black text-brand-950">
-              {formatDate(booking.startsAt)}
+              {consultationDeliveryMethodLabels[booking.deliveryMethod]}
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-ink-500">
-              روش برگزاری
-            </dt>
-            <dd className="mt-1 font-black text-brand-950">
-              {
-                consultationDeliveryMethodLabels[
-                  booking.deliveryMethod
-                ]
-              }
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm text-ink-500">
-              مدت جلسه
-            </dt>
-            <dd className="mt-1 font-black text-brand-950">
-              {booking.durationMinutes} دقیقه
-            </dd>
+            <dt className="text-sm text-ink-500">مدت جلسه</dt>
+            <dd className="mt-1 font-black text-brand-950">{booking.durationMinutes} دقیقه</dd>
           </div>
         </dl>
       </Card>
@@ -129,6 +91,7 @@ export default async function BookingDetailPage({
         consultationBookingId={booking.id}
         receipts={receipts}
         settings={settings}
+        status={booking.status}
       />
 
       <Link

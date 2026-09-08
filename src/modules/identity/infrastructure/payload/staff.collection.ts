@@ -1,11 +1,7 @@
-import type { CollectionConfig, PayloadRequest } from 'payload'
+import { APIError, type CollectionConfig, type PayloadRequest } from 'payload'
 
 import { can } from '../../application/can'
-import {
-  getStaffRoles,
-  staffRoleLabels,
-  staffRoles,
-} from '../../domain/staff-role'
+import { getStaffRoles, staffRoleLabels, staffRoles } from '../../domain/staff-role'
 
 const isSignedIn = ({ req }: { req: PayloadRequest }) =>
   req.user?.collection === 'staff' && req.user.accountStatus === 'active'
@@ -18,6 +14,7 @@ const canCreateStaff = async ({ req }: { req: PayloadRequest }) => {
   const { totalDocs } = await req.payload.count({
     collection: 'staff',
     overrideAccess: true,
+    req,
   })
 
   return totalDocs === 0
@@ -60,9 +57,40 @@ export const Staff: CollectionConfig = {
   access: {
     admin: isSignedIn,
     create: canCreateStaff,
-    delete: canManageStaff,
+    delete: ({ req }) =>
+      canManageStaff({ req }) && req.user ? { id: { not_equals: req.user.id } } : false,
     read: isSignedIn,
     update: canUpdateStaff,
+  },
+  hooks: {
+    beforeValidate: [
+      async ({ data, operation, originalDoc, req }) => {
+        if (operation === 'create') {
+          const { totalDocs } = await req.payload.count({
+            collection: 'staff',
+            overrideAccess: true,
+            req,
+          })
+          if (totalDocs === 0) return { ...data, roles: ['admin'], accountStatus: 'active' }
+        }
+        if (
+          operation === 'update' &&
+          req.user?.collection === 'staff' &&
+          String(req.user.id) === String(originalDoc.id)
+        ) {
+          if (
+            data?.accountStatus === 'suspended' ||
+            (originalDoc.roles?.includes('admin') && data?.roles && !data.roles.includes('admin'))
+          ) {
+            throw new APIError(
+              'نمی‌توانید دسترسی مدیریت خودتان را حذف یا حساب خودتان را معلق کنید. این کار باید توسط مدیر دیگری انجام شود.',
+              400,
+            )
+          }
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {
@@ -77,7 +105,11 @@ export const Staff: CollectionConfig = {
       label: 'نقش‌ها',
       hasMany: true,
       required: true,
-      defaultValue: ['admin'],
+      defaultValue: ['contentEditor'],
+      admin: {
+        description:
+          'فقط نقش‌های مورد نیاز همکار را انتخاب کنید. مدیر سیستم به همه بخش‌ها دسترسی دارد.',
+      },
       options: staffRoles.map((value) => ({
         label: staffRoleLabels[value],
         value,

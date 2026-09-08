@@ -1,13 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import {
-  isCatalogSlug,
-  isHttpsUrl,
-} from '../../domain/catalog'
-import {
-  canManageCatalog,
-  readPublishedCatalog,
-} from './catalog-access'
+import { isCatalogSlug, isHttpsUrl } from '../../domain/catalog'
+import { canManageCatalog, readPublishedCatalog } from './catalog-access'
 
 export const Countries: CollectionConfig = {
   slug: 'countries',
@@ -16,13 +10,7 @@ export const Countries: CollectionConfig = {
     plural: 'کشورها',
   },
   admin: {
-    defaultColumns: [
-      'name',
-      'code',
-      'featuredOnHomepage',
-      '_status',
-      'updatedAt',
-    ],
+    defaultColumns: ['name', 'code', 'featuredOnHomepage', '_status', 'updatedAt'],
     group: 'محتوا',
     useAsTitle: 'name',
   },
@@ -97,10 +85,9 @@ export const Countries: CollectionConfig = {
                   label: 'پذیرش درخواست جدید',
                   defaultValue: false,
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                     description:
-                      'تا زمان ساخت فرم ثبت درخواست، این گزینه را خاموش نگه دارید.',
+                      'با روشن کردن این گزینه و انتشار صفحه، مشتری می‌تواند درخواست وقت سفارت ثبت کند.',
                   },
                 },
                 {
@@ -108,8 +95,7 @@ export const Countries: CollectionConfig = {
                   type: 'text',
                   label: 'عنوان صفحه',
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                     placeholder: 'مثلاً دریافت وقت سفارت کانادا',
                   },
                 },
@@ -119,10 +105,8 @@ export const Countries: CollectionConfig = {
                   label: 'توضیح کوتاه',
                   maxLength: 280,
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
-                    description:
-                      'این متن روی کارت کشور در صفحه وقت سفارت نمایش داده می‌شود.',
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                    description: 'این متن روی کارت کشور در صفحه وقت سفارت نمایش داده می‌شود.',
                   },
                 },
                 {
@@ -130,8 +114,7 @@ export const Countries: CollectionConfig = {
                   type: 'textarea',
                   label: 'توضیحات کامل',
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                   },
                 },
                 {
@@ -143,8 +126,7 @@ export const Countries: CollectionConfig = {
                     plural: 'مدارک',
                   },
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                   },
                   fields: [
                     {
@@ -169,8 +151,7 @@ export const Countries: CollectionConfig = {
                     plural: 'مراحل',
                   },
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                   },
                   fields: [
                     {
@@ -196,8 +177,7 @@ export const Countries: CollectionConfig = {
                     plural: 'نکات',
                   },
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                   },
                   fields: [
                     {
@@ -211,8 +191,7 @@ export const Countries: CollectionConfig = {
                 {
                   type: 'row',
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                   },
                   fields: [
                     {
@@ -238,18 +217,15 @@ export const Countries: CollectionConfig = {
                   type: 'text',
                   label: 'لینک منبع رسمی',
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
-                    description:
-                      'لینک رسمی سفارت، کارگزاری یا سامانه رزرو وقت.',
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
+                    description: 'لینک رسمی سفارت، کارگزاری یا سامانه رزرو وقت.',
                   },
                   validate: (value: unknown) => {
                     if (!value) {
                       return true
                     }
 
-                    return typeof value === 'string' &&
-                      isHttpsUrl(value)
+                    return typeof value === 'string' && isHttpsUrl(value)
                       ? true
                       : 'لینک منبع رسمی باید با https شروع شود.'
                   },
@@ -259,8 +235,7 @@ export const Countries: CollectionConfig = {
                   type: 'date',
                   label: 'تاریخ آخرین بررسی اطلاعات',
                   admin: {
-                    condition: (_, siblingData) =>
-                      Boolean(siblingData?.enabled),
+                    condition: (_, siblingData) => Boolean(siblingData?.enabled),
                     date: {
                       displayFormat: 'yyyy/MM/dd',
                     },
@@ -284,20 +259,16 @@ export const Countries: CollectionConfig = {
                   unique: true,
                   index: true,
                   admin: {
-                    description:
-                      'فقط حروف کوچک انگلیسی، عدد و خط تیره؛ مانند canada',
+                    description: 'فقط حروف کوچک انگلیسی، عدد و خط تیره؛ مانند canada',
                   },
                   hooks: {
                     beforeValidate: [
                       ({ value }) =>
-                        typeof value === 'string'
-                          ? value.trim().toLowerCase()
-                          : value,
+                        typeof value === 'string' ? value.trim().toLowerCase() : value,
                     ],
                   },
                   validate: (value: unknown) =>
-                    typeof value === 'string' &&
-                    isCatalogSlug(value)
+                    typeof value === 'string' && isCatalogSlug(value)
                       ? true
                       : 'آدرس باید فقط شامل حروف کوچک انگلیسی، عدد و خط تیره باشد.',
                 },
@@ -315,14 +286,11 @@ export const Countries: CollectionConfig = {
                   hooks: {
                     beforeValidate: [
                       ({ value }) =>
-                        typeof value === 'string'
-                          ? value.trim().toUpperCase()
-                          : value,
+                        typeof value === 'string' ? value.trim().toUpperCase() : value,
                     ],
                   },
                   validate: (value: unknown) =>
-                    typeof value === 'string' &&
-                    /^[A-Z]{2}$/.test(value)
+                    typeof value === 'string' && /^[A-Z]{2}$/.test(value)
                       ? true
                       : 'کد کشور باید دقیقاً دو حرف انگلیسی باشد.',
                 },

@@ -1,17 +1,10 @@
 import type { CustomerId } from '@/modules/identity'
 
-export const serviceRequestTypes = [
-  'service',
-  'embassyAppointment',
-] as const
+export const serviceRequestTypes = ['service', 'embassyAppointment'] as const
 
-export type ServiceRequestType =
-  (typeof serviceRequestTypes)[number]
+export type ServiceRequestType = (typeof serviceRequestTypes)[number]
 
-export const serviceRequestTypeLabels: Record<
-  ServiceRequestType,
-  string
-> = {
+export const serviceRequestTypeLabels: Record<ServiceRequestType, string> = {
   service: 'درخواست خدمت',
   embassyAppointment: 'درخواست وقت سفارت',
 }
@@ -29,13 +22,9 @@ export const serviceRequestStatuses = [
   'cancelled',
 ] as const
 
-export type ServiceRequestStatus =
-  (typeof serviceRequestStatuses)[number]
+export type ServiceRequestStatus = (typeof serviceRequestStatuses)[number]
 
-export const serviceRequestStatusLabels: Record<
-  ServiceRequestStatus,
-  string
-> = {
+export const serviceRequestStatusLabels: Record<ServiceRequestStatus, string> = {
   submitted: 'ثبت‌شده',
   needsDocuments: 'در انتظار مدارک',
   underReview: 'در حال بررسی',
@@ -48,17 +37,9 @@ export const serviceRequestStatusLabels: Record<
   cancelled: 'لغوشده',
 }
 
-export type ServiceRequestStatusTone =
-  | 'danger'
-  | 'info'
-  | 'neutral'
-  | 'success'
-  | 'warning'
+export type ServiceRequestStatusTone = 'danger' | 'info' | 'neutral' | 'success' | 'warning'
 
-export const serviceRequestStatusTones: Record<
-  ServiceRequestStatus,
-  ServiceRequestStatusTone
-> = {
+export const serviceRequestStatusTones: Record<ServiceRequestStatus, ServiceRequestStatusTone> = {
   submitted: 'neutral',
   needsDocuments: 'warning',
   underReview: 'info',
@@ -96,19 +77,12 @@ export type ServiceRequestDetail = ServiceRequestSummary & {
   applicant: ServiceRequestApplicant
   customerMessage?: string
   quotedAmount?: number
-  staffNote?: string
 }
 
 export function getServiceRequestTitle(
-  request: Pick<
-    ServiceRequestSummary,
-    'countryName' | 'requestType' | 'serviceTitle'
-  >,
+  request: Pick<ServiceRequestSummary, 'countryName' | 'requestType' | 'serviceTitle'>,
 ): string {
-  if (
-    request.requestType === 'embassyAppointment' &&
-    request.countryName
-  ) {
+  if (request.requestType === 'embassyAppointment' && request.countryName) {
     return `وقت سفارت ${request.countryName}`
   }
 

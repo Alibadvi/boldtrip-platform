@@ -1,31 +1,18 @@
 import { randomUUID } from 'node:crypto'
+import { APIError, type CollectionSlug } from 'payload'
+import { lockWorkflowRecord } from '@/shared/infrastructure/lock-workflow-record'
 
-import type {
-  CollectionConfig,
-  PayloadRequest,
-} from 'payload'
+import type { CollectionConfig, PayloadRequest } from 'payload'
 
-import {
-  can,
-  getStaffRoles,
-  isCustomerAuthUser,
-} from '@/modules/identity'
+import { can, getStaffRoles, isCustomerAuthUser } from '@/modules/identity'
 
-import {
-  consultationBookingStatuses,
-  consultationBookingStatusLabels,
-} from '../../domain/booking'
+import { consultationBookingStatuses, consultationBookingStatusLabels } from '../../domain/booking'
 
 function staffCanSchedule(req: PayloadRequest): boolean {
-  return can(
-    getStaffRoles(req.user),
-    'scheduling.manage',
-  )
+  return can(getStaffRoles(req.user), 'scheduling.manage')
 }
 
-const readBookings: NonNullable<
-  CollectionConfig['access']
->['read'] = ({ req }) => {
+const readBookings: NonNullable<CollectionConfig['access']>['read'] = ({ req }) => {
   if (staffCanSchedule(req)) {
     return true
   }
@@ -42,10 +29,7 @@ const readBookings: NonNullable<
 }
 
 function createReference(): string {
-  return `BC-${new Date()
-    .toISOString()
-    .slice(0, 10)
-    .replaceAll('-', '')}-${randomUUID()
+  return `BC-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}-${randomUUID()
     .slice(0, 6)
     .toUpperCase()}`
 }
@@ -59,59 +43,80 @@ export const ConsultationBookings: CollectionConfig = {
   admin: {
     group: 'رزرو مشاوره',
     useAsTitle: 'reference',
-    defaultColumns: [
-      'reference',
-      'customer',
-      'slot',
-      'status',
-      'amount',
-    ],
-    description:
-      'رزروهای ثبت‌شده و وضعیت تأیید پرداخت آن‌ها.',
+    defaultColumns: ['reference', 'customer', 'slot', 'status', 'amount'],
+    description: 'رزروهای ثبت‌شده و وضعیت تأیید پرداخت آن‌ها.',
   },
   access: {
     admin: ({ req }) => staffCanSchedule(req),
-    create: ({ req }) =>
-      staffCanSchedule(req) ||
-      isCustomerAuthUser(req.user),
+    create: ({ req }) => staffCanSchedule(req) || isCustomerAuthUser(req.user),
     read: readBookings,
     update: ({ req }) => staffCanSchedule(req),
-    delete: ({ req }) => staffCanSchedule(req),
+    delete: () => false,
   },
   hooks: {
     beforeValidate: [
-      async ({ data, operation, req }) => {
-        if (
-          operation === 'update' &&
-          data?.status === 'cancelled'
-        ) {
-          return {
-            ...data,
-            reservationKey: null,
+      async ({ data, operation, originalDoc, req }) => {
+        if (operation === 'update') {
+          await lockWorkflowRecord(req, 'consultation-bookings', originalDoc.id)
+          const current = (await req.payload.findByID({
+            collection: 'consultation-bookings' as CollectionSlug,
+            id: originalDoc.id,
+            depth: 0,
+            overrideAccess: true,
+            req,
+          })) as unknown as Record<string, unknown>
+          const next = { ...data }
+          if (
+            next.status &&
+            next.status !== current.status &&
+            ['cancelled', 'completed'].includes(String(current.status))
+          ) {
+            throw new APIError('رزرو بسته‌شده قابل بازگشایی نیست؛ زمان جدید رزرو کنید.', 400)
           }
-        }
-
-        if (operation !== 'create') {
-          return data
+          if (
+            current.status === 'paymentReview' &&
+            next.status &&
+            next.status !== current.status &&
+            !req.context.paymentReceiptTransition
+          ) {
+            throw new APIError('ابتدا رسید این رزرو را تأیید یا رد کنید.', 400)
+          }
+          if (
+            next.status === 'completed' &&
+            current.status !== 'confirmed' &&
+            current.status !== 'completed'
+          ) {
+            throw new APIError('فقط جلسه تأییدشده را می‌توان برگزارشده ثبت کرد.', 400)
+          }
+          for (const field of [
+            'reference',
+            'customer',
+            'slot',
+            'amount',
+            'startsAt',
+            'durationMinutes',
+            'deliveryMethod',
+          ])
+            next[field] = current[field]
+          next.reservationKey =
+            (next.status ?? current.status) === 'cancelled' ? null : current.reservationKey
+          return next
         }
 
         const nextData = { ...(data ?? {}) }
         const relation = nextData.slot
-        const slotId =
-          relation && typeof relation === 'object'
-            ? relation.id
-            : relation
+        const slotId = relation && typeof relation === 'object' ? relation.id : relation
 
         if (!slotId) {
           throw new Error('انتخاب زمان مشاوره الزامی است.')
         }
 
-        const slot = await req.payload.findByID({
-          collection:
-            'consultation-slots' as 'service-requests',
+        const slot = (await req.payload.findByID({
+          collection: 'consultation-slots' as 'service-requests',
           id: slotId,
           overrideAccess: true,
-        }) as unknown as {
+          req,
+        })) as unknown as {
           active?: boolean
           deliveryMethod?: string
           durationMinutes?: number
@@ -119,28 +124,20 @@ export const ConsultationBookings: CollectionConfig = {
           startsAt?: string
         }
 
-        if (
-          !slot.active ||
-          !slot.startsAt ||
-          new Date(slot.startsAt).getTime() <= Date.now()
-        ) {
-          throw new Error(
-            'این زمان دیگر قابل رزرو نیست.',
-          )
+        if (!slot.active || !slot.startsAt || new Date(slot.startsAt).getTime() <= Date.now()) {
+          throw new Error('این زمان دیگر قابل رزرو نیست.')
         }
 
         if (isCustomerAuthUser(req.user)) {
           nextData.customer = req.user.id
           nextData.status = 'awaitingPayment'
+          nextData.reference = createReference()
         }
 
-        nextData.reference =
-          nextData.reference || createReference()
+        nextData.reference = nextData.reference || createReference()
         nextData.amount = slot.priceAmount ?? 0
-        nextData.deliveryMethod =
-          slot.deliveryMethod ?? 'video'
-        nextData.durationMinutes =
-          slot.durationMinutes ?? 45
+        nextData.deliveryMethod = slot.deliveryMethod ?? 'video'
+        nextData.durationMinutes = slot.durationMinutes ?? 45
         nextData.startsAt = slot.startsAt
         nextData.reservationKey = String(slotId)
 
@@ -171,8 +168,7 @@ export const ConsultationBookings: CollectionConfig = {
     {
       name: 'slot',
       type: 'relationship',
-      relationTo:
-        'consultation-slots' as 'service-requests',
+      relationTo: 'consultation-slots' as 'service-requests',
       label: 'زمان انتخاب‌شده',
       required: true,
       index: true,
@@ -242,13 +238,10 @@ export const ConsultationBookings: CollectionConfig = {
       label: 'وضعیت رزرو',
       required: true,
       defaultValue: 'awaitingPayment',
-      options: consultationBookingStatuses.map(
-        (status) => ({
-          label:
-            consultationBookingStatusLabels[status],
-          value: status,
-        }),
-      ),
+      options: consultationBookingStatuses.map((status) => ({
+        label: consultationBookingStatusLabels[status],
+        value: status,
+      })),
     },
   ],
 }

@@ -1,19 +1,32 @@
-import type { GlobalConfig } from 'payload'
+import { APIError, type GlobalConfig } from 'payload'
+import { isPaymentAccountReady } from '../../domain/payment-policy'
 
-import { can, getStaffRoles } from '@/modules/identity'
+import { can, getStaffRoles, isCustomerAuthUser } from '@/modules/identity'
 
 export const PaymentSettings: GlobalConfig = {
   slug: 'payment-settings',
   label: 'اطلاعات پرداخت دستی',
   admin: {
     group: 'عملیات',
-    description:
-      'اطلاعات کارت و حسابی که پس از اعلام هزینه به مشتری نمایش داده می‌شود.',
+    description: 'اطلاعات کارت و حسابی که پس از اعلام هزینه به مشتری نمایش داده می‌شود.',
   },
   access: {
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) =>
-      can(getStaffRoles(req.user), 'payments.review'),
+    read: ({ req }) => isCustomerAuthUser(req.user) || can(getStaffRoles(req.user), 'admin.access'),
+    update: ({ req }) => can(getStaffRoles(req.user), 'payments.review'),
+  },
+  hooks: {
+    beforeChange: [
+      ({ data, originalDoc }) => {
+        const next = { ...originalDoc, ...data }
+        if (next.active && !isPaymentAccountReady(next)) {
+          throw new APIError(
+            'برای فعال‌کردن پرداخت، نام صاحب حساب و شماره کارت یا شبا را کامل کنید.',
+            400,
+          )
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {

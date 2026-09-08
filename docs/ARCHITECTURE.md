@@ -194,3 +194,24 @@ Record future architecture changes in this section with date, reason, and conseq
   login to block admin login. The API adapter preserves Payload authentication, validation and
   ownership checks; existing account records are retained. The new cookie names require one
   fresh login for each account after pulling this change.
+
+
+## Workflow integrity — 2026-09-08
+
+Receipt submission/review and the linked request or booking update use the same Payload
+request/transaction. A small PostgreSQL adapter helper locks the parent row before rereading
+its state. Request/booking edits take the same lock, so payment decisions cannot race a quote
+change or cancellation through these collection hooks. Transactions must remain enabled;
+the helper fails closed when no active PostgreSQL transaction exists. This relies on the
+installed Payload/Postgres adapter session API and needs rechecking when that adapter changes.
+
+Receipt ownership and amount come from the parent. Pending/approved duplicates are refused;
+settled receipts and their files cannot be edited or deleted through the app. Rejections need
+a customer-visible reason. Closed requests/bookings cannot be reopened; cancellation keeps
+the history. These controls do not implement refunds, an immutable audit log or bank matching.
+
+Internal case notes are staff-only fields and are excluded from customer DTOs. File validation
+checks the size, extension, MIME type and initial bytes before upload processing; it is not a
+malware scanner. Private local storage remains a development arrangement, not the production
+object-storage/retention design. New staff default to content-editor privileges; first-account
+bootstrap still creates an active administrator.
