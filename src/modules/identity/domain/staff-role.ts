@@ -28,6 +28,7 @@ export function getStaffRoles(user: unknown): StaffRole[] {
     user.collection !== 'staff' ||
     !('accountStatus' in user) ||
     user.accountStatus !== 'active' ||
+    (process.env.NODE_ENV === 'production' && (!('mfaEnabled' in user) || user.mfaEnabled !== true)) ||
     !('roles' in user)
   ) {
     return []

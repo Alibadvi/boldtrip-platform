@@ -1,0 +1,15 @@
+groups:
+  - name: boldtrip
+    rules:
+      - alert: BoldTripUnavailable
+        expr: probe_success{job="boldtrip"} == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: BoldTrip application or database is unavailable
+      - alert: BoldTripMonitoringMissing
+        expr: absent(probe_success{job="boldtrip"})
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: BoldTrip health monitoring has stopped

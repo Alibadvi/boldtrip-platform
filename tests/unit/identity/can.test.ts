@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { can } from '@/modules/identity'
+import { can } from '@/modules/identity/application/can'
 
 describe('staff capabilities', () => {
   it('gives administrators every operational capability', () => {
@@ -20,3 +20,4 @@ describe('staff capabilities', () => {
     expect(can(['consultant', 'contentEditor'], 'content.manage')).toBe(true)
   })
 })
+

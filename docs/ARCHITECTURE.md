@@ -215,3 +215,11 @@ checks the size, extension, MIME type and initial bytes before upload processing
 malware scanner. Private local storage remains a development arrangement, not the production
 object-storage/retention design. New staff default to content-editor privileges; first-account
 bootstrap still creates an active administrator.
+
+## Production security additions — 2026-09-08
+
+Staff MFA uses RFC 6238 codes, an AES-GCM-encrypted secret, a row-locked replay counter and one-use hashed recovery codes. Native staff password reset is blocked because it can issue a session without the login MFA hook; trusted server enrollment/recovery revokes old sessions. Customer/admin cookie separation remains in place. Auth attempt counters survive failed login transactions.
+
+Operational audit rows share the source mutation transaction and record IDs, status changes and changed field names without copying documents, bank numbers or internal notes. API roles cannot edit/delete history; database administrators still can. This is not externally tamper-proof audit storage.
+
+Slot reservation takes a slot lock and retains a unique reservation key. Expired unpaid holds release that key, while receipt review and confirmation retain it. Refunds preserve the approved payment receipt and use a separate finance workflow. Private storage, malware scanning and email are configured through deployment environment variables, with production checks that fail closed when required configuration is missing. Deployment and verification limitations are in DEPLOYMENT.md.

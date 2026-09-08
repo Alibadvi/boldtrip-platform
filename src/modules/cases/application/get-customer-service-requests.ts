@@ -12,40 +12,7 @@ import type {
   ServiceRequestType,
 } from '../domain/service-request'
 
-type RelatedService =
-  | number
-  | string
-  | {
-      id: number | string
-      title?: string
-    }
-
-type RelatedCountry =
-  | number
-  | string
-  | {
-      id: number | string
-      name?: string
-    }
-
-type ServiceRequestRecord = {
-  applicant?: Partial<ServiceRequestApplicant>
-  country?: RelatedCountry | null
-  createdAt: string
-  customer:
-    | CustomerId
-    | {
-        id: CustomerId
-      }
-  customerMessage?: null | string
-  id: number | string
-  quotedAmount?: null | number
-  reference: string
-  requestType: ServiceRequestType
-  service?: RelatedService | null
-  status: ServiceRequestStatus
-  submittedAt?: null | string
-}
+import type { ServiceRequest as ServiceRequestRecord } from '@/payload-types'
 
 function relationId(
   value:
@@ -116,7 +83,7 @@ export const getCustomerServiceRequests = cache(
       },
     })
 
-    return (result.docs as unknown as ServiceRequestRecord[]).map(toSummary)
+    return (result.docs).map(toSummary)
   },
 )
 
@@ -152,7 +119,7 @@ export const getCustomerServiceRequest = cache(
       },
     })
 
-    const request = result.docs[0] as unknown as ServiceRequestRecord | undefined
+    const request = result.docs[0]
 
     return request ? toDetail(request) : null
   },

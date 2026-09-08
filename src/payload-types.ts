@@ -68,12 +68,19 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    refunds: Refund;
+    'audit-events': AuditEvent;
+    'auth-rate-limits': AuthRateLimit;
     staff: Staff;
     customers: Customer;
     countries: Country;
     visas: Visa;
     services: Service;
     'service-requests': ServiceRequest;
+    'customer-documents': CustomerDocument;
+    'consultation-slots': ConsultationSlot;
+    'consultation-bookings': ConsultationBooking;
+    'payment-receipts': PaymentReceipt;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -81,12 +88,19 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    refunds: RefundsSelect<false> | RefundsSelect<true>;
+    'audit-events': AuditEventsSelect<false> | AuditEventsSelect<true>;
+    'auth-rate-limits': AuthRateLimitsSelect<false> | AuthRateLimitsSelect<true>;
     staff: StaffSelect<false> | StaffSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     countries: CountriesSelect<false> | CountriesSelect<true>;
     visas: VisasSelect<false> | VisasSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     'service-requests': ServiceRequestsSelect<false> | ServiceRequestsSelect<true>;
+    'customer-documents': CustomerDocumentsSelect<false> | CustomerDocumentsSelect<true>;
+    'consultation-slots': ConsultationSlotsSelect<false> | ConsultationSlotsSelect<true>;
+    'consultation-bookings': ConsultationBookingsSelect<false> | ConsultationBookingsSelect<true>;
+    'payment-receipts': PaymentReceiptsSelect<false> | PaymentReceiptsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -99,10 +113,12 @@ export interface Config {
   globals: {
     homepage: Homepage;
     'consultation-page': ConsultationPage;
+    'payment-settings': PaymentSetting;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'consultation-page': ConsultationPageSelect<false> | ConsultationPageSelect<true>;
+    'payment-settings': PaymentSettingsSelect<false> | PaymentSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -151,32 +167,54 @@ export interface CustomerAuthOperations {
   };
 }
 /**
+ * ثبت بازپرداخت به‌معنی انتقال بانکی نیست. پس از واریز واقعی، شناسه بانکی را ثبت کنید.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "staff".
+ * via the `definition` "refunds".
  */
-export interface Staff {
+export interface Refund {
   id: number;
-  name: string;
-  roles: ('admin' | 'consultant' | 'caseOperator' | 'financeOperator' | 'contentEditor')[];
-  accountStatus: 'active' | 'suspended';
+  receipt: number | PaymentReceipt;
+  amount: number;
+  reason: string;
+  status: 'requested' | 'approved' | 'rejected' | 'refunded';
+  bankReference?: string | null;
+  refundedAt?: string | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'staff';
+}
+/**
+ * رسید را باز کنید، با گردش حساب تطبیق دهید و سپس تأیید یا رد کنید. هنگام رد، دلیل را بنویسید؛ نتیجه به مشتری نمایش داده می‌شود. رسیدهای بررسی‌شده قابل تغییر یا حذف نیستند.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-receipts".
+ */
+export interface PaymentReceipt {
+  id: number;
+  customer: number | Customer;
+  payableType: 'serviceRequest' | 'consultation';
+  serviceRequest?: (number | null) | ServiceRequest;
+  consultationBooking?: (number | null) | ConsultationBooking;
+  /**
+   * مبلغ از پرونده یا رزرو گرفته می‌شود.
+   */
+  amount: number;
+  paidAt?: string | null;
+  note?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewerNote?: string | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * حساب مشتریان سایت برای رزرو و پیگیری خدمات.
@@ -211,6 +249,97 @@ export interface Customer {
   collection: 'customers';
 }
 /**
+ * درخواست‌های خدمات و وقت سفارت ثبت‌شده توسط مشتریان.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-requests".
+ */
+export interface ServiceRequest {
+  id: number;
+  reference: string;
+  customer: number | Customer;
+  requestType: 'service' | 'embassyAppointment';
+  service?: (number | null) | Service;
+  country?: (number | null) | Country;
+  status:
+    | 'submitted'
+    | 'needsDocuments'
+    | 'underReview'
+    | 'quoted'
+    | 'awaitingPayment'
+    | 'paymentReview'
+    | 'inProgress'
+    | 'completed'
+    | 'rejected'
+    | 'cancelled';
+  submittedAt: string;
+  applicant: {
+    fullName: string;
+    mobile: string;
+    email: string;
+    nationality: string;
+    /**
+     * در صورت آماده بودن پاسپورت وارد شود.
+     */
+    passportNumber?: string | null;
+    applicantsCount: number;
+  };
+  customerMessage?: string | null;
+  /**
+   * برای خدماتی که قیمت آن‌ها پس از بررسی اعلام می‌شود.
+   */
+  quotedAmount?: number | null;
+  /**
+   * این متن فعلاً فقط در پنل مدیریت نمایش داده می‌شود.
+   */
+  staffNote?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * خدمات قابل نمایش در سایت، مانند خدمات ویزا، وقت سفارت و مشاوره.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  kind: 'visa' | 'embassyAppointment' | 'consultation' | 'documentReview';
+  /**
+   * این متن در کارت خدمت در صفحه فهرست نمایش داده می‌شود.
+   */
+  summary: string;
+  /**
+   * توضیح کامل و ساده‌ای که مشتری در صفحه اختصاصی خدمت می‌خواند.
+   */
+  description: string;
+  benefits: {
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  steps: {
+    title: string;
+    description: string;
+    id?: string | null;
+  }[];
+  pricingMode: 'fixed' | 'quotation';
+  /**
+   * فقط عدد وارد کنید؛ برای مثال 2500000.
+   */
+  priceAmount?: number | null;
+  estimatedDuration?: string | null;
+  /**
+   * فقط حروف انگلیسی کوچک، عدد و خط تیره؛ مانند visa-services
+   */
+  slug: string;
+  sortOrder: number;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "countries".
  */
@@ -223,7 +352,7 @@ export interface Country {
   embassyAppointment?: {
     enabled?: boolean | null;
     /**
-     * تا زمان ساخت فرم ثبت درخواست، این گزینه را خاموش نگه دارید.
+     * با روشن کردن این گزینه و انتشار صفحه، مشتری می‌تواند درخواست وقت سفارت ثبت کند.
      */
     acceptingRequests?: boolean | null;
     title?: string | null;
@@ -275,6 +404,128 @@ export interface Country {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * رزروهای ثبت‌شده و وضعیت تأیید پرداخت آن‌ها.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consultation-bookings".
+ */
+export interface ConsultationBooking {
+  id: number;
+  holdExpiresAt?: string | null;
+  cancellationReason?: string | null;
+  reference: string;
+  customer: number | Customer;
+  slot: number | ConsultationSlot;
+  reservationKey?: string | null;
+  startsAt: string;
+  durationMinutes: number;
+  deliveryMethod: string;
+  amount: number;
+  topic: string;
+  customerNote?: string | null;
+  status: 'awaitingPayment' | 'paymentReview' | 'confirmed' | 'cancelled' | 'expired' | 'completed';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * روز و ساعت‌های قابل رزرو را از این قسمت تعریف کنید.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consultation-slots".
+ */
+export interface ConsultationSlot {
+  id: number;
+  startsAt: string;
+  durationMinutes: number;
+  deliveryMethod: 'video' | 'phone' | 'inPerson';
+  priceAmount: number;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-events".
+ */
+export interface AuditEvent {
+  id: number;
+  action: string;
+  targetCollection: string;
+  targetId: string;
+  actor: string;
+  fromStatus?: string | null;
+  toStatus?: string | null;
+  changedFields?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auth-rate-limits".
+ */
+export interface AuthRateLimit {
+  id: number;
+  key: string;
+  hits: number;
+  windowStartedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff".
+ */
+export interface Staff {
+  id: number;
+  /**
+   * فعال‌سازی و بازیابی از طریق دستور staff:mfa در سرور انجام می‌شود.
+   */
+  mfaEnabled?: boolean | null;
+  mfaSecret?: string | null;
+  mfaLastStep?: number | null;
+  mfaRecoveryHashes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  name: string;
+  /**
+   * فقط نقش‌های مورد نیاز همکار را انتخاب کنید. مدیر سیستم به همه بخش‌ها دسترسی دارد.
+   */
+  roles: ('admin' | 'consultant' | 'caseOperator' | 'financeOperator' | 'contentEditor')[];
+  accountStatus: 'active' | 'suspended';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'staff';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "visas".
  */
@@ -317,95 +568,34 @@ export interface Visa {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * خدمات قابل نمایش در سایت، مانند خدمات ویزا، وقت سفارت و مشاوره.
+ * مدارک خصوصی مشتریان که به یک درخواست مشخص متصل هستند.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services".
+ * via the `definition` "customer-documents".
  */
-export interface Service {
+export interface CustomerDocument {
   id: number;
-  title: string;
-  kind: 'visa' | 'embassyAppointment' | 'consultation' | 'documentReview';
-  /**
-   * این متن در کارت خدمت در صفحه فهرست نمایش داده می‌شود.
-   */
-  summary: string;
-  /**
-   * توضیح کامل و ساده‌ای که مشتری در صفحه اختصاصی خدمت می‌خواند.
-   */
-  description: string;
-  benefits: {
-    title: string;
-    description?: string | null;
-    id?: string | null;
-  }[];
-  steps: {
-    title: string;
-    description: string;
-    id?: string | null;
-  }[];
-  pricingMode: 'fixed' | 'quotation';
-  /**
-   * فقط عدد وارد کنید؛ برای مثال 2500000.
-   */
-  priceAmount?: number | null;
-  estimatedDuration?: string | null;
-  /**
-   * فقط حروف انگلیسی کوچک، عدد و خط تیره؛ مانند visa-services
-   */
-  slug: string;
-  sortOrder: number;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * درخواست‌های خدمات و وقت سفارت ثبت‌شده توسط مشتریان.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "service-requests".
- */
-export interface ServiceRequest {
-  id: number;
-  reference: string;
   customer: number | Customer;
-  requestType: 'service' | 'embassyAppointment';
-  service?: (number | null) | Service;
-  country?: (number | null) | Country;
-  status:
-    | 'submitted'
-    | 'needsDocuments'
-    | 'underReview'
-    | 'quoted'
-    | 'awaitingPayment'
-    | 'paymentReview'
-    | 'inProgress'
-    | 'completed'
-    | 'rejected'
-    | 'cancelled';
-  submittedAt: string;
-  applicant: {
-    fullName: string;
-    mobile: string;
-    email: string;
-    nationality: string;
-    /**
-     * در صورت آماده بودن پاسپورت وارد شود.
-     */
-    passportNumber?: string | null;
-    applicantsCount: number;
-  };
-  customerMessage?: string | null;
+  serviceRequest: number | ServiceRequest;
+  label: string;
+  kind: 'passport' | 'identity' | 'photo' | 'financial' | 'application' | 'other';
+  status: 'pending' | 'accepted' | 'rejected';
   /**
-   * برای خدماتی که قیمت آن‌ها پس از بررسی اعلام می‌شود.
+   * در صورت رد مدرک، دلیل و روش اصلاح را برای مشتری بنویسید.
    */
-  quotedAmount?: number | null;
-  /**
-   * این متن فعلاً فقط در پنل مدیریت نمایش داده می‌شود.
-   */
-  staffNote?: string | null;
+  reviewerNote?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -432,6 +622,18 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'refunds';
+        value: number | Refund;
+      } | null)
+    | ({
+        relationTo: 'audit-events';
+        value: number | AuditEvent;
+      } | null)
+    | ({
+        relationTo: 'auth-rate-limits';
+        value: number | AuthRateLimit;
+      } | null)
+    | ({
         relationTo: 'staff';
         value: number | Staff;
       } | null)
@@ -454,6 +656,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'service-requests';
         value: number | ServiceRequest;
+      } | null)
+    | ({
+        relationTo: 'customer-documents';
+        value: number | CustomerDocument;
+      } | null)
+    | ({
+        relationTo: 'consultation-slots';
+        value: number | ConsultationSlot;
+      } | null)
+    | ({
+        relationTo: 'consultation-bookings';
+        value: number | ConsultationBooking;
+      } | null)
+    | ({
+        relationTo: 'payment-receipts';
+        value: number | PaymentReceipt;
       } | null);
   globalSlug?: string | null;
   user:
@@ -509,9 +727,53 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "refunds_select".
+ */
+export interface RefundsSelect<T extends boolean = true> {
+  receipt?: T;
+  amount?: T;
+  reason?: T;
+  status?: T;
+  bankReference?: T;
+  refundedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-events_select".
+ */
+export interface AuditEventsSelect<T extends boolean = true> {
+  action?: T;
+  targetCollection?: T;
+  targetId?: T;
+  actor?: T;
+  fromStatus?: T;
+  toStatus?: T;
+  changedFields?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auth-rate-limits_select".
+ */
+export interface AuthRateLimitsSelect<T extends boolean = true> {
+  key?: T;
+  hits?: T;
+  windowStartedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "staff_select".
  */
 export interface StaffSelect<T extends boolean = true> {
+  mfaEnabled?: T;
+  mfaSecret?: T;
+  mfaLastStep?: T;
+  mfaRecoveryHashes?: T;
   name?: T;
   roles?: T;
   accountStatus?: T;
@@ -707,6 +969,91 @@ export interface ServiceRequestsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customer-documents_select".
+ */
+export interface CustomerDocumentsSelect<T extends boolean = true> {
+  customer?: T;
+  serviceRequest?: T;
+  label?: T;
+  kind?: T;
+  status?: T;
+  reviewerNote?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consultation-slots_select".
+ */
+export interface ConsultationSlotsSelect<T extends boolean = true> {
+  startsAt?: T;
+  durationMinutes?: T;
+  deliveryMethod?: T;
+  priceAmount?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consultation-bookings_select".
+ */
+export interface ConsultationBookingsSelect<T extends boolean = true> {
+  holdExpiresAt?: T;
+  cancellationReason?: T;
+  reference?: T;
+  customer?: T;
+  slot?: T;
+  reservationKey?: T;
+  startsAt?: T;
+  durationMinutes?: T;
+  deliveryMethod?: T;
+  amount?: T;
+  topic?: T;
+  customerNote?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-receipts_select".
+ */
+export interface PaymentReceiptsSelect<T extends boolean = true> {
+  customer?: T;
+  payableType?: T;
+  serviceRequest?: T;
+  consultationBooking?: T;
+  amount?: T;
+  paidAt?: T;
+  note?: T;
+  status?: T;
+  reviewerNote?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -868,6 +1215,29 @@ export interface ConsultationPage {
   createdAt?: string | null;
 }
 /**
+ * اطلاعات کارت و حسابی که پس از اعلام هزینه به مشتری نمایش داده می‌شود.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-settings".
+ */
+export interface PaymentSetting {
+  id: number;
+  active?: boolean | null;
+  /**
+   * فقط اعداد شماره کارت را وارد کنید.
+   */
+  cardNumber?: string | null;
+  cardholderName?: string | null;
+  bankName?: string | null;
+  /**
+   * با IR وارد شود.
+   */
+  iban?: string | null;
+  instructions?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -1000,6 +1370,21 @@ export interface ConsultationPageSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-settings_select".
+ */
+export interface PaymentSettingsSelect<T extends boolean = true> {
+  active?: T;
+  cardNumber?: T;
+  cardholderName?: T;
+  bankName?: T;
+  iban?: T;
+  instructions?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

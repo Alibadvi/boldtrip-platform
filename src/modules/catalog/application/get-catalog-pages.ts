@@ -12,15 +12,7 @@ import type {
 } from '../domain/catalog'
 import { isCatalogSlug } from '../domain/catalog'
 
-type CountryRecord = Omit<Country, 'embassyAppointment'> & {
-  embassyAppointment?: Partial<EmbassyAppointmentGuide> | null
-  sortOrder?: number
-}
-
-type VisaRecord = VisaDetail & {
-  country: number | string | { id: number | string }
-  sortOrder?: number
-}
+import type { Country as CountryRecord, Visa as VisaRecord } from '@/payload-types'
 
 const publishedOnly = {
   _status: {
@@ -29,7 +21,7 @@ const publishedOnly = {
 } as const
 
 function normalizeEmbassyAppointment(
-  value?: Partial<EmbassyAppointmentGuide> | null,
+  value?: CountryRecord['embassyAppointment'],
 ): EmbassyAppointmentGuide | undefined {
   if (!value) {
     return undefined
@@ -38,14 +30,14 @@ function normalizeEmbassyAppointment(
   return {
     enabled: Boolean(value.enabled),
     acceptingRequests: Boolean(value.acceptingRequests),
-    title: value.title,
-    summary: value.summary,
-    introduction: value.introduction,
-    estimatedTime: value.estimatedTime,
-    feeNote: value.feeNote,
-    officialSourceUrl: value.officialSourceUrl,
-    lastReviewedAt: value.lastReviewedAt,
-    requiredDocuments: value.requiredDocuments ?? [],
+    title: value.title ?? undefined,
+    summary: value.summary ?? undefined,
+    introduction: value.introduction ?? undefined,
+    estimatedTime: value.estimatedTime ?? undefined,
+    feeNote: value.feeNote ?? undefined,
+    officialSourceUrl: value.officialSourceUrl ?? undefined,
+    lastReviewedAt: value.lastReviewedAt ?? undefined,
+    requiredDocuments: (value.requiredDocuments ?? []).map((item) => ({ ...item, description: item.description ?? undefined })),
     steps: value.steps ?? [],
     importantNotes: value.importantNotes ?? [],
   }
@@ -55,7 +47,7 @@ function countryFromRecord(record: CountryRecord): Country {
   return {
     code: record.code,
     featuredOnHomepage: Boolean(record.featuredOnHomepage),
-    flag: record.flag,
+    flag: record.flag ?? undefined,
     id: record.id,
     introduction: record.introduction,
     name: record.name,
@@ -71,7 +63,7 @@ function visaSummaryFromRecord(record: VisaRecord): VisaSummary {
   return {
     category: record.category,
     id: record.id,
-    processingTime: record.processingTime,
+    processingTime: record.processingTime ?? undefined,
     slug: record.slug,
     summary: record.summary,
     title: record.title,
@@ -81,16 +73,16 @@ function visaSummaryFromRecord(record: VisaRecord): VisaSummary {
 function visaDetailFromRecord(record: VisaRecord): VisaDetail {
   return {
     ...visaSummaryFromRecord(record),
-    disclaimer: record.disclaimer,
-    feeNote: record.feeNote,
+    disclaimer: record.disclaimer ?? undefined,
+    feeNote: record.feeNote ?? undefined,
     lastReviewedAt: record.lastReviewedAt,
-    officialSourceLabel: record.officialSourceLabel,
+    officialSourceLabel: record.officialSourceLabel ?? undefined,
     officialSourceUrl: record.officialSourceUrl,
-    requirements: record.requirements ?? [],
-    stayLength: record.stayLength,
+    requirements: (record.requirements ?? []).map((item) => ({ ...item, description: item.description ?? undefined })),
+    stayLength: record.stayLength ?? undefined,
     steps: record.steps ?? [],
-    suitableFor: record.suitableFor,
-    validity: record.validity,
+    suitableFor: record.suitableFor ?? undefined,
+    validity: record.validity ?? undefined,
   }
 }
 
@@ -122,9 +114,7 @@ async function findCountry(slug: string): Promise<Country | null> {
     },
   })
 
-  const record = result.docs[0] as
-    | unknown as CountryRecord
-    | undefined
+  const record = result.docs[0]
 
   return record ? countryFromRecord(record) : null
 }
@@ -146,7 +136,7 @@ export const getCountries = cache(
       where: publishedOnly,
     })
 
-    return (result.docs as unknown as CountryRecord[]).map(
+    return (result.docs).map(
       countryFromRecord,
     )
   },
@@ -178,7 +168,7 @@ export const getFeaturedCountries = cache(
       },
     })
 
-    return (result.docs as unknown as CountryRecord[]).map(
+    return (result.docs).map(
       countryFromRecord,
     )
   },
@@ -210,7 +200,7 @@ export const getEmbassyAppointmentCountries = cache(
       },
     })
 
-    return (result.docs as unknown as CountryRecord[])
+    return (result.docs)
       .map(countryFromRecord)
       .filter(
         (country) =>
@@ -268,7 +258,7 @@ export const getCountryPage = cache(
     return {
       country,
       visas: (
-        result.docs as unknown as VisaRecord[]
+        result.docs
       ).map(visaSummaryFromRecord),
     }
   },
@@ -317,9 +307,7 @@ export const getVisaPage = cache(
       },
     })
 
-    const record = result.docs[0] as
-      | unknown as VisaRecord
-      | undefined
+    const record = result.docs[0]
 
     return record
       ? {

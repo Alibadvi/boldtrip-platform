@@ -47,6 +47,7 @@ export const preparePaymentReceipt: CollectionBeforeValidateHook = async ({
     amount?: number
     quotedAmount?: number
     status: string
+    holdExpiresAt?: string | null
   }
   const owner = relationId(payable.customer)
   if (!owner || (isCustomerAuthUser(req.user) && String(owner) !== String(req.user.id))) {
@@ -54,6 +55,7 @@ export const preparePaymentReceipt: CollectionBeforeValidateHook = async ({
   }
 
   if (operation === 'create') {
+    if (consultation && payable.holdExpiresAt && new Date(payable.holdExpiresAt).getTime() <= Date.now()) throw new APIError('مهلت رزرو تمام شده است. زمان را دوباره رزرو کنید.', 400)
     if (!isPayableStatus(payable.status)) {
       throw new APIError(
         'این مورد در مرحله دریافت رسید نیست. وضعیت پرداخت را دوباره بررسی کنید.',
