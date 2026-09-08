@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import { cache } from 'react'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 
 import type { CustomerId } from '@/modules/identity'
 
@@ -66,11 +66,7 @@ export const getCustomerDocuments = cache(
     serviceRequestId?: number | string,
   ): Promise<CustomerDocument[]> => {
     const payload = await getPayload({ config: configPromise })
-    const find = payload.find.bind(payload) as unknown as (
-      args: Record<string, unknown>,
-    ) => Promise<FindResult>
-
-    const conditions: Record<string, unknown>[] = [
+    const conditions: Where[] = [
       {
         customer: {
           equals: customerId,
@@ -86,7 +82,7 @@ export const getCustomerDocuments = cache(
       })
     }
 
-    const result = await find({
+    const result = await payload.find({
       collection: 'customer-documents',
       depth: 1,
       limit: 100,
@@ -101,3 +97,4 @@ export const getCustomerDocuments = cache(
     return result.docs.map(toDocument)
   },
 )
+

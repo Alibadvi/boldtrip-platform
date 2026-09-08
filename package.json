@@ -19,7 +19,10 @@
     "test:unit": "cross-env NODE_OPTIONS=--no-deprecation vitest run",
     "typecheck": "tsc --noEmit",
     "seed:demo": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-demo.ts",
-    "seed:demo:content": "pnpm seed:demo --content-only"
+    "seed:demo:content": "pnpm seed:demo --content-only",
+    "staff:mfa": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/staff-mfa.ts",
+    "jobs:expire-bookings": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/expire-bookings.ts",
+    "test:integration": "vitest run --config vitest.integration.config.mts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",
@@ -37,7 +40,8 @@
     "react-dom": "19.2.6",
     "sharp": "0.34.2",
     "tailwind-merge": "^3.3.1",
-    "zod": "^4.1.11"
+    "zod": "^4.1.11",
+    "@payloadcms/storage-s3": "3.88.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",

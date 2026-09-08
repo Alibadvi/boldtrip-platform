@@ -1,3 +1,8 @@
+import { Refunds } from '@/modules/payments/infrastructure/payload/refunds.collection'
+import { privateStorage } from '@/modules/documents/infrastructure/private-storage'
+import { AuditEvents, recordChange, recordDelete } from '@/modules/audit/infrastructure/audit-events.collection'
+import { AuthRateLimits } from '@/modules/identity/infrastructure/payload/auth-rate-limits.collection'
+import { emailAdapter } from '@/modules/notifications/infrastructure/email-adapter'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { fa } from '@payloadcms/translations/languages/fa'
@@ -31,7 +36,13 @@ import { serverEnv } from '@/shared/config/server-env'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+for (const collection of [Staff, Customers, ServiceRequests, CustomerDocuments, ConsultationBookings, ConsultationSlots, PaymentReceipts, Refunds]) {
+  collection.hooks = { ...collection.hooks, afterChange: [...(collection.hooks?.afterChange ?? []), recordChange], afterDelete: [...(collection.hooks?.afterDelete ?? []), recordDelete] }
+}
+
 export default buildConfig({
+  email: emailAdapter,
+  plugins: [privateStorage],
   cookiePrefix: staffCookiePrefix,
   admin: {
     user: Staff.slug,
@@ -43,6 +54,7 @@ export default buildConfig({
       },
       beforeNavLinks: ['/app/(payload)/_components/admin-brand#AdminNavIntro'],
       views: {
+        login: { Component: '/modules/identity/presentation/staff-login#StaffLogin', path: '/login' },
         dashboard: {
           Component: '/app/(payload)/_components/admin-dashboard#AdminDashboard',
         },
@@ -62,6 +74,9 @@ export default buildConfig({
   },
 
   collections: [
+    Refunds,
+    AuditEvents,
+    AuthRateLimits,
     Staff,
     Customers,
     Countries,

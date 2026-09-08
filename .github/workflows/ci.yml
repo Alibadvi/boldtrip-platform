@@ -42,6 +42,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Generate Payload types
+        run: pnpm generate:types
+
       - name: Generate Payload import map
         run: pnpm generate:importmap
 
@@ -54,5 +57,9 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
+      - name: Database security flows
+        run: pnpm test:integration
+
       - name: Production build
         run: pnpm build
+

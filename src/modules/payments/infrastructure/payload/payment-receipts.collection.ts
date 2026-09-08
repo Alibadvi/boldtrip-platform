@@ -92,7 +92,7 @@ export const PaymentReceipts: CollectionConfig = {
     {
       name: 'consultationBooking',
       type: 'relationship',
-      relationTo: 'consultation-bookings' as 'service-requests',
+      relationTo: 'consultation-bookings',
       label: 'رزرو مشاوره',
       admin: {
         condition: (_, data) => data?.payableType === 'consultation',

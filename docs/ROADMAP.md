@@ -152,3 +152,9 @@ A realistic solo-developer range remains approximately 12–16 full-time weeks a
 One issue is one testable vertical slice. Use short branches and natural commits. Each task states goal, files, constraints, and done criteria. Update this file after meaningful progress.
 
 
+
+## Production security branch — 2026-09-08
+
+Implemented regenerated operational types, typed API cleanup, staff authenticator enrollment/recovery and replay protection, persistent auth throttling, append-only application audit records, booking hold expiry, full-refund tracking, private S3 integration, pre-storage ClamAV scanning, Resend email, health probes, monitoring configuration and backup/restore scripts. Added generated schema migrations and focused unit/PostgreSQL integration checks.
+
+Handoff: see DEPLOYMENT.md. No production accounts or credentials were available. Live email/storage/scanner/MFA enrollment, alert delivery, schema rollout and restore drills remain unverified. PostgreSQL integration checks need GitHub CI because this workspace could not install PostgreSQL. Preserve the review branch until its database checks are addressed; do not treat source completion as production readiness.

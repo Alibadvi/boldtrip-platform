@@ -1,10 +1,12 @@
+import { limitAuthAttempts, verifyStaffMfa } from './auth-security'
+import { validatePassword } from './password-policy'
 import { APIError, type CollectionConfig, type PayloadRequest } from 'payload'
 
 import { can } from '../../application/can'
 import { getStaffRoles, staffRoleLabels, staffRoles } from '../../domain/staff-role'
 
 const isSignedIn = ({ req }: { req: PayloadRequest }) =>
-  req.user?.collection === 'staff' && req.user.accountStatus === 'active'
+  can(getStaffRoles(req.user), 'admin.access')
 
 const canCreateStaff = async ({ req }: { req: PayloadRequest }) => {
   if (can(getStaffRoles(req.user), 'staff.manage')) {
@@ -51,6 +53,9 @@ export const Staff: CollectionConfig = {
     useAsTitle: 'name',
   },
   auth: {
+    useSessions: true,
+    cookies: { sameSite: 'Lax', secure: process.env.NODE_ENV === 'production' },
+    removeTokenFromResponses: true,
     lockTime: 15 * 60 * 1000,
     maxLoginAttempts: 5,
   },
@@ -63,7 +68,9 @@ export const Staff: CollectionConfig = {
     update: canUpdateStaff,
   },
   hooks: {
-    beforeValidate: [
+    beforeOperation: [limitAuthAttempts],
+    beforeLogin: [verifyStaffMfa],
+    beforeValidate: [validatePassword,
       async ({ data, operation, originalDoc, req }) => {
         if (operation === 'create') {
           const { totalDocs } = await req.payload.count({
@@ -93,6 +100,10 @@ export const Staff: CollectionConfig = {
     ],
   },
   fields: [
+    { name: 'mfaEnabled', type: 'checkbox', defaultValue: false, saveToJWT: true, admin: { readOnly: true, description: 'فعال‌سازی و بازیابی از طریق دستور staff:mfa در سرور انجام می‌شود.' }, access: { create: () => false, update: () => false } },
+    { name: 'mfaSecret', type: 'text', hidden: true, access: { read: () => false, create: () => false, update: () => false } },
+    { name: 'mfaLastStep', type: 'number', hidden: true, access: { read: () => false, create: () => false, update: () => false } },
+    { name: 'mfaRecoveryHashes', type: 'json', hidden: true, access: { read: () => false, create: () => false, update: () => false } },
     {
       name: 'name',
       type: 'text',

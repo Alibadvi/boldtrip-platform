@@ -1,4 +1,6 @@
-import { open } from 'node:fs/promises'
+import { productionEnv } from '@/shared/config/production-env'
+import { scanUpload } from './scan-upload'
+import { open, readFile } from 'node:fs/promises'
 import { extname } from 'node:path'
 import { APIError, type CollectionBeforeOperationHook } from 'payload'
 
@@ -49,5 +51,10 @@ export const validatePrivateUpload: CollectionBeforeOperationHook = async ({ ope
 
   if (!isPDF && !isPNG && !isJPEG) {
     throw new APIError('محتوای فایل با فرمت PDF، JPG یا PNG مطابقت ندارد.', 400)
+  }
+  if (productionEnv.CLAMD_HOST) {
+    const bytes = file.tempFilePath ? await readFile(file.tempFilePath) : file.data
+    if (!bytes.length || bytes.length > maxSize) throw new APIError('حجم فایل مجاز نیست.', 400)
+    await scanUpload(bytes, productionEnv.CLAMD_HOST, productionEnv.CLAMD_PORT)
   }
 }

@@ -98,6 +98,8 @@ export const ServiceRequests: CollectionConfig = {
           ) {
             throw new APIError('مبلغ پرونده پس از ارسال رسید قابل تغییر نیست.', 400)
           }
+          if (next.status === 'inProgress' && current.status !== 'inProgress' && !req.context.paymentReceiptTransition) throw new APIError('شروع کار نیازمند تأیید رسید پرداخت است.', 400)
+          if (next.status === 'completed' && !['inProgress', 'completed'].includes(current.status)) throw new APIError('پرونده ابتدا باید در حال انجام باشد.', 400)
           const status = next.status ?? current.status
           const amount = next.quotedAmount === undefined ? current.quotedAmount : next.quotedAmount
           if (
@@ -232,7 +234,7 @@ export const ServiceRequests: CollectionConfig = {
               admin: {
                 condition: (_, siblingData) => siblingData?.requestType === 'service',
               },
-              validate: (value, { siblingData }) => {
+              validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) => {
                 const data = siblingData as {
                   requestType?: string
                 }
@@ -252,7 +254,7 @@ export const ServiceRequests: CollectionConfig = {
               admin: {
                 condition: (_, siblingData) => siblingData?.requestType === 'embassyAppointment',
               },
-              validate: (value, { siblingData }) => {
+              validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) => {
                 const data = siblingData as {
                   requestType?: string
                 }

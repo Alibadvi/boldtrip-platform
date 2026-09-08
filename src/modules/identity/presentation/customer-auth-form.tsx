@@ -71,8 +71,8 @@ export function CustomerAuthForm({ mode, nextPath }: CustomerAuthFormProps) {
     event.preventDefault()
     setError(null)
 
-    if (form.password.length < 8) {
-      setError('رمز عبور باید حداقل ۸ کاراکتر داشته باشد.')
+    if (isSignUp && form.password.length < 12) {
+      setError('رمز عبور باید حداقل ۱۲ کاراکتر داشته باشد.')
       return
     }
 
@@ -184,10 +184,10 @@ export function CustomerAuthForm({ mode, nextPath }: CustomerAuthFormProps) {
           autoComplete={isSignUp ? 'new-password' : 'current-password'}
           className="min-h-12 w-full rounded-control border border-border bg-white px-4 text-left text-ink-950 outline-none transition placeholder:text-ink-500 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
           dir="ltr"
-          minLength={8}
+          minLength={isSignUp ? 12 : 1}
           name="password"
           onChange={(event) => updateField('password', event.target.value)}
-          placeholder="حداقل ۸ کاراکتر"
+          placeholder="حداقل ۱۲ کاراکتر"
           required
           type="password"
           value={form.password}
@@ -214,7 +214,7 @@ export function CustomerAuthForm({ mode, nextPath }: CustomerAuthFormProps) {
             autoComplete="new-password"
             className="min-h-12 w-full rounded-control border border-border bg-white px-4 text-left text-ink-950 outline-none transition placeholder:text-ink-500 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
             dir="ltr"
-            minLength={8}
+            minLength={isSignUp ? 12 : 1}
             name="confirmPassword"
             onChange={(event) => updateField('confirmPassword', event.target.value)}
             placeholder="رمز عبور را دوباره وارد کنید"

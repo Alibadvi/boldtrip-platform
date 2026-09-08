@@ -121,9 +121,9 @@ export function ResetPasswordForm() {
       return
     }
 
-    if (password.length < 8) {
+    if (password.length < 12) {
       setError(
-        'رمز عبور باید حداقل ۸ کاراکتر داشته باشد.',
+        'رمز عبور باید حداقل ۱۲ کاراکتر داشته باشد.',
       )
       return
     }
@@ -184,7 +184,7 @@ export function ResetPasswordForm() {
           autoComplete="new-password"
           className={fieldClass()}
           dir="ltr"
-          minLength={8}
+          minLength={12}
           onChange={(event) =>
             setPassword(event.target.value)
           }
@@ -202,7 +202,7 @@ export function ResetPasswordForm() {
           autoComplete="new-password"
           className={fieldClass()}
           dir="ltr"
-          minLength={8}
+          minLength={12}
           onChange={(event) =>
             setConfirmation(event.target.value)
           }

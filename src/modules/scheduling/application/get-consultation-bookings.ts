@@ -63,24 +63,12 @@ function toBooking(
   }
 }
 
-async function findRecords(
-  args: Record<string, unknown>,
-): Promise<{ docs: unknown[] }> {
-  const payload = await getPayload({
-    config: configPromise,
-  })
-  const find = payload.find.bind(payload) as (
-    options: Record<string, unknown>,
-  ) => Promise<{ docs: unknown[] }>
-
-  return find(args)
-}
-
 export const getAvailableConsultationSlots = cache(
   async (): Promise<ConsultationSlot[]> => {
+    const payload = await getPayload({ config: configPromise })
     const [slotResult, bookingResult] =
       await Promise.all([
-        findRecords({
+        payload.find({
           collection: 'consultation-slots',
           depth: 0,
           limit: 100,
@@ -98,16 +86,14 @@ export const getAvailableConsultationSlots = cache(
             ],
           },
         }),
-        findRecords({
+        payload.find({
           collection: 'consultation-bookings',
           depth: 0,
           limit: 500,
           overrideAccess: true,
           pagination: false,
           where: {
-            status: {
-              not_equals: 'cancelled',
-            },
+            and: [{ status: { not_in: ['cancelled', 'expired'] } }, { or: [{ status: { not_equals: 'awaitingPayment' } }, { holdExpiresAt: { exists: false } }, { holdExpiresAt: { greater_than: new Date().toISOString() } }] }],
           },
         }),
       ])
@@ -122,7 +108,7 @@ export const getAvailableConsultationSlots = cache(
       ),
     )
 
-    return (slotResult.docs as SlotRecord[])
+    return slotResult.docs
       .filter(
         (slot) =>
           slot.startsAt &&
@@ -139,7 +125,7 @@ export const getAvailableConsultationSlots = cache(
           slot.durationMinutes ?? 45,
         id: slot.id,
         priceAmount: slot.priceAmount ?? 0,
-        startsAt: slot.startsAt as string,
+        startsAt: slot.startsAt,
       }))
   },
 )
@@ -149,7 +135,8 @@ export const getCustomerConsultationBookings =
     async (
       customerId: CustomerId,
     ): Promise<ConsultationBooking[]> => {
-      const result = await findRecords({
+      const payload = await getPayload({ config: configPromise })
+      const result = await payload.find({
         collection: 'consultation-bookings',
         depth: 0,
         limit: 100,
@@ -163,9 +150,7 @@ export const getCustomerConsultationBookings =
         },
       })
 
-      return (
-        result.docs as BookingRecord[]
-      ).map(toBooking)
+      return result.docs.map(toBooking)
     },
   )
 
@@ -175,7 +160,8 @@ export const getCustomerConsultationBooking =
       customerId: CustomerId,
       bookingId: string,
     ): Promise<ConsultationBooking | null> => {
-      const result = await findRecords({
+      const payload = await getPayload({ config: configPromise })
+      const result = await payload.find({
         collection: 'consultation-bookings',
         depth: 0,
         limit: 1,
@@ -200,3 +186,4 @@ export const getCustomerConsultationBooking =
       return booking ? toBooking(booking) : null
     },
   )
+

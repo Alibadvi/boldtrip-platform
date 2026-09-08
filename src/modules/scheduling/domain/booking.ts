@@ -5,6 +5,7 @@ export const consultationBookingStatuses = [
   'paymentReview',
   'confirmed',
   'cancelled',
+  'expired',
   'completed',
 ] as const
 
@@ -19,6 +20,7 @@ export const consultationBookingStatusLabels: Record<
   paymentReview: 'در حال بررسی رسید',
   confirmed: 'تأیید شده',
   cancelled: 'لغو شده',
+  expired: 'مهلت پرداخت تمام شده',
   completed: 'انجام شده',
 }
 
@@ -30,6 +32,7 @@ export const consultationBookingStatusTones: Record<
   paymentReview: 'info',
   confirmed: 'success',
   cancelled: 'danger',
+  expired: 'neutral',
   completed: 'neutral',
 }
 
@@ -53,3 +56,4 @@ export type ConsultationBooking = {
   status: ConsultationBookingStatus
   topic: string
 }
+

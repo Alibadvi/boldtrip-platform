@@ -10,15 +10,7 @@ import type {
   ServiceSummary,
 } from '../domain/service'
 
-type ServiceRecord = Omit<
-  ServiceDetail,
-  'benefits' | 'steps' | 'priceAmount'
-> & {
-  benefits?: ServiceBenefit[]
-  steps?: ServiceStep[]
-  priceAmount?: number | null
-  sortOrder?: number
-}
+import type { Service as ServiceRecord } from '@/payload-types'
 
 const publishedOnly = {
   _status: {
@@ -34,7 +26,7 @@ function toServiceSummary(record: ServiceRecord): ServiceSummary {
     summary: record.summary,
     kind: record.kind,
     pricingMode: record.pricingMode,
-    estimatedDuration: record.estimatedDuration,
+    estimatedDuration: record.estimatedDuration ?? undefined,
     ...(typeof record.priceAmount === 'number'
       ? { priceAmount: record.priceAmount }
       : {}),
@@ -45,7 +37,7 @@ function toServiceDetail(record: ServiceRecord): ServiceDetail {
   return {
     ...toServiceSummary(record),
     description: record.description,
-    benefits: record.benefits ?? [],
+    benefits: (record.benefits ?? []).map((item) => ({ ...item, description: item.description ?? undefined })),
     steps: record.steps ?? [],
   }
 }
@@ -66,7 +58,7 @@ export const getServices = cache(async (): Promise<ServiceSummary[]> => {
     where: publishedOnly,
   })
 
-  return (result.docs as unknown as ServiceRecord[]).map(toServiceSummary)
+  return (result.docs).map(toServiceSummary)
 })
 
 export const getServicePage = cache(
@@ -98,7 +90,7 @@ export const getServicePage = cache(
       },
     })
 
-    const service = result.docs[0] as unknown as ServiceRecord | undefined
+    const service = result.docs[0]
 
     return service ? toServiceDetail(service) : null
   },

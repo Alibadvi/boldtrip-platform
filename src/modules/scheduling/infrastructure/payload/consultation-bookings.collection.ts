@@ -1,3 +1,4 @@
+import { productionEnv } from '@/shared/config/production-env'
 import { randomUUID } from 'node:crypto'
 import { APIError, type CollectionSlug } from 'payload'
 import { lockWorkflowRecord } from '@/shared/infrastructure/lock-workflow-record'
@@ -69,7 +70,7 @@ export const ConsultationBookings: CollectionConfig = {
           if (
             next.status &&
             next.status !== current.status &&
-            ['cancelled', 'completed'].includes(String(current.status))
+            ['cancelled', 'completed', 'expired'].includes(String(current.status))
           ) {
             throw new APIError('رزرو بسته‌شده قابل بازگشایی نیست؛ زمان جدید رزرو کنید.', 400)
           }
@@ -88,7 +89,11 @@ export const ConsultationBookings: CollectionConfig = {
           ) {
             throw new APIError('فقط جلسه تأییدشده را می‌توان برگزارشده ثبت کرد.', 400)
           }
+          if (next.status === 'confirmed' && current.status !== 'confirmed' && !req.context.paymentReceiptTransition) throw new APIError('تأیید رزرو فقط از طریق تأیید رسید انجام می‌شود.', 400)
+          if (next.status === 'expired' && (current.status !== 'awaitingPayment' || !current.holdExpiresAt || new Date(String(current.holdExpiresAt)).getTime() > Date.now())) throw new APIError('این رزرو قابل انقضا نیست.', 400)
+          if (next.status === 'cancelled' && !String(next.cancellationReason ?? '').trim()) throw new APIError('دلیل لغو را وارد کنید. بازپرداخت وجه جداگانه ثبت می‌شود.', 400)
           for (const field of [
+            'holdExpiresAt',
             'reference',
             'customer',
             'slot',
@@ -98,8 +103,9 @@ export const ConsultationBookings: CollectionConfig = {
             'deliveryMethod',
           ])
             next[field] = current[field]
+          if (req.context.paymentReceiptTransition && next.status === 'awaitingPayment') next.holdExpiresAt = new Date(Math.min(Date.now() + productionEnv.BOOKING_HOLD_MINUTES * 60000, new Date(String(current.startsAt)).getTime())).toISOString()
           next.reservationKey =
-            (next.status ?? current.status) === 'cancelled' ? null : current.reservationKey
+            ['cancelled', 'expired'].includes(String(next.status ?? current.status)) ? null : current.reservationKey
           return next
         }
 
@@ -111,8 +117,16 @@ export const ConsultationBookings: CollectionConfig = {
           throw new Error('انتخاب زمان مشاوره الزامی است.')
         }
 
+        await lockWorkflowRecord(req, 'consultation-slots', slotId)
+        const previous = await req.payload.find({ collection: 'consultation-bookings', depth: 0, overrideAccess: true, req, limit: 1, where: { reservationKey: { equals: String(slotId) } } })
+        const held = previous.docs[0]
+        if (held) {
+          if (held.status === 'awaitingPayment' && held.holdExpiresAt && new Date(held.holdExpiresAt).getTime() <= Date.now()) {
+            await req.payload.update({ collection: 'consultation-bookings', id: held.id, data: { status: 'expired' }, overrideAccess: true, req })
+          } else throw new APIError('این زمان قبلاً رزرو شده است. زمان دیگری انتخاب کنید.', 409)
+        }
         const slot = (await req.payload.findByID({
-          collection: 'consultation-slots' as 'service-requests',
+          collection: 'consultation-slots',
           id: slotId,
           overrideAccess: true,
           req,
@@ -134,6 +148,8 @@ export const ConsultationBookings: CollectionConfig = {
           nextData.reference = createReference()
         }
 
+        nextData.status = 'awaitingPayment'
+        nextData.holdExpiresAt = new Date(Math.min(Date.now() + productionEnv.BOOKING_HOLD_MINUTES * 60000, new Date(slot.startsAt).getTime())).toISOString()
         nextData.reference = nextData.reference || createReference()
         nextData.amount = slot.priceAmount ?? 0
         nextData.deliveryMethod = slot.deliveryMethod ?? 'video'
@@ -146,6 +162,8 @@ export const ConsultationBookings: CollectionConfig = {
     ],
   },
   fields: [
+    { name: 'holdExpiresAt', type: 'date', label: 'مهلت ارسال رسید', admin: { readOnly: true }, index: true },
+    { name: 'cancellationReason', type: 'textarea', label: 'دلیل لغو', maxLength: 1000 },
     {
       name: 'reference',
       type: 'text',
@@ -168,7 +186,7 @@ export const ConsultationBookings: CollectionConfig = {
     {
       name: 'slot',
       type: 'relationship',
-      relationTo: 'consultation-slots' as 'service-requests',
+      relationTo: 'consultation-slots',
       label: 'زمان انتخاب‌شده',
       required: true,
       index: true,

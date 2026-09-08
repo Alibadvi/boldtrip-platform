@@ -1,3 +1,5 @@
+import { limitAuthAttempts } from './auth-security'
+import { validatePassword } from './password-policy'
 import type { CollectionConfig, PayloadRequest } from 'payload'
 
 import { can } from '../../application/can'
@@ -70,18 +72,19 @@ export const Customers: CollectionConfig = {
     description: 'حساب مشتریان سایت برای رزرو و پیگیری خدمات.',
   },
   auth: {
+    useSessions: true,
+    removeTokenFromResponses: true,
     cookies: {
       sameSite: 'Lax',
       secure: process.env.NODE_ENV === 'production',
     },
     lockTime: 15 * 60 * 1000,
     maxLoginAttempts: 5,
-    minPasswordLength: 8,
     tokenExpiration: 60 * 60 * 24 * 7,
     forgotPassword: {
       generateEmailSubject: () =>
         'بازیابی رمز عبور BoldTrip',
-      generateEmailHTML: ({ token }) => {
+      generateEmailHTML: ({ token } = {}) => {
         const siteURL =
           process.env.NEXT_PUBLIC_SITE_URL ??
           'http://localhost:3000'
@@ -99,6 +102,7 @@ export const Customers: CollectionConfig = {
     read: readCustomers,
     update: updateCustomer,
   },
+  hooks: { beforeOperation: [limitAuthAttempts], beforeValidate: [validatePassword] },
   fields: [
     {
       name: 'name',

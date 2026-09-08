@@ -1,6 +1,6 @@
 import configPromise from '@payload-config'
 import { cache } from 'react'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 
 import type { CustomerId } from '@/modules/identity'
 
@@ -26,11 +26,7 @@ export const getManualPaymentSettings = cache(
       config: configPromise,
     })
 
-    const findGlobal = payload.findGlobal.bind(payload) as (
-      args: Record<string, unknown>,
-    ) => Promise<Record<string, unknown>>
-
-    const settings = await findGlobal({
+    const settings = await payload.findGlobal({
       slug: 'payment-settings',
       overrideAccess: true,
     })
@@ -75,11 +71,7 @@ export const getPaymentReceipts = cache(
       config: configPromise,
     })
 
-    const find = payload.find.bind(payload) as (
-      args: Record<string, unknown>,
-    ) => Promise<{ docs: ReceiptRecord[] }>
-
-    const relationFilter = serviceRequestId
+    const relationFilter: Where = serviceRequestId
       ? {
           serviceRequest: {
             equals: serviceRequestId,
@@ -91,7 +83,7 @@ export const getPaymentReceipts = cache(
           },
         }
 
-    const result = await find({
+    const result = await payload.find({
       collection: 'payment-receipts',
       depth: 0,
       limit: 20,
@@ -113,7 +105,7 @@ export const getPaymentReceipts = cache(
     return result.docs.map((receipt) => ({
       amount: receipt.amount,
       createdAt: receipt.createdAt,
-      filename: receipt.filename,
+      filename: receipt.filename ?? undefined,
       id: receipt.id,
       paidAt: receipt.paidAt ?? undefined,
       reviewerNote: receipt.reviewerNote ?? undefined,
@@ -121,3 +113,4 @@ export const getPaymentReceipts = cache(
     }))
   },
 )
+
