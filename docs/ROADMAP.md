@@ -49,6 +49,34 @@ workspace; the local database needs the corrected seed command.
 - No dependencies or schema changes. No tests, builds or app runs were performed; browser
   verification, accessibility review and production workflow/security gates remain outstanding.
 
+## Workflow and permission hardening — 2026-09-08
+
+- Active staff identity required by the central capability resolver; new staff no longer
+  default to administrator. First-admin bootstrap and self-lockout guards are explicit.
+- Internal case notes excluded from customer responses. Customers cannot supply a quote,
+  reviewer note, owner or authoritative review status; new destinations/services are checked
+  on the server. Request ownership and booking snapshots are immutable after creation.
+- Receipt amount/owner/state validation, duplicate-pending/approved protection, mandatory
+  rejection reasons and linked transitions sharing a PostgreSQL row lock and transaction.
+  Reviewed receipts and operational histories are retained; use status changes instead of delete.
+- Private upload size/signature/type checks; corrected files are new records. Closed cases
+  refuse uploads. Signature checking does not replace malware scanning.
+- Customer request guidance and payment states explain what to do next, suppress repeat
+  payment/upload prompts and retain receipt history. Receipt form handles network failure
+  without staying stuck or resetting a missing event target.
+- Request CMS links open the related documents/receipts; internal notes and review steps have
+  clearer labels. Payment settings cannot be activated without account details.
+- Demo seeding is blocked in production and preserves existing operational records/passwords.
+- No schema/dependency changes. Source review only: no tests, typecheck, build, app run or
+  database mutations performed. Generated Payload types remain stale for several existing
+  modules; regenerate them locally before the next compile/build review.
+
+Remaining launch gates: private object storage and malware quarantine, delivery-capable
+email/password recovery, staff MFA, audit/retention policy, booking expiry/cancellation/refund
+rules, deployment backups/restore/monitoring, real approved content/account settings, and
+runtime verification of ownership, simultaneous payment reviews and customer/admin sessions.
+The basic customer journeys exist; production readiness has not been verified.
+
 ## Phase 1 — Foundation
 
 Current work:
@@ -122,4 +150,5 @@ A realistic solo-developer range remains approximately 12–16 full-time weeks a
 ## Work discipline
 
 One issue is one testable vertical slice. Use short branches and natural commits. Each task states goal, files, constraints, and done criteria. Update this file after meaningful progress.
+
 

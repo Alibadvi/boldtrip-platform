@@ -1,11 +1,9 @@
 import path from 'node:path'
-import type { CollectionConfig, PayloadRequest } from 'payload'
+import { APIError, type CollectionConfig, type PayloadRequest } from 'payload'
+import { lockWorkflowRecord } from '@/shared/infrastructure/lock-workflow-record'
+import { validatePrivateUpload } from '@/shared/infrastructure/validate-private-upload'
 
-import {
-  can,
-  getStaffRoles,
-  isCustomerAuthUser,
-} from '@/modules/identity'
+import { can, getStaffRoles, isCustomerAuthUser } from '@/modules/identity'
 
 import {
   documentKinds,
@@ -18,9 +16,7 @@ function staffCanManageDocuments(req: PayloadRequest): boolean {
   return can(getStaffRoles(req.user), 'cases.manage')
 }
 
-const readDocuments: NonNullable<
-  CollectionConfig['access']
->['read'] = ({ req }) => {
+const readDocuments: NonNullable<CollectionConfig['access']>['read'] = ({ req }) => {
   if (staffCanManageDocuments(req)) {
     return true
   }
@@ -45,84 +41,63 @@ export const CustomerDocuments: CollectionConfig = {
   admin: {
     group: 'عملیات',
     useAsTitle: 'label',
-    defaultColumns: [
-      'label',
-      'kind',
-      'customer',
-      'serviceRequest',
-      'status',
-      'createdAt',
-    ],
-    description:
-      'مدارک خصوصی مشتریان که به یک درخواست مشخص متصل هستند.',
+    defaultColumns: ['label', 'kind', 'customer', 'serviceRequest', 'status', 'createdAt'],
+    description: 'مدارک خصوصی مشتریان که به یک درخواست مشخص متصل هستند.',
   },
   access: {
     admin: ({ req }) => staffCanManageDocuments(req),
-    create: ({ req }) =>
-      staffCanManageDocuments(req) ||
-      isCustomerAuthUser(req.user),
+    create: ({ req }) => staffCanManageDocuments(req) || isCustomerAuthUser(req.user),
     read: readDocuments,
     update: ({ req }) => staffCanManageDocuments(req),
     delete: ({ req }) => staffCanManageDocuments(req),
   },
   upload: {
-    staticDir: path.resolve(
-      process.cwd(),
-      'private-uploads/documents',
-    ),
+    staticDir: path.resolve(process.cwd(), 'private-uploads/documents'),
     filesRequiredOnCreate: true,
-    mimeTypes: [
-      'application/pdf',
-      'image/jpeg',
-      'image/png',
-    ],
+    mimeTypes: ['application/pdf', 'image/jpeg', 'image/png'],
   },
   hooks: {
+    beforeOperation: [validatePrivateUpload],
     beforeValidate: [
-      async ({ data, operation, req }) => {
-        if (operation !== 'create') {
-          return data
+      async ({ data, operation, originalDoc, req }) => {
+        const next = { ...data }
+        const relation = operation === 'create' ? next.serviceRequest : originalDoc.serviceRequest
+        const requestId = relation && typeof relation === 'object' ? relation.id : relation
+        if (!requestId) throw new APIError('انتخاب درخواست مربوط به مدرک الزامی است.', 400)
+        await lockWorkflowRecord(req, 'service-requests', requestId)
+        const request = await req.payload.findByID({
+          collection: 'service-requests',
+          id: requestId,
+          depth: 0,
+          overrideAccess: true,
+          req,
+        })
+        const owner = typeof request.customer === 'object' ? request.customer?.id : request.customer
+        if (!owner || (isCustomerAuthUser(req.user) && String(owner) !== String(req.user.id))) {
+          throw new APIError('به این درخواست دسترسی ندارید.', 403)
         }
-
-        const nextData = { ...(data ?? {}) }
-        const uploadedFile = req.file as
-          | { size?: number }
-          | undefined
-
         if (
-          uploadedFile?.size &&
-          uploadedFile.size > 10 * 1024 * 1024
+          (operation === 'create' || req.file) &&
+          ['completed', 'cancelled', 'rejected'].includes(request.status)
         ) {
-          throw new Error(
-            'حجم فایل نباید بیشتر از ۱۰ مگابایت باشد.',
-          )
+          throw new APIError('پرونده بسته شده است و مدرک جدید نمی‌پذیرد.', 400)
         }
-
+        next.customer = owner
+        next.serviceRequest = requestId
         if (isCustomerAuthUser(req.user)) {
-          nextData.customer = req.user.id
-          nextData.status = 'pending'
-
-          const relation = nextData.serviceRequest
-          const requestId =
-            relation && typeof relation === 'object'
-              ? relation.id
-              : relation
-
-          if (!requestId) {
-            throw new Error(
-              'انتخاب درخواست مربوط به مدرک الزامی است.',
-            )
-          }
-
-          await req.payload.findByID({
-            collection: 'service-requests',
-            id: requestId,
-            overrideAccess: false,
-            req,
-          })
+          next.status = 'pending'
+          next.reviewerNote = null
         }
-
-        return nextData
+        if (operation === 'update' && req.file) {
+          throw new APIError('برای حفظ سابقه، فایل اصلاح‌شده را به‌عنوان مدرک جدید ثبت کنید.', 400)
+        }
+        if (
+          (next.status ?? originalDoc?.status) === 'rejected' &&
+          !String(next.reviewerNote ?? originalDoc?.reviewerNote ?? '').trim()
+        ) {
+          throw new APIError('دلیل رد و روش اصلاح مدرک را برای مشتری بنویسید.', 400)
+        }
+        return next
       },
     ],
   },
@@ -179,8 +154,7 @@ export const CustomerDocuments: CollectionConfig = {
       label: 'توضیح کارشناس',
       maxLength: 2000,
       admin: {
-        description:
-          'در صورت رد مدرک، دلیل و روش اصلاح را برای مشتری بنویسید.',
+        description: 'در صورت رد مدرک، دلیل و روش اصلاح را برای مشتری بنویسید.',
       },
     },
   ],

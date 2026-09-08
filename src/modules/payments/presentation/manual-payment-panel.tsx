@@ -1,3 +1,4 @@
+import { isClosedStatus, isPayableStatus, isPaymentAccountReady } from '../domain/payment-policy'
 import {
   paymentReceiptStatusLabels,
   type ManualPaymentSettings,
@@ -15,103 +16,104 @@ export function ManualPaymentPanel({
   receipts,
   serviceRequestId,
   settings,
+  status,
 }: {
   amount?: number
   consultationBookingId?: number | string
   receipts: PaymentReceiptSummary[]
   serviceRequestId?: number | string
   settings: ManualPaymentSettings
+  status: string
 }) {
-  if (!amount || amount <= 0) {
-    return (
-      <div className="rounded-3xl border border-border bg-white p-6">
-        <h2 className="text-xl font-black text-brand-950">
-          پرداخت
-        </h2>
-        <p className="mt-3 leading-8 text-ink-500">
-          مبلغ این مورد هنوز توسط کارشناس اعلام نشده است.
-        </p>
-      </div>
-    )
-  }
-
-  const approved = receipts.some(
-    (receipt) => receipt.status === 'approved',
-  )
+  const closed = isClosedStatus(status)
+  const approved = receipts.some((receipt) => receipt.status === 'approved')
+  const pending =
+    status === 'paymentReview' || receipts.some((receipt) => receipt.status === 'pending')
+  const accountReady = isPaymentAccountReady(settings)
+  const canPay =
+    !closed &&
+    !approved &&
+    !pending &&
+    isPayableStatus(status) &&
+    typeof amount === 'number' &&
+    amount > 0 &&
+    accountReady
+  const message = closed
+    ? 'این مورد بسته شده است. پرداخت جدید انجام ندهید. برای پیگیری پرداخت قبلی با پشتیبانی تماس بگیرید.'
+    : approved
+      ? 'پرداخت شما تأیید شده است. نیازی به واریز یا ارسال رسید دوباره نیست.'
+      : pending
+        ? 'رسید دریافت شد و منتظر بررسی است. دوباره وجه واریز نکنید و رسید تکراری نفرستید.'
+        : !isPayableStatus(status) || !amount
+          ? 'این مورد هنوز در مرحله پرداخت نیست. پس از بررسی کارشناس، مبلغ و اقدام بعدی اعلام می‌شود.'
+          : !accountReady
+            ? 'اطلاعات حساب هنوز آماده نیست. فعلاً وجهی واریز نکنید و با پشتیبانی تماس بگیرید.'
+            : 'مبلغ زیر را به حساب اعلام‌شده واریز کنید، سپس رسید را یک‌بار بفرستید. ثبت رسید به‌معنی تأیید پرداخت نیست.'
 
   return (
     <div className="grid gap-5">
+      <section
+        className="rounded-3xl border border-brand-100 bg-brand-50 p-6"
+        aria-label="راهنمای پرداخت"
+      >
+        <h2 className="text-lg font-black text-brand-950">
+          {closed
+            ? 'پرونده بسته‌شده'
+            : approved
+              ? 'پرداخت تأییدشده'
+              : pending
+                ? 'در انتظار بررسی رسید'
+                : 'وضعیت پرداخت'}
+        </h2>
+        <p className="mt-2 leading-8 text-brand-900">{message}</p>
+      </section>
       <section className="rounded-3xl bg-brand-950 p-6 text-white">
-        <p className="text-sm text-white/65">
-          مبلغ قابل پرداخت
-        </p>
+        <p className="text-sm text-white/65">{canPay ? 'مبلغ قابل پرداخت' : 'مبلغ ثبت‌شده'}</p>
         <p className="mt-2 text-3xl font-black">
-          {formatAmount(amount)} تومان
+          {typeof amount === 'number' ? `${formatAmount(amount)} تومان` : 'هنوز اعلام نشده'}
         </p>
 
-        {settings.active ? (
+        {canPay ? (
           <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
             {settings.cardNumber ? (
               <div>
-                <dt className="text-white/60">
-                  شماره کارت
-                </dt>
-                <dd
-                  className="mt-1 font-bold tracking-wider"
-                  dir="ltr"
-                >
+                <dt className="text-white/60">شماره کارت</dt>
+                <dd className="mt-1 font-bold tracking-wider" dir="ltr">
                   {settings.cardNumber}
                 </dd>
               </div>
             ) : null}
             {settings.cardholderName ? (
               <div>
-                <dt className="text-white/60">
-                  نام صاحب کارت
-                </dt>
-                <dd className="mt-1 font-bold">
-                  {settings.cardholderName}
-                </dd>
+                <dt className="text-white/60">نام صاحب کارت</dt>
+                <dd className="mt-1 font-bold">{settings.cardholderName}</dd>
               </div>
             ) : null}
             {settings.bankName ? (
               <div>
                 <dt className="text-white/60">بانک</dt>
-                <dd className="mt-1 font-bold">
-                  {settings.bankName}
-                </dd>
+                <dd className="mt-1 font-bold">{settings.bankName}</dd>
               </div>
             ) : null}
             {settings.iban ? (
               <div>
                 <dt className="text-white/60">شماره شبا</dt>
-                <dd
-                  className="mt-1 break-all font-bold"
-                  dir="ltr"
-                >
+                <dd className="mt-1 break-all font-bold" dir="ltr">
                   {settings.iban}
                 </dd>
               </div>
             ) : null}
           </dl>
-        ) : (
-          <p className="mt-5 rounded-2xl bg-white/10 p-4 text-sm leading-7">
-            اطلاعات حساب هنوز توسط مدیریت فعال نشده است.
-          </p>
-        )}
+        ) : null}
 
-        {settings.instructions ? (
-          <p className="mt-5 text-sm leading-7 text-white/75">
-            {settings.instructions}
-          </p>
+        {canPay && settings.instructions ? (
+          <p className="mt-5 text-sm leading-7 text-white/75">{settings.instructions}</p>
         ) : null}
       </section>
 
       {receipts.length ? (
         <section className="rounded-3xl border border-border bg-white p-6">
-          <h2 className="text-lg font-black text-brand-950">
-            رسیدهای ارسال‌شده
-          </h2>
+          <h2 className="text-lg font-black text-brand-950">رسیدهای ارسال‌شده</h2>
           <div className="mt-4 grid gap-3">
             {receipts.map((receipt) => (
               <div
@@ -119,21 +121,13 @@ export function ManualPaymentPanel({
                 key={receipt.id}
               >
                 <div>
-                  <p className="font-bold text-brand-950">
-                    {formatAmount(receipt.amount)} تومان
-                  </p>
+                  <p className="font-bold text-brand-950">{formatAmount(receipt.amount)} تومان</p>
                   {receipt.reviewerNote ? (
-                    <p className="mt-1 text-sm text-ink-500">
-                      {receipt.reviewerNote}
-                    </p>
+                    <p className="mt-1 text-sm text-ink-500">{receipt.reviewerNote}</p>
                   ) : null}
                 </div>
                 <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">
-                  {
-                    paymentReceiptStatusLabels[
-                      receipt.status
-                    ]
-                  }
+                  {paymentReceiptStatusLabels[receipt.status]}
                 </span>
               </div>
             ))}
@@ -141,7 +135,7 @@ export function ManualPaymentPanel({
         </section>
       ) : null}
 
-      {!approved && settings.active ? (
+      {canPay && typeof amount === 'number' ? (
         <PaymentReceiptForm
           amount={amount}
           consultationBookingId={consultationBookingId}

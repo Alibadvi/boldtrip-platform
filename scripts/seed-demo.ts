@@ -13,12 +13,48 @@ const today = new Date()
 const reviewedAt = today.toISOString()
 
 const countries = [
-  { slug: 'canada', code: 'CA', flag: '🇨🇦', name: 'کانادا', source: 'https://www.canada.ca/en/immigration-refugees-citizenship.html' },
-  { slug: 'germany', code: 'DE', flag: '🇩🇪', name: 'آلمان', source: 'https://www.auswaertiges-amt.de/en/visa-service' },
-  { slug: 'france', code: 'FR', flag: '🇫🇷', name: 'فرانسه', source: 'https://france-visas.gouv.fr/en/' },
-  { slug: 'italy', code: 'IT', flag: '🇮🇹', name: 'ایتالیا', source: 'https://vistoperitalia.esteri.it/home/en' },
-  { slug: 'spain', code: 'ES', flag: '🇪🇸', name: 'اسپانیا', source: 'https://www.exteriores.gob.es/en/ServiciosAlCiudadano/Paginas/Visados.aspx' },
-  { slug: 'netherlands', code: 'NL', flag: '🇳🇱', name: 'هلند', source: 'https://www.netherlandsworldwide.nl/visa-the-netherlands' },
+  {
+    slug: 'canada',
+    code: 'CA',
+    flag: '🇨🇦',
+    name: 'کانادا',
+    source: 'https://www.canada.ca/en/immigration-refugees-citizenship.html',
+  },
+  {
+    slug: 'germany',
+    code: 'DE',
+    flag: '🇩🇪',
+    name: 'آلمان',
+    source: 'https://www.auswaertiges-amt.de/en/visa-service',
+  },
+  {
+    slug: 'france',
+    code: 'FR',
+    flag: '🇫🇷',
+    name: 'فرانسه',
+    source: 'https://france-visas.gouv.fr/en/',
+  },
+  {
+    slug: 'italy',
+    code: 'IT',
+    flag: '🇮🇹',
+    name: 'ایتالیا',
+    source: 'https://vistoperitalia.esteri.it/home/en',
+  },
+  {
+    slug: 'spain',
+    code: 'ES',
+    flag: '🇪🇸',
+    name: 'اسپانیا',
+    source: 'https://www.exteriores.gob.es/en/ServiciosAlCiudadano/Paginas/Visados.aspx',
+  },
+  {
+    slug: 'netherlands',
+    code: 'NL',
+    flag: '🇳🇱',
+    name: 'هلند',
+    source: 'https://www.netherlandsworldwide.nl/visa-the-netherlands',
+  },
 ] as const
 
 const visaTemplates = [
@@ -51,8 +87,10 @@ const services = [
     title: 'خدمات ویزا',
     kind: 'visa',
     pricingMode: 'quotation',
-    summary: 'بررسی اولیه شرایط، چک‌لیست اختصاصی و همراهی مرحله‌به‌مرحله برای آماده‌سازی درخواست ویزا.',
-    description: 'ابتدا مقصد و نوع ویزا را انتخاب می‌کنید. کارشناس اطلاعات اولیه را بررسی می‌کند، مدارک موردنیاز را اعلام می‌کند و ادامه مسیر در حساب کاربری قابل پیگیری است.',
+    summary:
+      'بررسی اولیه شرایط، چک‌لیست اختصاصی و همراهی مرحله‌به‌مرحله برای آماده‌سازی درخواست ویزا.',
+    description:
+      'ابتدا مقصد و نوع ویزا را انتخاب می‌کنید. کارشناس اطلاعات اولیه را بررسی می‌کند، مدارک موردنیاز را اعلام می‌کند و ادامه مسیر در حساب کاربری قابل پیگیری است.',
     estimatedDuration: 'پس از بررسی نوع پرونده اعلام می‌شود',
   },
   {
@@ -61,7 +99,8 @@ const services = [
     kind: 'embassyAppointment',
     pricingMode: 'quotation',
     summary: 'ثبت درخواست وقت سفارت، دریافت مدارک و پیگیری وضعیت از داخل حساب کاربری.',
-    description: 'کشور مقصد را انتخاب کنید و اطلاعات متقاضی را ثبت کنید. پس از بررسی ظرفیت، هزینه و مراحل بعدی توسط کارشناس اعلام می‌شود.',
+    description:
+      'کشور مقصد را انتخاب کنید و اطلاعات متقاضی را ثبت کنید. پس از بررسی ظرفیت، هزینه و مراحل بعدی توسط کارشناس اعلام می‌شود.',
     estimatedDuration: 'وابسته به ظرفیت سفارت',
   },
   {
@@ -71,7 +110,8 @@ const services = [
     pricingMode: 'fixed',
     priceAmount: 1450000,
     summary: 'کنترل چک‌لیست، کیفیت فایل‌ها و نواقص احتمالی پیش از ادامه پرونده.',
-    description: 'مدارک بارگذاری‌شده با چک‌لیست خدمت تطبیق داده می‌شوند و موارد ناقص یا نیازمند اصلاح در پنل شما مشخص خواهد شد.',
+    description:
+      'مدارک بارگذاری‌شده با چک‌لیست خدمت تطبیق داده می‌شوند و موارد ناقص یا نیازمند اصلاح در پنل شما مشخص خواهد شد.',
     estimatedDuration: '۲ تا ۳ روز کاری',
   },
   {
@@ -80,7 +120,8 @@ const services = [
     kind: 'visa',
     pricingMode: 'quotation',
     summary: 'تکمیل فرم‌های موردنیاز بر اساس اطلاعات تأییدشده متقاضی.',
-    description: 'اطلاعات فرم‌ها از شما دریافت و پیش‌نویس برای بازبینی آماده می‌شود. مسئولیت تأیید نهایی اطلاعات با متقاضی است.',
+    description:
+      'اطلاعات فرم‌ها از شما دریافت و پیش‌نویس برای بازبینی آماده می‌شود. مسئولیت تأیید نهایی اطلاعات با متقاضی است.',
     estimatedDuration: '۳ تا ۵ روز کاری',
   },
   {
@@ -90,7 +131,8 @@ const services = [
     pricingMode: 'fixed',
     priceAmount: 1200000,
     summary: 'جلسه آنلاین برای بررسی هدف سفر، شرایط فعلی و انتخاب مسیر مناسب.',
-    description: 'در یک جلسه ۴۵ دقیقه‌ای، وضعیت فعلی و پرسش‌های اصلی شما بررسی می‌شود. این جلسه تضمین دریافت ویزا یا نتیجه پرونده نیست.',
+    description:
+      'در یک جلسه ۴۵ دقیقه‌ای، وضعیت فعلی و پرسش‌های اصلی شما بررسی می‌شود. این جلسه تضمین دریافت ویزا یا نتیجه پرونده نیست.',
     estimatedDuration: '۴۵ دقیقه',
   },
 ] as const
@@ -114,22 +156,27 @@ async function upsert(
 
   const current = result.docs[0] as DemoRecord | undefined
 
+  if (current && ['customers', 'service-requests', 'consultation-bookings'].includes(collection)) {
+    // Rerunning the showcase must not reset passwords, reviews or paid bookings.
+    return current
+  }
+
   if (current) {
-    return await payload.update({
+    return (await payload.update({
       collection: collection as never,
       id: current.id,
       data: data as never,
       draft: false,
       overrideAccess: true,
-    }) as unknown as DemoRecord
+    })) as unknown as DemoRecord
   }
 
-  return await payload.create({
+  return (await payload.create({
     collection: collection as never,
     data: data as never,
     draft: false,
     overrideAccess: true,
-  }) as unknown as DemoRecord
+  })) as unknown as DemoRecord
 }
 
 function futureSlot(daysFromNow: number, hour: number): string {
@@ -140,6 +187,8 @@ function futureSlot(daysFromNow: number, hour: number): string {
 }
 
 async function seed() {
+  if (process.env.NODE_ENV === 'production')
+    throw new Error('Demo seeding is disabled in production.')
   const { default: config } = await import('../src/payload.config')
   const payload = await getPayload({ config })
   payload.logger.info('Seeding BoldTrip showcase data...')
@@ -157,23 +206,39 @@ async function seed() {
       hero: {
         kicker: 'مشاوره تخصصی BoldTrip',
         title: 'قبل از اقدام، مسیر مناسب خود را روشن کنید',
-        description: 'در یک جلسه آنلاین، هدف سفر، شرایط فعلی و گزینه‌های قابل بررسی شما مرور می‌شود تا تصمیم دقیق‌تری بگیرید.',
+        description:
+          'در یک جلسه آنلاین، هدف سفر، شرایط فعلی و گزینه‌های قابل بررسی شما مرور می‌شود تا تصمیم دقیق‌تری بگیرید.',
       },
       durationMinutes: 45,
       priceAmount: 1200000,
       deliveryMethod: 'video',
-      documentsNote: 'برای رزرو اولیه مدرکی لازم نیست. اگر کارشناس به مدرکی نیاز داشته باشد، آن را از داخل حساب کاربری و در پرونده مربوط بارگذاری می‌کنید.',
-      paymentNote: 'بعد از ثبت رزرو، اطلاعات کارت نمایشی نشان داده می‌شود. رسید را بارگذاری کنید تا وضعیت پرداخت در پنل بررسی شود.',
-      cancellationPolicy: 'برای نسخه نمایشی: جابه‌جایی جلسه تا ۲۴ ساعت پیش از زمان شروع امکان‌پذیر است. قانون نهایی باید توسط مدیریت تأیید شود.',
+      documentsNote:
+        'برای رزرو اولیه مدرکی لازم نیست. اگر کارشناس به مدرکی نیاز داشته باشد، آن را از داخل حساب کاربری و در پرونده مربوط بارگذاری می‌کنید.',
+      paymentNote:
+        'بعد از ثبت رزرو، اطلاعات کارت نمایشی نشان داده می‌شود. رسید را بارگذاری کنید تا وضعیت پرداخت در پنل بررسی شود.',
+      cancellationPolicy:
+        'برای نسخه نمایشی: جابه‌جایی جلسه تا ۲۴ ساعت پیش از زمان شروع امکان‌پذیر است. قانون نهایی باید توسط مدیریت تأیید شود.',
       benefits: [
-        { title: 'انتخاب مسیر مناسب', description: 'گزینه‌ها بر اساس هدف سفر و اطلاعات اولیه شما دسته‌بندی می‌شوند.' },
-        { title: 'کاهش خطاهای شروع پرونده', description: 'پیش از پرداخت هزینه خدمات، ابهام‌ها و مدارک پایه مرور می‌شوند.' },
-        { title: 'جمع‌بندی قابل پیگیری', description: 'موضوع جلسه و وضعیت رزرو در حساب کاربری باقی می‌ماند.' },
+        {
+          title: 'انتخاب مسیر مناسب',
+          description: 'گزینه‌ها بر اساس هدف سفر و اطلاعات اولیه شما دسته‌بندی می‌شوند.',
+        },
+        {
+          title: 'کاهش خطاهای شروع پرونده',
+          description: 'پیش از پرداخت هزینه خدمات، ابهام‌ها و مدارک پایه مرور می‌شوند.',
+        },
+        {
+          title: 'جمع‌بندی قابل پیگیری',
+          description: 'موضوع جلسه و وضعیت رزرو در حساب کاربری باقی می‌ماند.',
+        },
       ],
       steps: [
         { title: 'انتخاب زمان', description: 'یکی از زمان‌های آزاد را انتخاب کنید.' },
         { title: 'ثبت موضوع', description: 'پرسش‌ها و هدف اصلی جلسه را کوتاه بنویسید.' },
-        { title: 'ارسال رسید', description: 'اطلاعات پرداخت را ببینید و رسید نمایشی را بارگذاری کنید.' },
+        {
+          title: 'ارسال رسید',
+          description: 'اطلاعات پرداخت را ببینید و رسید نمایشی را بارگذاری کنید.',
+        },
         { title: 'تأیید جلسه', description: 'پس از بررسی رسید، وضعیت رزرو تأیید می‌شود.' },
       ],
     } as never,
@@ -188,7 +253,8 @@ async function seed() {
       cardholderName: 'حساب نمایشی BoldTrip',
       bankName: 'بانک نمونه',
       iban: 'IR000000000000000000000000',
-      instructions: 'این اطلاعات صرفاً برای نمایش به مشتری است و قابل پرداخت نیست. پیش از انتشار واقعی، اطلاعات مالی معتبر و قوانین تأیید پرداخت را جایگزین کنید.',
+      instructions:
+        'این اطلاعات صرفاً برای نمایش به مشتری است و قابل پرداخت نیست. پیش از انتشار واقعی، اطلاعات مالی معتبر و قوانین تأیید پرداخت را جایگزین کنید.',
     },
   })
 
@@ -212,15 +278,33 @@ async function seed() {
         summary: `مشاهده مراحل نمونه، ثبت اطلاعات متقاضی و پیگیری درخواست وقت سفارت ${country.name}.`,
         introduction: `پس از ثبت درخواست، تیم BoldTrip اطلاعات اولیه را بررسی می‌کند. ظرفیت، محل مراجعه و هزینه نهایی بسته به شرایط مرکز درخواست و نوع ویزا اعلام خواهد شد.`,
         requiredDocuments: [
-          { title: 'تصویر صفحه مشخصات پاسپورت', description: 'پاسپورت باید معتبر و تصویر آن خوانا باشد.' },
+          {
+            title: 'تصویر صفحه مشخصات پاسپورت',
+            description: 'پاسپورت باید معتبر و تصویر آن خوانا باشد.',
+          },
           { title: 'اطلاعات تماس متقاضی', description: 'شماره موبایل و ایمیل در دسترس وارد شود.' },
-          { title: 'اطلاعات نوع سفر', description: 'هدف سفر، بازه زمانی و نوع ویزای موردنظر مشخص شود.' },
+          {
+            title: 'اطلاعات نوع سفر',
+            description: 'هدف سفر، بازه زمانی و نوع ویزای موردنظر مشخص شود.',
+          },
         ],
         steps: [
-          { title: 'ثبت درخواست', description: 'اطلاعات اولیه و کشور مقصد را در حساب کاربری ثبت کنید.' },
-          { title: 'بارگذاری مدارک', description: 'فایل‌های درخواست‌شده را فقط در صفحه پرونده خود ارسال کنید.' },
-          { title: 'بررسی و اعلام هزینه', description: 'کارشناس ظرفیت و جزئیات درخواست را بررسی می‌کند.' },
-          { title: 'پرداخت و پیگیری', description: 'پس از اعلام مبلغ، رسید پرداخت را بارگذاری و وضعیت را پیگیری کنید.' },
+          {
+            title: 'ثبت درخواست',
+            description: 'اطلاعات اولیه و کشور مقصد را در حساب کاربری ثبت کنید.',
+          },
+          {
+            title: 'بارگذاری مدارک',
+            description: 'فایل‌های درخواست‌شده را فقط در صفحه پرونده خود ارسال کنید.',
+          },
+          {
+            title: 'بررسی و اعلام هزینه',
+            description: 'کارشناس ظرفیت و جزئیات درخواست را بررسی می‌کند.',
+          },
+          {
+            title: 'پرداخت و پیگیری',
+            description: 'پس از اعلام مبلغ، رسید پرداخت را بارگذاری و وضعیت را پیگیری کنید.',
+          },
         ],
         importantNotes: [
           { text: 'زمان خالی و نتیجه رزرو توسط سفارت یا مرکز رسمی تعیین می‌شود.' },
@@ -253,21 +337,44 @@ async function seed() {
         stayLength: visa.stayLength,
         feeNote: 'هزینه‌های دولتی، خدمات مرکز درخواست و خدمات BoldTrip جداگانه اعلام می‌شوند.',
         requirements: [
-          { kind: 'required', title: 'پاسپورت معتبر', description: 'اعتبار موردنیاز باید پیش از اقدام از منبع رسمی کنترل شود.' },
-          { kind: 'required', title: 'فرم و اطلاعات هویتی', description: 'تمام اطلاعات باید دقیق و مطابق مدارک رسمی باشد.' },
-          { kind: 'conditional', title: 'مدارک مالی و شغلی', description: 'نوع و میزان مدارک به شرایط متقاضی و مسیر درخواست بستگی دارد.' },
-          { kind: 'later', title: 'اطلاعات بیومتریک یا مراجعه حضوری', description: 'در صورت درخواست مرجع رسمی انجام می‌شود.' },
+          {
+            kind: 'required',
+            title: 'پاسپورت معتبر',
+            description: 'اعتبار موردنیاز باید پیش از اقدام از منبع رسمی کنترل شود.',
+          },
+          {
+            kind: 'required',
+            title: 'فرم و اطلاعات هویتی',
+            description: 'تمام اطلاعات باید دقیق و مطابق مدارک رسمی باشد.',
+          },
+          {
+            kind: 'conditional',
+            title: 'مدارک مالی و شغلی',
+            description: 'نوع و میزان مدارک به شرایط متقاضی و مسیر درخواست بستگی دارد.',
+          },
+          {
+            kind: 'later',
+            title: 'اطلاعات بیومتریک یا مراجعه حضوری',
+            description: 'در صورت درخواست مرجع رسمی انجام می‌شود.',
+          },
         ],
         steps: [
           { title: 'بررسی شرایط اولیه', description: 'نوع ویزا و هدف سفر را انتخاب کنید.' },
           { title: 'تکمیل اطلاعات و مدارک', description: 'چک‌لیست اختصاصی پرونده را تکمیل کنید.' },
-          { title: 'بازبینی و اقدام', description: 'پس از تأیید اطلاعات، مراحل رسمی درخواست دنبال می‌شود.' },
-          { title: 'پیگیری نتیجه', description: 'وضعیت پرونده و درخواست‌های تکمیلی را از حساب خود ببینید.' },
+          {
+            title: 'بازبینی و اقدام',
+            description: 'پس از تأیید اطلاعات، مراحل رسمی درخواست دنبال می‌شود.',
+          },
+          {
+            title: 'پیگیری نتیجه',
+            description: 'وضعیت پرونده و درخواست‌های تکمیلی را از حساب خود ببینید.',
+          },
         ],
         officialSourceLabel: `منبع رسمی ${country.name}`,
         officialSourceUrl: country.source,
         lastReviewedAt: reviewedAt,
-        disclaimer: 'این صفحه محتوای نمایشی است. شرایط و هزینه‌ها ممکن است تغییر کنند و تصمیم نهایی فقط با مرجع رسمی است.',
+        disclaimer:
+          'این صفحه محتوای نمایشی است. شرایط و هزینه‌ها ممکن است تغییر کنند و تصمیم نهایی فقط با مرجع رسمی است.',
         sortOrder: (index + 1) * 10,
       })
     }
@@ -280,24 +387,46 @@ async function seed() {
       _status: 'published',
       sortOrder: (index + 1) * 10,
       benefits: [
-        { title: 'مسیر مشخص', description: 'هر مرحله و اقدام بعدی در حساب کاربری نمایش داده می‌شود.' },
-        { title: 'بررسی توسط کارشناس', description: 'اطلاعات و مدارک ثبت‌شده پیش از ادامه مسیر کنترل می‌شوند.' },
-        { title: 'پیگیری متمرکز', description: 'درخواست، مدارک و وضعیت پرداخت در یک پرونده باقی می‌مانند.' },
+        {
+          title: 'مسیر مشخص',
+          description: 'هر مرحله و اقدام بعدی در حساب کاربری نمایش داده می‌شود.',
+        },
+        {
+          title: 'بررسی توسط کارشناس',
+          description: 'اطلاعات و مدارک ثبت‌شده پیش از ادامه مسیر کنترل می‌شوند.',
+        },
+        {
+          title: 'پیگیری متمرکز',
+          description: 'درخواست، مدارک و وضعیت پرداخت در یک پرونده باقی می‌مانند.',
+        },
       ],
       steps: [
         { title: 'ثبت درخواست', description: 'خدمت را انتخاب و اطلاعات اولیه را کامل کنید.' },
-        { title: 'ارسال مدارک', description: 'فقط مدارک درخواست‌شده را از صفحه پرونده بارگذاری کنید.' },
-        { title: 'بررسی و اعلام هزینه', description: 'کارشناس نتیجه بررسی و مبلغ قابل پرداخت را ثبت می‌کند.' },
-        { title: 'پرداخت و شروع خدمت', description: 'رسید را ارسال کنید؛ پس از تأیید، انجام خدمت آغاز می‌شود.' },
+        {
+          title: 'ارسال مدارک',
+          description: 'فقط مدارک درخواست‌شده را از صفحه پرونده بارگذاری کنید.',
+        },
+        {
+          title: 'بررسی و اعلام هزینه',
+          description: 'کارشناس نتیجه بررسی و مبلغ قابل پرداخت را ثبت می‌کند.',
+        },
+        {
+          title: 'پرداخت و شروع خدمت',
+          description: 'رسید را ارسال کنید؛ پس از تأیید، انجام خدمت آغاز می‌شود.',
+        },
       ],
     })
     serviceRecords.set(service.slug, record)
   }
 
-  payload.logger.info('Published 6 country/embassy guides, 18 visa pages and 5 services. Demo embassy requests are enabled.')
+  payload.logger.info(
+    'Published 6 country/embassy guides, 18 visa pages and 5 services. Demo embassy requests are enabled.',
+  )
 
   if (process.argv.includes('--content-only')) {
-    payload.logger.info('Demo content complete. Restart the app and open /embassy-appointments/canada.')
+    payload.logger.info(
+      'Demo content complete. Restart the app and open /embassy-appointments/canada.',
+    )
     await payload.destroy()
     return
   }
@@ -351,13 +480,15 @@ async function seed() {
   const slots: DemoRecord[] = []
   for (const [index, day] of [2, 3, 5, 7, 9, 10].entries()) {
     const startsAt = futureSlot(day, index % 2 === 0 ? 10 : 14)
-    slots.push(await upsert(payload, 'consultation-slots', 'startsAt', startsAt, {
-      startsAt,
-      durationMinutes: 45,
-      deliveryMethod: 'video',
-      priceAmount: 1200000,
-      active: true,
-    }))
+    slots.push(
+      await upsert(payload, 'consultation-slots', 'startsAt', startsAt, {
+        startsAt,
+        durationMinutes: 45,
+        deliveryMethod: 'video',
+        priceAmount: 1200000,
+        active: true,
+      }),
+    )
   }
 
   const booking = await upsert(payload, 'consultation-bookings', 'reference', 'BC-DEMO-001', {
@@ -371,7 +502,7 @@ async function seed() {
     amount: 1200000,
     topic: 'بررسی مسیر تحصیلی کانادا',
     customerNote: 'رزرو نمونه برای نمایش وضعیت پرداخت و پیگیری جلسه.',
-    status: 'confirmed',
+    status: 'awaitingPayment',
   })
 
   const pixel = Buffer.from(
@@ -426,7 +557,9 @@ async function seed() {
   })
 
   payload.logger.info('Demo seed complete.')
-  payload.logger.info('Customer: customer.demo@boldtrip.local / DemoCustomer123!')
+  payload.logger.info(
+    'Demo customer: customer.demo@boldtrip.local. Existing passwords and operational records were preserved.',
+  )
   await payload.destroy()
 }
 

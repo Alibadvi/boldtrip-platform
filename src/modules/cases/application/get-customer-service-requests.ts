@@ -43,7 +43,6 @@ type ServiceRequestRecord = {
   reference: string
   requestType: ServiceRequestType
   service?: RelatedService | null
-  staffNote?: null | string
   status: ServiceRequestStatus
   submittedAt?: null | string
 }
@@ -58,20 +57,12 @@ function relationId(
   return typeof value === 'object' ? value.id : value
 }
 
-function toSummary(
-  record: ServiceRequestRecord,
-): ServiceRequestSummary {
+function toSummary(record: ServiceRequestRecord): ServiceRequestSummary {
   const serviceTitle =
-    record.service &&
-    typeof record.service === 'object'
-      ? record.service.title
-      : undefined
+    record.service && typeof record.service === 'object' ? record.service.title : undefined
 
   const countryName =
-    record.country &&
-    typeof record.country === 'object'
-      ? record.country.name
-      : undefined
+    record.country && typeof record.country === 'object' ? record.country.name : undefined
 
   return {
     countryName,
@@ -86,38 +77,27 @@ function toSummary(
   }
 }
 
-function toDetail(
-  record: ServiceRequestRecord,
-): ServiceRequestDetail {
+function toDetail(record: ServiceRequestRecord): ServiceRequestDetail {
   return {
     ...toSummary(record),
 
     applicant: {
-      applicantsCount:
-        record.applicant?.applicantsCount ?? 1,
+      applicantsCount: record.applicant?.applicantsCount ?? 1,
       email: record.applicant?.email ?? '',
       fullName: record.applicant?.fullName ?? '',
       mobile: record.applicant?.mobile ?? '',
       nationality: record.applicant?.nationality ?? '',
-      passportNumber:
-        record.applicant?.passportNumber ?? undefined,
+      passportNumber: record.applicant?.passportNumber ?? undefined,
     },
 
-    customerMessage:
-      record.customerMessage ?? undefined,
+    customerMessage: record.customerMessage ?? undefined,
 
-    quotedAmount:
-      record.quotedAmount ?? undefined,
-
-    staffNote:
-      record.staffNote ?? undefined,
+    quotedAmount: record.quotedAmount ?? undefined,
   }
 }
 
 export const getCustomerServiceRequests = cache(
-  async (
-    customerId: CustomerId,
-  ): Promise<ServiceRequestSummary[]> => {
+  async (customerId: CustomerId): Promise<ServiceRequestSummary[]> => {
     const payload = await getPayload({
       config: configPromise,
     })
@@ -136,17 +116,12 @@ export const getCustomerServiceRequests = cache(
       },
     })
 
-    return (
-      result.docs as unknown as ServiceRequestRecord[]
-    ).map(toSummary)
+    return (result.docs as unknown as ServiceRequestRecord[]).map(toSummary)
   },
 )
 
 export const getCustomerServiceRequest = cache(
-  async (
-    customerId: CustomerId,
-    requestId: string,
-  ): Promise<ServiceRequestDetail | null> => {
+  async (customerId: CustomerId, requestId: string): Promise<ServiceRequestDetail | null> => {
     if (!requestId) {
       return null
     }
@@ -177,9 +152,7 @@ export const getCustomerServiceRequest = cache(
       },
     })
 
-    const request = result.docs[0] as
-      | unknown as ServiceRequestRecord
-      | undefined
+    const request = result.docs[0] as unknown as ServiceRequestRecord | undefined
 
     return request ? toDetail(request) : null
   },

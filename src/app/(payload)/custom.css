@@ -2,6 +2,7 @@
 @import 'tailwindcss/theme.css' layer(boldtrip-theme) prefix(bt);
 @import 'tailwindcss/utilities.css' layer(boldtrip-utilities) prefix(bt) source(none);
 @source './_components';
+@source '../../modules/cases/presentation/request-admin-links.tsx';
 
 /* No Preflight: Payload owns the form, modal and editor resets. */
 @font-face {
@@ -29,7 +30,12 @@
     @apply bt:text-[14px] bt:leading-relaxed;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-body);
     @apply bt:font-bold bt:leading-relaxed bt:text-[#24133f];
   }
@@ -56,7 +62,8 @@
     @apply bt:bg-violet-50 bt:text-[#5b34c4];
   }
 
-  .app-header, .doc-controls {
+  .app-header,
+  .doc-controls {
     @apply bt:bg-white;
   }
 
@@ -86,7 +93,9 @@
     @apply bt:border-violet-600 bt:ring-2 bt:ring-violet-100;
   }
 
-  input[type='email'], input[type='url'], input[type='password'] {
+  input[type='email'],
+  input[type='url'],
+  input[type='password'] {
     direction: ltr;
     @apply bt:text-left;
   }
