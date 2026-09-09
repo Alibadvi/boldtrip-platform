@@ -36,7 +36,7 @@ const footerGroups = [
 
 export function SiteFooter() {
   return (
-    <footer className="relative overflow-hidden bg-[#170b28] pt-16 pb-8 text-white before:absolute before:-bottom-64 before:-left-32 before:size-128 before:rounded-full before:border before:border-white/5">
+    <footer className="relative overflow-hidden bg-[#170b28] pt-32 pb-8 text-white before:absolute before:inset-x-0 before:top-0 before:h-24 before:bg-linear-to-b before:from-brand-50 before:to-[#170b28] after:absolute after:-bottom-64 after:-left-32 after:size-128 after:rounded-full after:border after:border-white/5">
       <Container className="relative z-10">
         <div className="mb-12 flex flex-col justify-between gap-6 border-b border-white/15 pb-10 sm:flex-row sm:items-end">
           <p className="max-w-xl text-2xl font-extrabold leading-relaxed text-white sm:text-3xl">

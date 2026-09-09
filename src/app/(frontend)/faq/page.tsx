@@ -32,24 +32,26 @@ export default async function FaqPage() {
   }))
 
   return (
-    <>
-      <section className="relative overflow-hidden bg-brand-50 py-20 text-center sm:py-24">
+    <div className="bg-brand-50">
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#140728_0%,#28104f_48%,#4b249e_100%)] py-20 text-center text-white sm:py-24">
         <div className="pointer-events-none absolute -top-24 right-1/4 size-80 rounded-full bg-accent-300/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-28 left-1/4 size-80 rounded-full bg-brand-300/20 blur-3xl" />
         <Container size="reading" className="relative z-10">
-          <span className="mb-3 inline-block text-sm font-extrabold text-brand-600">
+          <span className="mb-3 inline-block text-sm font-extrabold text-accent-300">
             راهنمای بلدتریپ
           </span>
-          <h1 className="m-0 text-[clamp(2.6rem,7vw,4.5rem)] leading-tight font-black tracking-[-0.055em] text-brand-950">
+          <h1 className="m-0 text-[clamp(2.6rem,7vw,4.5rem)] leading-tight font-black tracking-[-0.055em] text-white">
             سوالات متداول
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-ink-700 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-white/68 sm:text-lg">
             پاسخ کوتاه و مستقیم درباره خدمات، مدارک، مشاوره و نحوه پرداخت.
           </p>
         </Container>
       </section>
 
-      <section className="bg-white py-20 sm:py-24 lg:py-28">
+      <div aria-hidden="true" className="h-24 bg-linear-to-b from-[#4b249e] to-[#faf8ff]" />
+
+      <section className="-mt-px bg-linear-to-b from-[#faf8ff] via-white to-brand-50 py-20 sm:py-24 lg:py-28">
         <Container size="reading">
           {faqGroups.map((group, index) => (
             <section
@@ -84,6 +86,6 @@ export default async function FaqPage() {
           </div>
         </Container>
       </section>
-    </>
+    </div>
   )
 }

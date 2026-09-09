@@ -116,27 +116,41 @@ function SectionHeading({
   id,
   kicker,
   title,
+  tone = 'light',
 }: {
   description?: string
   id?: string
   kicker: string
   title: string
+  tone?: 'light' | 'dark'
 }) {
+  const dark = tone === 'dark'
+
   return (
     <div className="max-w-3xl">
-      <span className="mb-4 inline-flex items-center gap-3 text-sm font-black text-brand-600 before:h-px before:w-9 before:bg-current">
+      <span
+        className={`mb-4 inline-flex items-center gap-3 text-sm font-black before:h-px before:w-9 before:bg-current ${
+          dark ? 'text-accent-300' : 'text-brand-600'
+        }`}
+      >
         {kicker}
       </span>
 
       <h2
         id={id}
-        className="text-3xl font-black leading-[1.45] text-brand-950 sm:text-4xl lg:text-[2.65rem]"
+        className={`text-3xl font-black leading-[1.45] sm:text-4xl lg:text-[2.65rem] ${
+          dark ? 'text-white' : 'text-brand-950'
+        }`}
       >
         {title}
       </h2>
 
       {description && (
-        <p className="mt-4 max-w-2xl text-base leading-8 text-ink-700">
+        <p
+          className={`mt-4 max-w-2xl text-base leading-8 ${
+            dark ? 'text-white/68' : 'text-ink-700'
+          }`}
+        >
           {description}
         </p>
       )}
@@ -155,24 +169,29 @@ export default async function HomePage() {
     .slice(0, 5)
 
   return (
-    <>
+    <div className="bg-brand-50">
       <HomeHero content={content.hero} />
       <section
         aria-labelledby="destinations-title"
-        className="relative overflow-hidden py-18 sm:py-24"
+        className="relative -mt-px overflow-hidden bg-[radial-gradient(circle_at_12%_18%,rgb(117_73_229/20%),transparent_34%),linear-gradient(180deg,#1b0b35_0%,#28104f_100%)] py-18 text-white sm:py-24"
       >
-        <Container>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-36 -left-28 size-96 rounded-full bg-accent-300/8 blur-3xl"
+        />
+        <Container className="relative z-10">
           <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <SectionHeading
               id="destinations-title"
               kicker={content.destinationIntro.kicker}
               title={content.destinationIntro.title}
               description={content.destinationIntro.description}
+              tone="dark"
             />
 
             <Link
               href="/countries"
-              className="group inline-flex shrink-0 items-center gap-3 text-sm font-black text-brand-700"
+              className="group inline-flex shrink-0 items-center gap-3 text-sm font-black text-accent-300"
             >
               مشاهده همه مقصدها
 
@@ -255,15 +274,16 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="services-title"
-        className="overflow-hidden bg-brand-50/55 py-18 sm:py-24"
+        className="relative -mt-px overflow-hidden bg-[radial-gradient(circle_at_88%_28%,rgb(99_54_209/22%),transparent_30%),linear-gradient(180deg,#28104f_0%,#17082f_100%)] py-18 text-white sm:py-24"
       >
-        <Container>
+        <Container className="relative z-10">
           <Reveal>
             <SectionHeading
               id="services-title"
               kicker={content.serviceIntro.kicker}
               title={content.serviceIntro.title}
               description={content.serviceIntro.description}
+              tone="dark"
             />
           </Reveal>
 
@@ -412,9 +432,14 @@ export default async function HomePage() {
         </section>
       </FlightScrollSection>
 
+      <div
+        aria-hidden="true"
+        className="-mt-px h-32 bg-linear-to-b from-[#4b249e] via-brand-100 to-canvas sm:h-40"
+      />
+
       <section
         aria-labelledby="trust-title"
-        className="py-18 sm:py-28"
+        className="relative -mt-px overflow-hidden bg-canvas py-18 sm:py-28"
       >
         <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal>
@@ -529,7 +554,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="py-8">
+      <section className="-mt-px bg-linear-to-b from-canvas to-brand-50 py-10">
         <Container>
           <Reveal className="relative isolate overflow-hidden rounded-[2.2rem] bg-[linear-gradient(120deg,#fff2c9_0%,#ffe39b_45%,#f7f4ff_100%)] p-7 shadow-[0_18px_55px_rgb(36_19_63/9%)] sm:p-12">
             <span
@@ -566,7 +591,7 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="faq-title"
-        className="py-18 sm:py-28"
+        className="-mt-px bg-linear-to-b from-brand-50 via-[#f5f1ff] to-[#eee8ff] py-18 sm:py-28"
       >
         <Container className="grid items-start gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-18">
           <Reveal className="lg:sticky lg:top-28">
@@ -604,6 +629,6 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </section>
-    </>
+    </div>
   )
 }

@@ -53,11 +53,12 @@ export default async function VisaPage({ params }: VisaPageProps) {
   }).format(new Date(visa.lastReviewedAt))
 
   return (
-    <>
-      <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-white py-14 sm:py-18">
+    <div className="bg-brand-50">
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#140728_0%,#28104f_48%,#4b249e_100%)] py-14 text-white sm:py-18">
         <div className="pointer-events-none absolute -top-24 left-0 size-80 rounded-full bg-brand-300/20 blur-3xl" />
         <Container className="relative z-10">
           <CatalogBreadcrumbs
+            inverse
             items={[
               { href: '/', label: 'خانه' },
               { href: '/countries', label: 'کشورها' },
@@ -67,22 +68,24 @@ export default async function VisaPage({ params }: VisaPageProps) {
           />
           <div className="mt-10 max-w-3xl">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-extrabold text-brand-700">
+              <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-extrabold text-accent-300">
                 {visaCategoryLabels[visa.category]}
               </span>
-              <span className="text-sm text-ink-500">
+              <span className="text-sm text-white/55">
                 آخرین بازبینی: <time dateTime={visa.lastReviewedAt}>{reviewedDate}</time>
               </span>
             </div>
-            <h1 className="mt-4 text-[clamp(2.6rem,7vw,4.6rem)] leading-tight font-black tracking-[-0.055em] text-brand-950">
+            <h1 className="mt-4 text-[clamp(2.6rem,7vw,4.6rem)] leading-tight font-black tracking-[-0.055em] text-white">
               {visa.title} {country.name}
             </h1>
-            <p className="mt-5 text-base leading-9 text-ink-700 sm:text-lg">{visa.summary}</p>
+            <p className="mt-5 text-base leading-9 text-white/68 sm:text-lg">{visa.summary}</p>
           </div>
         </Container>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <div aria-hidden="true" className="h-24 bg-linear-to-b from-[#4b249e] to-[#faf8ff]" />
+
+      <section className="-mt-px bg-linear-to-b from-[#faf8ff] via-white to-brand-50 py-16 sm:py-20">
         <Container>
           {facts.length ? (
             <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -198,6 +201,6 @@ export default async function VisaPage({ params }: VisaPageProps) {
           ) : null}
         </Container>
       </section>
-    </>
+    </div>
   )
 }

@@ -34,11 +34,12 @@ export default async function CountryPage({ params }: CountryPageProps) {
   const { country, visas } = data
 
   return (
-    <>
-      <section className="relative overflow-hidden bg-brand-50 py-14 sm:py-18">
+    <div className="bg-brand-50">
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#140728_0%,#28104f_48%,#4b249e_100%)] py-14 text-white sm:py-18">
         <div className="pointer-events-none absolute -top-24 left-0 size-72 rounded-full bg-accent-300/20 blur-3xl" />
         <Container className="relative z-10">
           <CatalogBreadcrumbs
+            inverse
             items={[
               { href: '/', label: 'خانه' },
               { href: '/countries', label: 'کشورها' },
@@ -47,11 +48,11 @@ export default async function CountryPage({ params }: CountryPageProps) {
           />
           <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1fr_auto]">
             <div>
-              <span className="text-sm font-extrabold text-brand-600">اطلاعات مقصد</span>
-              <h1 className="mt-3 text-[clamp(2.7rem,7vw,4.8rem)] leading-tight font-black tracking-[-0.06em] text-brand-950">
+              <span className="text-sm font-extrabold text-accent-300">اطلاعات مقصد</span>
+              <h1 className="mt-3 text-[clamp(2.7rem,7vw,4.8rem)] leading-tight font-black tracking-[-0.06em] text-white">
                 ویزاهای {country.name}
               </h1>
-              <p className="mt-5 max-w-2xl text-base leading-9 text-ink-700 sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-9 text-white/68 sm:text-lg">
                 {country.summary}
               </p>
             </div>
@@ -62,7 +63,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
               >
                 {country.flag}
               </span>
-              <span className="text-sm font-black text-ink-500" dir="ltr">
+              <span className="text-sm font-black text-white/55" dir="ltr">
                 {country.code}
               </span>
             </div>
@@ -70,7 +71,9 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section className="bg-white py-18 sm:py-22">
+      <div aria-hidden="true" className="h-24 bg-linear-to-b from-[#4b249e] to-[#faf8ff]" />
+
+      <section className="-mt-px bg-linear-to-b from-[#faf8ff] to-white py-18 sm:py-22">
         <Container className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
           <div>
             <span className="text-sm font-extrabold text-brand-600">پیش از انتخاب ویزا</span>
@@ -84,7 +87,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section className="bg-canvas py-20 sm:py-24" aria-labelledby="visa-list-title">
+      <section className="-mt-px bg-linear-to-b from-white via-brand-50 to-[#f1ecff] py-20 sm:py-24" aria-labelledby="visa-list-title">
         <Container>
           <div className="mb-9">
             <span className="text-sm font-extrabold text-brand-600">مسیرهای منتشرشده</span>
@@ -136,7 +139,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section className="bg-white py-16">
+      <section className="-mt-px bg-linear-to-b from-[#f1ecff] to-brand-50 py-16">
         <Container>
           <div className="flex flex-col items-start justify-between gap-7 rounded-panel bg-brand-950 p-8 text-white sm:p-10 lg:flex-row lg:items-center">
             <div>
@@ -154,6 +157,6 @@ export default async function CountryPage({ params }: CountryPageProps) {
           </div>
         </Container>
       </section>
-    </>
+    </div>
   )
 }

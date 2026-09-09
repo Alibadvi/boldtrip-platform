@@ -285,7 +285,7 @@ export function HomeHero({ content }: HomeHeroProps) {
       {/* Transition into the next section */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-canvas to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-[#1b0b35] to-transparent"
       />
     </section>
   )
