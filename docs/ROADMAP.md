@@ -162,8 +162,9 @@ Handoff: see DEPLOYMENT.md. No production accounts or credentials were available
 ## Cinematic homepage flight — 2026-09-09
 
 - Reworked the existing flight section while preserving the latest homepage, navbar and CMS content.
-- The opening plane/clouds are visible in server-rendered markup. Scroll motion begins during entrance; the plane approaches the camera before banking away through four cloud layers and side mist.
-- Responsive, pre-compressed local WebP assets bypass first-request image optimization: approximately 65 KB combined on mobile or 181 KB on larger screens. Repeated clouds reuse one download.
+- The opening plane/clouds are visible in server-rendered markup. Scroll motion begins during entrance. A new front-facing aircraft approaches along the camera's center line, breaks through dense clouds and passes overhead. Cloud banks gather from both sides, then separate according to the aircraft's perspective magnification; wispy mist follows with a delayed wake.
+- Built-in image generation supplies three transparent photographic assets: a pearl/plum head-on jet, dawn-lit cumulus billows, and turbulent mist. Responsive WebP files are stored in `public/assets/flight/{aircraft-front,cloud-bank,mist-veil}-{640,1280}.webp`. Combined downloads are approximately 162 KB on mobile or 524 KB on larger screens; repeated layers reuse those three downloads and bypass first-request image optimization.
+- Warm backlighting, a light streak, steel-blue shadows, vignette, subtle static grain and letterboxing replace the previous globe/HUD presentation. The scene fades into the existing process section.
 - Native sticky scrolling uses stable viewport dimensions, event-driven animation frames and direct transform/opacity updates. No animation library, WebGL renderer, continuous render loop or database change.
 - The following process section remains available to keyboard users and enters over the closing scene without opacity/inert gating. Reduced-motion, short-landscape and no-script layouts use a static scene.
 - Source/asset review only. The preview browser blocked local/offline pages; device rendering and physical-device performance remain unverified. No full app build, typecheck or test suite was run, as requested.

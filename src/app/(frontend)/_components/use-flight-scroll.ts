@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 
 type FlightLayer =
-  | 'horizon'
+  | 'light'
   | 'cloudBackLeft'
   | 'cloudBackRight'
   | 'plane'
@@ -12,15 +12,17 @@ type FlightLayer =
   | 'cloudFrontRight'
   | 'mistLeft'
   | 'mistRight'
+  | 'mistCenter'
+  | 'wake'
   | 'intro'
   | 'outro'
   | 'fade'
   | 'progress'
+  | 'hud'
 
 const clamp = (value: number) => Math.max(0, Math.min(1, value))
 const range = (value: number, start: number, end: number) => clamp((value - start) / (end - start))
 const ease = (value: number) => value * value * (3 - 2 * value)
-const mix = (start: number, end: number, progress: number) => start + (end - start) * progress
 
 /** Native scrolling, one scheduled frame per event, and no React renders during the flight. */
 export function useFlightScroll() {
@@ -86,96 +88,121 @@ export function useFlightScroll() {
       if (Math.abs(previous - p) < 0.0002) return
       previous = p
 
-      const gather = ease(range(p, 0, 0.39))
-      const clear = ease(range(p, 0.35, 0.78))
-      const flight = ease(range(p, 0.28, 0.9))
-      const approach = ease(range(p, 0.22, 0.64))
-      const depart = ease(range(p, 0.62, 0.93))
-      const bank = Math.sin(flight * Math.PI)
-      const leave = ease(range(p, 0.8, 1))
-      const cloudOpacity = (0.55 + gather * 0.4) * (1 - leave)
+      const gather = ease(range(p, 0, 0.3))
+      const approach = ease(range(p, 0.22, 0.79))
+      const flyOver = ease(range(p, 0.75, 0.91))
+      const leave = ease(range(p, 0.82, 0.98))
+      const planeZ = -900 + 1550 * approach
+      const planeScale = 0.45 + 0.6 * approach
 
-      move(
-        'horizon',
-        width * -0.035 * flight,
-        height * 0.12 * flight,
-        0,
-        1 + flight * 0.12,
-        1 - leave,
-      )
+      // Perspective magnification drives the wake: the growing aircraft pushes each layer
+      // outward, with a lag for wispy vapor. The nose stays on the camera's center line.
+      const projectedScale = (planeScale * 1000) / (1000 - planeZ)
+      const wakeBack = ease(range(projectedScale, 0.3, 1.2))
+      const wakeNear = ease(range(projectedScale, 0.42, 1.6))
+      const wakeMist = ease(range(projectedScale, 0.6, 2))
+      const cloudOpacity = 1 - leave
+
+      move('light', 0, 0, 0, 1, (0.55 + gather * 0.35) * cloudOpacity)
       move(
         'flare',
-        width * mix(-0.05, 0.24, flight),
-        height * (-0.02 - flight * 0.08),
         0,
-        1 + bank * 0.4,
-        bank * (1 - leave) * 0.6,
+        height * (0.1 - flyOver * 0.8),
+        0,
+        0.7 + approach,
+        (0.15 + gather * 0.55) * (1 - ease(range(p, 0.76, 0.86))),
       )
+
       move(
         'cloudBackLeft',
-        width * (-0.48 + gather * 0.31 - clear * 0.24),
-        height * (0.02 - clear * 0.07),
-        -80,
-        1.1,
+        -width * (0.46 - gather * 0.23 + wakeBack * 0.85),
+        height * (0.04 - wakeBack * 0.12),
+        -220 + wakeBack * 60,
+        1.3 + gather * 0.05 + wakeBack * 0.08,
         cloudOpacity,
       )
       move(
         'cloudBackRight',
-        width * (0.48 - gather * 0.31 + clear * 0.24),
-        height * (-0.06 + clear * 0.02),
-        -110,
-        1.15,
+        width * (0.46 - gather * 0.23 + wakeBack * 0.85),
+        height * (-0.02 + wakeBack * 0.05),
+        -220 + wakeBack * 60,
+        1.3 + gather * 0.05 + wakeBack * 0.08,
         cloudOpacity,
       )
+
+      // Approach along Z, then pass above the viewer; no sideways flight path.
       move(
         'plane',
-        width * (-0.19 + approach * 0.27 + depart * 1.3),
-        height * ((height < 700 ? 0.23 : 0.14) - approach * 0.2 - depart * 0.28),
-        -260 + approach * 360 + depart * 240,
-        0.7 + approach * 0.23 + depart * 0.1,
-        1 - ease(range(p, 0.87, 0.98)),
-        `rotateX(${mix(12, -6, flight).toFixed(2)}deg) rotateY(${mix(-22, 18, flight).toFixed(2)}deg) rotateZ(${(-12 + bank * 17).toFixed(2)}deg)`,
+        0,
+        height * (0.09 - flyOver * 0.96),
+        planeZ,
+        planeScale,
+        1 - ease(range(p, 0.83, 0.91)),
+        `rotateX(${-flyOver * 4}deg)`,
       )
+
       move(
         'cloudFrontLeft',
-        width * (-0.57 + gather * 0.32 - clear * 0.5),
-        height * (0.08 + clear * 0.13),
-        75,
-        1.1 + clear * 0.22,
+        -width * (0.6 - gather * 0.4 + wakeNear * 1.15),
+        height * (0.09 - wakeNear * 0.18),
+        35 + wakeNear * 95,
+        1.05 + gather * 0.08 + wakeNear * 0.15,
         cloudOpacity,
+        `rotateZ(${-wakeNear * 12}deg)`,
       )
       move(
         'cloudFrontRight',
-        width * (0.57 - gather * 0.32 + clear * 0.5),
-        height * (0.13 + clear * 0.04),
-        95,
-        1.1 + clear * 0.22,
+        width * (0.6 - gather * 0.4 + wakeNear * 1.15),
+        height * (0.13 + wakeNear * 0.08),
+        35 + wakeNear * 95,
+        1.05 + gather * 0.08 + wakeNear * 0.15,
         cloudOpacity,
+        `rotateZ(${wakeNear * 12}deg)`,
+      )
+
+      move(
+        'mistCenter',
+        0,
+        height * (0.08 - wakeMist * 0.1),
+        60 + wakeMist * 80,
+        1 + wakeMist * 0.35,
+        (0.25 + gather * 0.25) * (1 - wakeMist) * cloudOpacity,
       )
       move(
         'mistLeft',
-        width * (-0.7 + gather * 0.58 - clear * 0.35),
-        0,
-        0,
-        1,
-        (0.15 + gather * 0.5) * (1 - leave),
+        -width * (0.42 - gather * 0.24 + wakeMist * 1.15),
+        height * (0.1 + wakeMist * 0.15),
+        80 + wakeMist * 50,
+        1 + wakeMist * 0.25,
+        (0.5 + gather * 0.2) * (1 - wakeMist * 0.55) * cloudOpacity,
+        `rotateZ(${-wakeMist * 20}deg)`,
       )
       move(
         'mistRight',
-        width * (0.7 - gather * 0.58 + clear * 0.35),
-        0,
-        0,
-        1,
-        (0.15 + gather * 0.5) * (1 - leave),
+        width * (0.42 - gather * 0.24 + wakeMist * 1.15),
+        height * (0.15 - wakeMist * 0.14),
+        80 + wakeMist * 50,
+        1 + wakeMist * 0.25,
+        (0.5 + gather * 0.2) * (1 - wakeMist * 0.55) * cloudOpacity,
+        `rotateZ(${wakeMist * 20}deg)`,
       )
-      move('intro', 0, -height * 0.07 * flight, 0, 1, 1 - ease(range(p, 0.32, 0.48)))
-      move('outro', 0, 24 * (1 - ease(range(p, 0.73, 0.87))), 0, 1, ease(range(p, 0.73, 0.87)))
+
+      const trail = ease(range(p, 0.72, 0.86))
+      move(
+        'wake',
+        0,
+        height * (0.35 - trail * 0.4),
+        140,
+        1 + trail * 0.15,
+        trail * (1 - ease(range(p, 0.87, 0.98))) * 0.55,
+      )
+      move('intro', 0, -height * 0.05 * approach, 0, 1, 1 - ease(range(p, 0.23, 0.39)))
+      move('outro', 0, 24 * (1 - ease(range(p, 0.85, 0.95))), 0, 1, ease(range(p, 0.85, 0.95)))
       move('fade', 0, 0, 0, 1, leave)
+      move('hud', 0, 0, 0, 1, 1 - ease(range(p, 0.65, 0.8)))
 
       const progress = layers.current.progress
       if (progress) progress.style.transform = `scaleX(${p.toFixed(4)})`
-      const phase = p < 0.44 ? 'clouds' : p < 0.8 ? 'flight' : 'arrival'
-      if (section.dataset.phase !== phase) section.dataset.phase = phase
     }
 
     const schedule = () => {
@@ -195,7 +222,6 @@ export function useFlightScroll() {
         node.style.cssText = style
       })
       section.dataset.active = 'false'
-      section.dataset.phase = 'clouds'
     }
     const changeMode = () => {
       reset()
