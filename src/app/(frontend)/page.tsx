@@ -549,7 +549,7 @@ export default async function HomePage() {
       <FlightScrollSection>
         <section
           aria-labelledby="process-title"
-          className="relative isolate overflow-hidden bg-[linear-gradient(140deg,#17082f_0%,#2d1158_50%,#4b249e_100%)] py-20 text-white sm:py-28"
+          className="relative isolate overflow-hidden bg-[linear-gradient(140deg,#17082f_0%,#2d1158_50%,#4b249e_100%)] py-20 text-white before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-24 before:bg-linear-to-b before:from-[#17082f] before:to-transparent sm:py-28"
         >
           <div
             aria-hidden="true"

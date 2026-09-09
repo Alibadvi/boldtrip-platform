@@ -158,3 +158,12 @@ One issue is one testable vertical slice. Use short branches and natural commits
 Implemented regenerated operational types, typed API cleanup, staff authenticator enrollment/recovery and replay protection, persistent auth throttling, append-only application audit records, booking hold expiry, full-refund tracking, private S3 integration, pre-storage ClamAV scanning, Resend email, health probes, monitoring configuration and backup/restore scripts. Added generated schema migrations and focused unit/PostgreSQL integration checks.
 
 Handoff: see DEPLOYMENT.md. No production accounts or credentials were available. Live email/storage/scanner/MFA enrollment, alert delivery, schema rollout and restore drills remain unverified. PostgreSQL integration checks need GitHub CI because this workspace could not install PostgreSQL. Preserve the review branch until its database checks are addressed; do not treat source completion as production readiness.
+
+## Cinematic homepage flight — 2026-09-09
+
+- Reworked the existing flight section while preserving the latest homepage, navbar and CMS content.
+- The opening plane/clouds are visible in server-rendered markup. Scroll motion begins during entrance; the plane approaches the camera before banking away through four cloud layers and side mist.
+- Responsive, pre-compressed local WebP assets bypass first-request image optimization: approximately 65 KB combined on mobile or 181 KB on larger screens. Repeated clouds reuse one download.
+- Native sticky scrolling uses stable viewport dimensions, event-driven animation frames and direct transform/opacity updates. No animation library, WebGL renderer, continuous render loop or database change.
+- The following process section remains available to keyboard users and enters over the closing scene without opacity/inert gating. Reduced-motion, short-landscape and no-script layouts use a static scene.
+- Source/asset review only. The preview browser blocked local/offline pages; device rendering and physical-device performance remain unverified. No full app build, typecheck or test suite was run, as requested.
