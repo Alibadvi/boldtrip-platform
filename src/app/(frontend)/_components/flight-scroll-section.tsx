@@ -1,640 +1,280 @@
 'use client'
 
-import Image from 'next/image'
-import {
-  useEffect,
-  useRef,
-  type CSSProperties,
-  type ReactNode,
-} from 'react'
+/* eslint-disable @next/next/no-img-element -- Pre-compressed responsive assets bypass cold image optimization. */
+import type { ReactNode } from 'react'
 
-type FlightScrollSectionProps = {
-  children: ReactNode
-  id?: string
-  nextBackground?: string
-}
+import { useFlightScroll } from './use-flight-scroll'
 
-function clamp(value: number) {
-  return Math.max(0, Math.min(1, value))
-}
-
-function easeBetween(value: number, start: number, end: number) {
-  const t = clamp((value - start) / (end - start))
-
-  return t * t * (3 - 2 * t)
-}
-
-function Cloud({
-  className,
-  style,
+/** Both images ship with the site. Repeated clouds reuse the same browser download. */
+function FlightArtwork({
+  kind,
   mirrored = false,
 }: {
-  className: string
-  style?: CSSProperties
+  kind: 'plane' | 'cloud'
   mirrored?: boolean
 }) {
   return (
-    <div className={`absolute ${className}`} style={style}>
-      <Image
-        src="/assets/flight-cloud.png"
+    <picture>
+      <source media="(min-width: 768px)" srcSet={`/assets/flight/${kind}-1280.webp`} />
+      <img
+        src={`/assets/flight/${kind}-640.webp`}
         alt=""
-        width={1536}
-        height={1024}
-        sizes="(max-width: 767px) 100vw, 900px"
+        width={640}
+        height={427}
         loading="eager"
+        fetchPriority="low"
+        decoding="async"
         draggable={false}
-        className={`block h-auto w-full select-none ${
-          mirrored ? '-scale-x-100' : ''
-        }`}
+        className={`block h-auto w-full select-none ${mirrored ? '-scale-x-100' : ''}`}
       />
-    </div>
+    </picture>
   )
 }
+
+const moving = 'group-data-[active=true]/flight:will-change-transform'
+const cloud = `pointer-events-none absolute top-[30%] w-[94%] max-w-[1500px] sm:w-[76%] ${moving}`
 
 export function FlightScrollSection({
   children,
   id = 'boldtrip-flight',
   nextBackground = '#17082f',
-}: FlightScrollSectionProps) {
-  const hostRef = useRef<HTMLDivElement>(null)
-  const runwayRef = useRef<HTMLElement>(null)
-  const stageRef = useRef<HTMLDivElement>(null)
-  const nextRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const host = hostRef.current
-    const runway = runwayRef.current
-    const stage = stageRef.current
-    const next = nextRef.current
-
-    if (!host || !runway || !stage || !next) return
-
-    const motionQuery = window.matchMedia(
-      '(prefers-reduced-motion: no-preference) and (min-height: 540px)',
-    )
-
-    const previousValues = new Map<string, string>()
-
-    let enabled = false
-    let nearby = true
-    let frame = 0
-    let lastProgress = -1
-
-    let width = 1
-    let height = 1
-    let scrollDistance = 1
-
-    const apply = (values: Record<string, number | string>) => {
-      for (const [key, rawValue] of Object.entries(values)) {
-        const value = String(rawValue)
-
-        if (previousValues.get(key) === value) continue
-
-        host.style.setProperty(key, value)
-        previousValues.set(key, value)
-      }
-    }
-
-    const draw = () => {
-      frame = 0
-
-      if (!enabled) return
-
-      const progress = clamp(
-        -runway.getBoundingClientRect().top / scrollDistance,
-      )
-
-      if (Math.abs(progress - lastProgress) < 0.0001) return
-
-      lastProgress = progress
-
-      // Beat 1: clouds and mist enter from both sides.
-      const gather = easeBetween(progress, 0.025, 0.27)
-
-      // Beat 2: the plane travels through the cloud corridor.
-      const flight = easeBetween(progress, 0.27, 0.79)
-      const flightArc = Math.sin(flight * Math.PI)
-
-      // Foreground clouds separate as the plane approaches.
-      const open = easeBetween(progress, 0.43, 0.76)
-
-      // Beat 3: a final veil of mist bridges into the next section.
-      const washIn = easeBetween(progress, 0.69, 0.84)
-      const washOut = easeBetween(progress, 0.85, 1)
-
-      const reveal = easeBetween(progress, 0.78, 1)
-      const sceneExit = easeBetween(progress, 0.83, 1)
-
-      const planeOpacity =
-        easeBetween(progress, 0.255, 0.35) *
-        (1 - easeBetween(progress, 0.745, 0.83))
-
-      const planeX = width * (-0.95 + flight * 2.05)
-      const planeY =
-        height * (0.25 - flight * 0.56 - flightArc * 0.06)
-
-      const planeScale =
-        0.38 +
-        flightArc * 0.91 +
-        easeBetween(flight, 0.55, 1) * 0.15
-
-      const mistOpacity =
-        gather *
-        (1 - easeBetween(progress, 0.44, 0.73)) *
-        0.7
-
-      const letterbox =
-        easeBetween(progress, 0, 0.13) *
-        (1 - easeBetween(progress, 0.78, 0.98))
-
-      apply({
-        '--flight-progress': progress.toFixed(4),
-        '--scene-opacity': (1 - sceneExit).toFixed(4),
-        '--next-opacity': reveal.toFixed(4),
-
-        '--intro-opacity': (
-          1 - easeBetween(progress, 0.18, 0.35)
-        ).toFixed(4),
-        '--intro-y': `${
-          -easeBetween(progress, 0.12, 0.35) * 28
-        }px`,
-
-        '--closing-opacity': (
-          easeBetween(progress, 0.64, 0.73) *
-          (1 - easeBetween(progress, 0.8, 0.92))
-        ).toFixed(4),
-
-        '--sky-light': (
-          0.1 + easeBetween(progress, 0.4, 0.79) * 0.75
-        ).toFixed(4),
-
-        '--bars-scale': letterbox.toFixed(4),
-
-        '--plane-x': `${planeX.toFixed(2)}px`,
-        '--plane-y': `${planeY.toFixed(2)}px`,
-        '--plane-opacity': planeOpacity.toFixed(4),
-        '--plane-scale': planeScale.toFixed(4),
-        '--plane-bank': `${(-12 + flightArc * 25).toFixed(2)}deg`,
-        '--plane-turn': `${(-18 + flight * 36).toFixed(2)}deg`,
-
-        '--back-left-x': `${
-          width * (-0.32 + gather * 0.29 - flight * 0.12)
-        }px`,
-        '--back-right-x': `${
-          width * (0.32 - gather * 0.29 + flight * 0.12)
-        }px`,
-        '--back-y': `${-flight * height * 0.08}px`,
-
-        '--front-left-x': `${
-          width * (-0.72 + gather * 0.76 - open * 0.82)
-        }px`,
-        '--front-right-x': `${
-          width * (0.72 - gather * 0.76 + open * 0.82)
-        }px`,
-        '--front-y': `${open * height * 0.09}px`,
-        '--front-scale': (0.86 + gather * 0.24 + open * 0.2)
-          .toFixed(4),
-
-        '--mist-left-x': `${-72 + gather * 75 - open * 65}%`,
-        '--mist-right-x': `${72 - gather * 75 + open * 65}%`,
-        '--mist-opacity': mistOpacity.toFixed(4),
-
-        '--wash-opacity': (
-          washIn *
-          (1 - washOut) *
-          0.9
-        ).toFixed(4),
-        '--wash-y': `${(1 - washIn) * 32}%`,
-
-        '--flare-opacity': (
-          flightArc *
-          planeOpacity *
-          0.5
-        ).toFixed(4),
-      })
-
-      // Invisible next-section controls must not receive keyboard focus.
-      next.inert = progress < 0.78
-    }
-
-    const measure = () => {
-      if (!enabled) return
-
-      width = stage.clientWidth
-      height = stage.clientHeight
-      scrollDistance = Math.max(1, runway.offsetHeight - height)
-      lastProgress = -1
-
-      draw()
-    }
-
-    const schedule = () => {
-      if (!enabled || !nearby || frame || document.hidden) return
-
-      frame = window.requestAnimationFrame(draw)
-    }
-
-    const syncMotion = () => {
-      window.cancelAnimationFrame(frame)
-      frame = 0
-      enabled = motionQuery.matches
-
-      if (enabled) {
-        host.dataset.motion = 'on'
-        measure()
-      } else {
-        delete host.dataset.motion
-
-        for (const key of previousValues.keys()) {
-          host.style.removeProperty(key)
-        }
-
-        previousValues.clear()
-        lastProgress = -1
-        next.inert = false
-      }
-    }
-
-    const observer =
-      'IntersectionObserver' in window
-        ? new IntersectionObserver(
-            ([entry]) => {
-              nearby = Boolean(entry?.isIntersecting)
-
-              window.cancelAnimationFrame(frame)
-              frame = 0
-
-              /*
-               * Also settle the final state after large scroll jumps
-               * or anchor navigation past the scene.
-               */
-              draw()
-            },
-            { rootMargin: '200px 0px' },
-          )
-        : null
-
-    const resizeObserver =
-      'ResizeObserver' in window
-        ? new ResizeObserver(measure)
-        : null
-
-    const onVisibilityChange = () => {
-      if (!document.hidden) measure()
-    }
-
-    syncMotion()
-
-    observer?.observe(runway)
-    resizeObserver?.observe(runway)
-    resizeObserver?.observe(stage)
-
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', measure, { passive: true })
-    document.addEventListener('visibilitychange', onVisibilityChange)
-    motionQuery.addEventListener('change', syncMotion)
-
-    return () => {
-      window.cancelAnimationFrame(frame)
-
-      observer?.disconnect()
-      resizeObserver?.disconnect()
-
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', measure)
-      document.removeEventListener(
-        'visibilitychange',
-        onVisibilityChange,
-      )
-      motionQuery.removeEventListener('change', syncMotion)
-
-      delete host.dataset.motion
-      next.inert = false
-
-      for (const key of previousValues.keys()) {
-        host.style.removeProperty(key)
-      }
-    }
-  }, [])
+}: {
+  children: ReactNode
+  id?: string
+  nextBackground?: string
+}) {
+  const { root, stage, bind } = useFlightScroll()
+  const nextSectionId = `${id}-next`
 
   return (
-    <div
-      ref={hostRef}
-      className="group/film relative isolate"
-      style={{ backgroundColor: nextBackground }}
-    >
+    <div style={{ backgroundColor: nextBackground }}>
       <section
-        ref={runwayRef}
+        ref={root}
         id={id}
-        aria-labelledby={`${id}-heading`}
-        className="relative z-0 group-data-[motion=on]/film:h-[280svh] md:group-data-[motion=on]/film:h-[320svh]"
+        aria-labelledby={`${id}-title`}
+        data-phase="clouds"
+        className="group/flight relative isolate h-[240svh] text-white [--plane-start-y:14svh] [overflow-anchor:none] motion-reduce:h-auto [@media(max-height:540px)]:h-auto [@media(max-height:700px)]:[--plane-start-y:23svh] [@media(scripting:none)]:h-auto"
       >
         <div
-          ref={stageRef}
-          className="relative h-[100svh] min-h-[36rem] overflow-hidden text-white group-data-[motion=on]/film:sticky group-data-[motion=on]/film:top-0 group-data-[motion=on]/film:min-h-0"
+          ref={stage}
+          className="sticky top-0 isolate h-svh min-h-[540px] overflow-hidden [perspective:1000px] [@media(max-height:540px)]:relative [@media(max-height:540px)]:h-[600px]"
         >
           <div
-            className="absolute inset-0"
-            style={{ opacity: 'var(--scene-opacity, 1)' }}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_64%_38%,#9364c9_0%,#533379_26%,#211434_58%,#160c26_100%)]"
+          />
+
+          <div
+            ref={bind('horizon')}
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 ${moving}`}
           >
-            {/* Night-to-dawn sky. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_62%_45%,#66508a_0%,#302244_40%,#110c20_85%)]"
-            />
-
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_76%_38%,#ffe4bb_0%,#a998c6_27%,#5b477d_53%,#1c102e_88%)]"
-              style={{ opacity: 'var(--sky-light, 0.4)' }}
-            />
-
-            {/* Static atmospheric lighting: no animated blur filters. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -top-[20%] left-[48%] h-[125%] w-[20%] -rotate-[27deg] bg-[linear-gradient(90deg,transparent,rgba(255,232,195,0.1),transparent)]"
-            />
-
-            {/* Opening text leaves the frame before the fly-through. */}
-            <div
-              className="pointer-events-none absolute inset-x-6 top-[26%] z-40 text-center"
-              style={{
-                opacity: 'var(--intro-opacity, 1)',
-                transform:
-                  'translate3d(0, var(--intro-y, 0px), 0)',
-              }}
-            >
-              <p className="mb-4 text-[10px] font-semibold tracking-[0.35em] text-[#ead9b9] sm:text-xs">
-                BOLDTRIP — YOUR NEXT CHAPTER
-              </p>
-
-              <h2
-                id={`${id}-heading`}
-                className="text-[clamp(2.2rem,6vw,5.6rem)] font-black leading-[1.35] text-white"
-              >
-                از میان ابرها،
-                <span className="block text-[#ffe3a2]">
-                  به سمت یک شروع تازه.
-                </span>
-              </h2>
-
-              <p className="mx-auto mt-5 max-w-md text-sm leading-8 text-white/80 sm:text-base">
-                گاهی برای دیدن مسیر بعدی، باید کمی جلوتر رفت.
-              </p>
-            </div>
-
-            {/* The flight world has three depth layers. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 select-none [perspective:1100px]"
-            >
-              {/* Far clouds: slow entrance, small displacement. */}
-              <Cloud
-                className="-left-[30%] top-[24%] z-10 w-[120%] opacity-65 md:-left-[20%] md:top-[16%] md:w-[85%]"
-                style={{
-                  transform:
-                    'translate3d(var(--back-left-x, -6vw), var(--back-y, 0px), 0)',
-                }}
-              />
-
-              <Cloud
-                mirrored
-                className="-right-[30%] top-[38%] z-10 w-[120%] opacity-65 md:-right-[20%] md:top-[29%] md:w-[85%]"
-                style={{
-                  transform:
-                    'translate3d(var(--back-right-x, 6vw), var(--back-y, 0px), 0)',
-                }}
-              />
-
-              {/* A restrained anamorphic light streak. */}
-              <div
-                className="absolute top-[51%] left-[8%] z-10 h-px w-[84%] bg-linear-to-r from-transparent via-[#fff0cb] to-transparent"
-                style={{
-                  opacity: 'var(--flare-opacity, 0)',
-                }}
-              />
-
-              {/* Plane: behind the near clouds, in front of far clouds. */}
-              <div
-                className="absolute top-[61%] left-1/2 z-20 w-[min(90vw,78svh,760px)]"
-                style={{
-                  opacity: 'var(--plane-opacity, 1)',
-                  transform: [
-                    'translate3d(',
-                    'calc(-50% + var(--plane-x, 0px)),',
-                    'calc(-50% + var(--plane-y, 0px)),',
-                    '0)',
-                    'scale(var(--plane-scale, 0.88))',
-                    'rotateX(8deg)',
-                    'rotateY(var(--plane-turn, -5deg))',
-                    'rotateZ(var(--plane-bank, -6deg))',
-                  ].join(' '),
-                  transformOrigin: '50% 50%',
-                }}
-              >
-                <Image
-                  src="/assets/flight-plane.png"
-                  alt=""
-                  width={1536}
-                  height={1024}
-                  sizes="(max-width: 767px) 90vw, 760px"
-                  loading="eager"
-                  draggable={false}
-                  className="block h-auto w-full"
-                />
-              </div>
-
-              {/* Near clouds close across the center, then separate. */}
-              <Cloud
-                className="-left-[42%] top-[29%] z-30 w-[145%] md:-left-[35%] md:top-[13%] md:w-[110%]"
-                style={{
-                  transform:
-                    'translate3d(var(--front-left-x, -26vw), var(--front-y, 0px), 0) scale(var(--front-scale, 1))',
-                }}
-              />
-
-              <Cloud
-                mirrored
-                className="-right-[42%] top-[39%] z-30 w-[145%] md:-right-[35%] md:top-[27%] md:w-[110%]"
-                style={{
-                  transform:
-                    'translate3d(var(--front-right-x, 26vw), var(--front-y, 0px), 0) scale(var(--front-scale, 1))',
-                }}
-              />
-
-              {/* Left-to-center mist curtain. */}
-              <div
-                className="absolute -left-[25%] top-[15%] z-30 h-[82%] w-[105%] bg-[radial-gradient(ellipse_at_65%_50%,rgba(244,236,252,0.95)_0%,rgba(221,211,237,0.55)_32%,transparent_70%)]"
-                style={{
-                  opacity: 'var(--mist-opacity, 0)',
-                  transform:
-                    'translate3d(var(--mist-left-x, -70%), 0, 0)',
-                }}
-              />
-
-              {/* Right-to-center mist curtain. */}
-              <div
-                className="absolute -right-[25%] top-[24%] z-30 h-[82%] w-[105%] bg-[radial-gradient(ellipse_at_35%_50%,rgba(244,236,252,0.95)_0%,rgba(221,211,237,0.55)_32%,transparent_70%)]"
-                style={{
-                  opacity: 'var(--mist-opacity, 0)',
-                  transform:
-                    'translate3d(var(--mist-right-x, 70%), 0, 0)',
-                }}
-              />
-
-              {/* Final mist wash softens the handoff to real content. */}
-              <div
-                className="absolute -inset-x-[15%] -bottom-[15%] z-30 h-[115%] bg-[radial-gradient(ellipse_at_50%_65%,rgba(237,225,247,0.95)_0%,rgba(192,169,216,0.65)_35%,transparent_72%)]"
-                style={{
-                  opacity: 'var(--wash-opacity, 0)',
-                  transform:
-                    'translate3d(0, var(--wash-y, 30%), 0)',
-                }}
-              />
-            </div>
-
-            {/* Cinematic vignette. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-35 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(9,5,19,0.28)_73%,rgba(9,5,19,0.8)_100%)]"
-            />
-
-            {/* Static fine texture, avoiding a live noise filter. */}
+            <div className="absolute top-[37%] left-[57%] size-[clamp(70px,12vw,170px)] rounded-full bg-[radial-gradient(circle_at_35%_30%,#fff6d9,#eacbff_40%,#9970d5_65%,#4b2c6d)] shadow-[0_0_90px_25px_#efcbfc30]" />
+            <div className="absolute top-[65%] left-1/2 h-[80vw] min-h-[650px] w-[190%] -translate-x-1/2 rounded-[50%] border-t border-purple-200/50 bg-[radial-gradient(ellipse_at_50%_0%,#ae89cf_0%,#644878_12%,#291b3e_42%,#170d26_70%)] shadow-[0_-12px_70px_#c1a2fa30] sm:w-[130%]" />
             <svg
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-35 h-full w-full opacity-[0.075]"
+              viewBox="0 0 1440 900"
+              fill="none"
+              className="absolute inset-0 h-full w-full"
+              preserveAspectRatio="xMidYMid slice"
             >
-              <defs>
-                <pattern
-                  id={`${id}-texture`}
-                  x="0"
-                  y="0"
-                  width="53"
-                  height="47"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <circle cx="3" cy="8" r="0.6" fill="white" />
-                  <circle cx="18" cy="31" r="0.5" fill="white" />
-                  <circle cx="39" cy="13" r="0.7" fill="white" />
-                  <circle cx="47" cy="41" r="0.5" fill="white" />
-                  <circle cx="27" cy="44" r="0.6" fill="black" />
-                  <circle cx="13" cy="19" r="0.5" fill="black" />
-                </pattern>
-              </defs>
-
-              <rect
-                width="100%"
-                height="100%"
-                fill={`url(#${id}-texture)`}
+              <path
+                d="M-120 760C300 840 150 320 730 450S1040 750 1600 260"
+                stroke="#f1d5ff"
+                strokeOpacity=".24"
+                strokeDasharray="3 12"
               />
+              <path
+                d="M-100 660C350 1010 1060 1030 1610 620"
+                stroke="#eedfff"
+                strokeOpacity=".12"
+              />
+              <g fill="#f4e4ff" opacity=".55">
+                <circle cx="190" cy="290" r="2" />
+                <circle cx="360" cy="370" r="1.5" />
+                <circle cx="1000" cy="195" r="2" />
+                <circle cx="1250" cy="420" r="1.5" />
+                <circle cx="880" cy="280" r="1" />
+                <circle cx="640" cy="130" r="1.5" />
+              </g>
             </svg>
+          </div>
 
-            {/* Closing caption appears once the plane clears the scene. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 [perspective:1000px]"
+          >
             <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-6 top-[32%] z-40 text-center"
-              style={{
-                opacity: 'var(--closing-opacity, 0)',
-              }}
+              ref={bind('cloudBackLeft')}
+              className={`${cloud} left-0`}
+              style={{ transform: 'translate3d(-48vw,2vh,-80px) scale(1.1)', opacity: 0.55 }}
             >
-              <p className="text-xs font-bold text-[#ffe3a2] sm:text-sm">
-                آن‌سوی تردید، یک مسیر تازه هست.
-              </p>
-
-              <p className="mt-4 text-[clamp(2.3rem,6vw,5rem)] font-black leading-[1.4] text-white">
-                حالا، نوبتِ توست.
-              </p>
+              <FlightArtwork kind="cloud" />
             </div>
-
-            {/* Scroll-controlled cinema bars. */}
             <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 z-40 h-[6svh] max-h-16 origin-top bg-[#08060e]"
-              style={{
-                transform: 'scaleY(var(--bars-scale, 0.5))',
-              }}
-            />
-
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-[6svh] max-h-16 origin-bottom bg-[#08060e]"
-              style={{
-                transform: 'scaleY(var(--bars-scale, 0.5))',
-              }}
-            />
-
-            {/* Controls remain above the visual effects. */}
-            <div className="absolute inset-x-6 top-28 z-50 flex items-center justify-between gap-4 sm:inset-x-10 sm:top-32">
-              <span
-                dir="ltr"
-                className="text-[10px] font-medium tracking-[0.24em] text-white/75 sm:text-xs"
-              >
-                A BOLDTRIP JOURNEY
-              </span>
-
-              <a
-                href={`#${id}-next`}
-                onClick={(event) => {
-                  const next = nextRef.current
-
-                  if (!next) return
-
-                  event.preventDefault()
-
-                  next.inert = false
-                  hostRef.current?.style.setProperty(
-                    '--next-opacity',
-                    '1',
-                  )
-
-                  next.scrollIntoView({
-                    behavior: 'instant',
-                    block: 'start',
-                  })
-
-                  next.focus({ preventScroll: true })
-                }}
-                className="rounded-full border border-white/25 bg-black/20 px-4 py-2 text-xs text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-              >
-                ادامه صفحه ↓
-              </a>
+              ref={bind('cloudBackRight')}
+              className={`${cloud} right-0`}
+              style={{ transform: 'translate3d(48vw,-6vh,-110px) scale(1.15)', opacity: 0.55 }}
+            >
+              <FlightArtwork kind="cloud" mirrored />
             </div>
-
-            <div className="pointer-events-none absolute inset-x-6 bottom-[10%] z-40 text-center">
-              <p className="hidden text-xs font-medium text-white/80 group-data-[motion=on]/film:block">
-                آرام اسکرول کن؛ پرواز با حرکت تو پیش می‌رود.
-              </p>
-
+            <div
+              ref={bind('flare')}
+              className={`absolute top-[47%] left-[15%] h-8 w-[70%] bg-[radial-gradient(ellipse_at_center,#fff4df_0%,#e7c8ff80_18%,transparent_70%)] ${moving}`}
+              style={{ opacity: 0 }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center [perspective:1000px]">
               <div
-                aria-hidden="true"
-                className="mx-auto mt-4 hidden h-px w-28 overflow-hidden bg-white/20 group-data-[motion=on]/film:block"
+                ref={bind('plane')}
+                className={`w-[94vw] max-w-[1100px] shrink-0 motion-reduce:[--plane-start-y:clamp(180px,30svh,300px)] [@media(max-height:540px)]:w-[min(72vw,600px)] [@media(max-height:540px)]:[--plane-start-y:180px] ${moving}`}
+                style={{
+                  transform:
+                    'translate3d(-19vw,var(--plane-start-y),-260px) rotateX(12deg) rotateY(-22deg) rotateZ(-12deg) scale(.7)',
+                }}
               >
-                <div
-                  className="h-full origin-right bg-[#ffe3a2]"
-                  style={{
-                    transform:
-                      'scaleX(var(--flight-progress, 0))',
-                  }}
-                />
+                <FlightArtwork kind="plane" />
               </div>
+            </div>
+            <div
+              ref={bind('cloudFrontLeft')}
+              className={`${cloud} left-0`}
+              style={{ transform: 'translate3d(-57vw,8vh,75px) scale(1.1)', opacity: 0.55 }}
+            >
+              <FlightArtwork kind="cloud" />
+            </div>
+            <div
+              ref={bind('cloudFrontRight')}
+              className={`${cloud} right-0`}
+              style={{ transform: 'translate3d(57vw,13vh,95px) scale(1.1)', opacity: 0.55 }}
+            >
+              <FlightArtwork kind="cloud" mirrored />
+            </div>
+            <div
+              ref={bind('mistLeft')}
+              className={`absolute inset-y-0 left-0 w-[85%] bg-[radial-gradient(ellipse_at_0%_55%,#f0e4ff_0%,#cdb9e980_36%,transparent_70%)] ${moving}`}
+              style={{ transform: 'translate3d(-70vw,0,0)', opacity: 0.15 }}
+            />
+            <div
+              ref={bind('mistRight')}
+              className={`absolute inset-y-0 right-0 w-[85%] bg-[radial-gradient(ellipse_at_100%_55%,#eee4ff_0%,#c1c7f080_36%,transparent_70%)] ${moving}`}
+              style={{ transform: 'translate3d(70vw,0,0)', opacity: 0.15 }}
+            />
+          </div>
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#130a2360_100%)]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%]"
+            style={{ background: `linear-gradient(to top, ${nextBackground}, transparent)` }}
+          />
+          <div
+            ref={bind('fade')}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{ opacity: 0, backgroundColor: nextBackground }}
+          />
+
+          <div
+            ref={bind('intro')}
+            className="pointer-events-none absolute inset-x-5 top-[max(164px,20svh)] z-10 text-center"
+          >
+            <p
+              className="mb-3 text-[10px] font-medium tracking-[.32em] text-white/65 sm:text-xs"
+              dir="ltr"
+            >
+              BOLDTRIP · BEYOND THE HORIZON
+            </p>
+            <h2
+              id={`${id}-title`}
+              className="mx-auto max-w-4xl text-[clamp(2rem,min(5vw,7svh),4.75rem)] font-black leading-[1.55] tracking-normal text-white"
+            >
+              از خیالِ سفر،
+              <br />
+              <span className="text-accent-200">تا آن سوی ابرها.</span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-white/75 sm:mt-4 sm:max-w-lg sm:text-base [@media(max-height:700px)]:hidden">
+              مقصد بعدی شما، شروع یک داستان تازه است.
+            </p>
+          </div>
+
+          <div
+            ref={bind('outro')}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-6 top-[26%] z-10 text-center"
+            style={{ opacity: 0, transform: 'translateY(24px)' }}
+          >
+            <span className="mb-5 block text-xs tracking-wide text-accent-200">
+              افق تازه، قدم‌های روشن
+            </span>
+            <p className="text-[clamp(1.75rem,min(4.5vw,5.5svh),4rem)] font-black leading-[1.6]">
+              سفر شما،
+              <br />
+              از اینجا شروع می‌شود.
+            </p>
+          </div>
+
+          <div className="absolute inset-x-5 top-[max(112px,13svh)] z-20 flex items-center justify-between gap-4 text-[10px] sm:inset-x-10 sm:text-xs">
+            <span className="inline-flex items-center gap-2 text-white/65">
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-200" /> یک لحظه
+              برای سفر
+            </span>
+            <a
+              href={`#${nextSectionId}`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-[#201035]/70 px-4 text-white/85 transition-colors hover:bg-white/15 focus-visible:outline-accent-200"
+            >
+              ادامه به مراحل سفر <span aria-hidden="true">↓</span>
+            </a>
+          </div>
+
+          <div
+            className="absolute inset-x-5 bottom-10 z-20 mx-auto max-w-2xl motion-reduce:hidden sm:bottom-14 [@media(max-height:540px)]:hidden [@media(scripting:none)]:hidden"
+            aria-hidden="true"
+          >
+            <div className="mb-4 flex items-center justify-between gap-3 text-[10px] text-white/55 sm:text-xs">
+              <span>برای پرواز، اسکرول کنید</span>
+              <span dir="ltr" className="tracking-[.16em]">
+                SCROLL TO EXPLORE ↓
+              </span>
+            </div>
+            <div className="mb-4 h-px overflow-hidden bg-white/15">
+              <div
+                ref={bind('progress')}
+                className="h-full origin-right bg-accent-200"
+                style={{ transform: 'scaleX(0)' }}
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:gap-3 sm:text-xs">
+              <span className="rounded-xl border border-white/10 px-1 py-2 text-white/50 transition-colors group-data-[phase=clouds]/flight:border-accent-200/40 group-data-[phase=clouds]/flight:bg-accent-200/10 group-data-[phase=clouds]/flight:text-accent-100">
+                ۰۱ · ورود به ابرها
+              </span>
+              <span className="rounded-xl border border-white/10 px-1 py-2 text-white/50 transition-colors group-data-[phase=flight]/flight:border-accent-200/40 group-data-[phase=flight]/flight:bg-accent-200/10 group-data-[phase=flight]/flight:text-accent-100">
+                ۰۲ · پرواز به افق
+              </span>
+              <span className="rounded-xl border border-white/10 px-1 py-2 text-white/50 transition-colors group-data-[phase=arrival]/flight:border-accent-200/40 group-data-[phase=arrival]/flight:bg-accent-200/10 group-data-[phase=arrival]/flight:text-accent-100">
+                ۰۳ · شروع مسیر شما
+              </span>
             </div>
           </div>
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 z-30 h-4 sm:h-6"
+            style={{ backgroundColor: nextBackground }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-4 sm:h-6"
+            style={{ backgroundColor: nextBackground }}
+          />
         </div>
       </section>
-
-      {/*
-       * The next real section overlaps the last screen of the runway.
-       * Normal page scrolling brings it upward as the scene dissolves.
-       */}
+      {/* Real content enters naturally; it is never hidden or made inert by animation state. */}
       <div
-        ref={nextRef}
-        id={`${id}-next`}
+        id={nextSectionId}
         tabIndex={-1}
-        className="relative z-20 flow-root scroll-mt-24 outline-none group-data-[motion=on]/film:-mt-[100svh]"
-        style={{
-          opacity: 'var(--next-opacity, 1)',
-          backgroundColor: nextBackground,
-        }}
+        className="relative z-10 -mt-[40svh] scroll-mt-24 outline-none motion-reduce:mt-0 [@media(max-height:540px)]:mt-0 [@media(scripting:none)]:mt-0"
       >
         {children}
       </div>
