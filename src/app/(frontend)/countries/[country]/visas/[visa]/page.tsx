@@ -53,9 +53,10 @@ export default async function VisaPage({ params }: VisaPageProps) {
   }).format(new Date(visa.lastReviewedAt))
 
   return (
-    <>
-      <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-white py-14 sm:py-18">
+    <div className="bg-brand-50">
+      <section className="relative overflow-hidden bg-linear-to-b from-[#eee7ff] via-brand-50 to-[#faf8ff] py-14 sm:py-18">
         <div className="pointer-events-none absolute -top-24 left-0 size-80 rounded-full bg-brand-300/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 right-1/4 size-72 rounded-full bg-accent-300/15 blur-3xl" />
         <Container className="relative z-10">
           <CatalogBreadcrumbs
             items={[
@@ -82,12 +83,12 @@ export default async function VisaPage({ params }: VisaPageProps) {
         </Container>
       </section>
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="-mt-px bg-linear-to-b from-[#faf8ff] via-white to-brand-50 py-16 sm:py-20">
         <Container>
           {facts.length ? (
             <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {facts.map((fact) => (
-                <div className="rounded-card border border-border bg-canvas p-5" key={fact.label}>
+                <div className="rounded-card border border-brand-100/70 bg-white/85 p-5 shadow-[0_12px_35px_rgb(36_19_63/4%)]" key={fact.label}>
                   <dt className="text-xs font-bold text-ink-500">{fact.label}</dt>
                   <dd className="mt-2 text-base font-black text-brand-950">{fact.value}</dd>
                 </div>
@@ -111,7 +112,7 @@ export default async function VisaPage({ params }: VisaPageProps) {
                       <ul className="mt-3 grid list-none gap-3 p-0">
                         {group.requirements.map((requirement) => (
                           <li
-                            className="rounded-card border border-border bg-canvas p-5"
+                            className="rounded-card border border-brand-100/60 bg-brand-50/60 p-5"
                             key={`${group.kind}-${requirement.title}`}
                           >
                             <strong className="text-sm text-ink-950">{requirement.title}</strong>
@@ -198,6 +199,6 @@ export default async function VisaPage({ params }: VisaPageProps) {
           ) : null}
         </Container>
       </section>
-    </>
+    </div>
   )
 }

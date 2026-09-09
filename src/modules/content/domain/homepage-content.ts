@@ -71,9 +71,9 @@ export type HomepageContent = {
 
 export const defaultHomepageContent: HomepageContent = {
   hero: {
-    kicker: 'مسیر روشن خدمات ویزا',
-    title: 'برای ویزا و وقت سفارت،',
-    accent: 'سردرگم شروع نکنید.',
+    kicker: 'از انتخاب مسیر تا پیگیری پرونده',
+    title: 'مقصدت را انتخاب کن؛',
+    accent: 'مسیرش را مطمئن برو.',
     description:
       'شرایط کانادا و شینگن را بررسی کنید، خدمت مناسب را انتخاب کنید و ادامه مسیر را مرحله‌به‌مرحله در حساب خود پیگیری کنید.',
     primaryActionLabel: 'مشاهده ویزاها',
