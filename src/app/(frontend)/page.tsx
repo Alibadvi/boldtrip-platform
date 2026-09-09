@@ -154,11 +154,11 @@ export default async function HomePage() {
     .slice(0, 5)
 
   return (
-    <div className="bg-brand-50">
-      <section className="relative isolate -mt-24 overflow-hidden bg-[#fbf9ff] pt-36 pb-18 sm:pt-40 sm:pb-24 lg:min-h-[850px] lg:pt-44">
+    <>
+      <section className="relative isolate -mt-24 overflow-hidden pt-36 pb-18 sm:pt-40 sm:pb-24 lg:min-h-[850px] lg:pt-44">
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-30 bg-linear-to-b from-[#eee7ff] via-brand-50 to-[#fbf9ff]"
+          className="absolute inset-0 -z-30 bg-[linear-gradient(135deg,#fbf9ff_0%,#f2ebff_44%,#fff7df_100%)]"
         />
 
         <div
@@ -178,7 +178,16 @@ export default async function HomePage() {
 
         <Container className="grid items-center gap-12 lg:grid-cols-[0.94fr_1.06fr] lg:gap-8">
           <Reveal className="relative z-10">
-            <h1 className="mt-2 max-w-3xl text-[clamp(2.7rem,6vw,5.3rem)] font-black leading-[1.3] tracking-[-0.035em] text-brand-950">
+            <span className="inline-flex items-center gap-3 rounded-full border border-white/90 bg-white/75 px-4 py-2 text-xs font-black text-brand-700 shadow-[0_8px_25px_rgb(36_19_63/7%)] backdrop-blur-xl sm:text-sm">
+              <span className="relative flex size-2.5">
+                <span className="absolute inset-0 rounded-full bg-success opacity-50 motion-safe:animate-ping" />
+                <span className="relative size-2.5 rounded-full bg-success" />
+              </span>
+
+              {content.hero.kicker}
+            </span>
+
+            <h1 className="mt-7 max-w-3xl text-[clamp(2.7rem,6vw,5.3rem)] font-black leading-[1.3] tracking-[-0.035em] text-brand-950">
               {content.hero.title}
 
               <span className="relative mt-1 block w-fit text-brand-600">
@@ -268,6 +277,24 @@ export default async function HomePage() {
                 className="z-10 object-contain drop-shadow-[0_35px_45px_rgb(56_24_117/25%)] motion-safe:animate-float-soft"
               />
 
+              <div className="absolute top-[13%] right-[2%] z-20 rounded-2xl border border-white/80 bg-white/80 p-3 shadow-card backdrop-blur-xl sm:p-4 motion-safe:animate-float-reverse">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-canada-soft text-xl">
+                    🇨🇦
+                  </span>
+
+                  <span>
+                    <small className="block text-[0.65rem] text-ink-500">
+                      مقصد محبوب
+                    </small>
+
+                    <strong className="block text-sm text-brand-950">
+                      ویزای کانادا
+                    </strong>
+                  </span>
+                </div>
+              </div>
+
               <div className="absolute bottom-[11%] left-[1%] z-20 max-w-55 rounded-2xl border border-white/80 bg-brand-950/90 p-4 text-white shadow-raised backdrop-blur-xl motion-safe:animate-float-soft">
                 <span className="flex items-center gap-2 text-xs font-bold text-accent-300">
                   <TravelIcon name="document" className="size-4" />
@@ -341,7 +368,7 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="destinations-title"
-        className="relative -mt-px overflow-hidden bg-linear-to-b from-[#fbf9ff] via-white to-brand-50 py-18 sm:py-24"
+        className="relative overflow-hidden py-18 sm:py-24"
       >
         <Container>
           <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
@@ -437,7 +464,7 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="services-title"
-        className="relative -mt-px overflow-hidden bg-linear-to-b from-brand-50 via-[#f4f0ff] to-[#eee8ff] py-18 sm:py-24"
+        className="overflow-hidden bg-brand-50/55 py-18 sm:py-24"
       >
         <Container>
           <Reveal>
@@ -519,11 +546,6 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <div
-        aria-hidden="true"
-        className="-mt-px h-28 bg-linear-to-b from-[#eee8ff] to-[#17082f] sm:h-36"
-      />
-
       <FlightScrollSection>
         <section
           aria-labelledby="process-title"
@@ -601,7 +623,7 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="trust-title"
-        className="relative -mt-px bg-white pt-44 pb-18 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-36 before:bg-linear-to-b before:from-[#17082f] before:via-brand-50 before:to-white sm:pt-52 sm:pb-28 sm:before:h-44"
+        className="py-18 sm:py-28"
       >
         <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal>
@@ -716,7 +738,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="-mt-px bg-linear-to-b from-white to-brand-50 pt-8 pb-12">
+      <section className="py-8">
         <Container>
           <Reveal className="relative isolate overflow-hidden rounded-[2.2rem] bg-[linear-gradient(120deg,#fff2c9_0%,#ffe39b_45%,#f7f4ff_100%)] p-7 shadow-[0_18px_55px_rgb(36_19_63/9%)] sm:p-12">
             <span
@@ -753,7 +775,7 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="faq-title"
-        className="-mt-px bg-linear-to-b from-brand-50 via-[#f5f1ff] to-[#eee8ff] py-18 sm:py-28"
+        className="py-18 sm:py-28"
       >
         <Container className="grid items-start gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-18">
           <Reveal className="lg:sticky lg:top-28">
@@ -791,6 +813,6 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </section>
-    </div>
+    </>
   )
 }

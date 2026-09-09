@@ -34,10 +34,9 @@ export default async function CountryPage({ params }: CountryPageProps) {
   const { country, visas } = data
 
   return (
-    <div className="bg-brand-50">
-      <section className="relative overflow-hidden bg-linear-to-b from-[#eee7ff] via-brand-50 to-[#faf8ff] py-14 sm:py-18">
+    <>
+      <section className="relative overflow-hidden bg-brand-50 py-14 sm:py-18">
         <div className="pointer-events-none absolute -top-24 left-0 size-72 rounded-full bg-accent-300/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 right-1/4 size-72 rounded-full bg-brand-300/15 blur-3xl" />
         <Container className="relative z-10">
           <CatalogBreadcrumbs
             items={[
@@ -71,7 +70,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section className="-mt-px bg-linear-to-b from-[#faf8ff] to-white py-18 sm:py-22">
+      <section className="bg-white py-18 sm:py-22">
         <Container className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
           <div>
             <span className="text-sm font-extrabold text-brand-600">پیش از انتخاب ویزا</span>
@@ -85,10 +84,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section
-        className="-mt-px bg-linear-to-b from-white via-brand-50 to-[#f1ecff] py-20 sm:py-24"
-        aria-labelledby="visa-list-title"
-      >
+      <section className="bg-canvas py-20 sm:py-24" aria-labelledby="visa-list-title">
         <Container>
           <div className="mb-9">
             <span className="text-sm font-extrabold text-brand-600">مسیرهای منتشرشده</span>
@@ -140,7 +136,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section className="-mt-px bg-linear-to-b from-[#f1ecff] to-brand-50 py-16">
+      <section className="bg-white py-16">
         <Container>
           <div className="flex flex-col items-start justify-between gap-7 rounded-panel bg-brand-950 p-8 text-white sm:p-10 lg:flex-row lg:items-center">
             <div>
@@ -158,6 +154,6 @@ export default async function CountryPage({ params }: CountryPageProps) {
           </div>
         </Container>
       </section>
-    </div>
+    </>
   )
 }

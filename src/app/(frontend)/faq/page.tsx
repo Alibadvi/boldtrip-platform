@@ -32,8 +32,8 @@ export default async function FaqPage() {
   }))
 
   return (
-    <div className="bg-brand-50">
-      <section className="relative overflow-hidden bg-linear-to-b from-[#eee7ff] via-brand-50 to-[#faf8ff] py-20 text-center sm:py-24">
+    <>
+      <section className="relative overflow-hidden bg-brand-50 py-20 text-center sm:py-24">
         <div className="pointer-events-none absolute -top-24 right-1/4 size-80 rounded-full bg-accent-300/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-28 left-1/4 size-80 rounded-full bg-brand-300/20 blur-3xl" />
         <Container size="reading" className="relative z-10">
@@ -49,7 +49,7 @@ export default async function FaqPage() {
         </Container>
       </section>
 
-      <section className="relative -mt-px overflow-hidden bg-linear-to-b from-[#faf8ff] via-white to-brand-50 py-20 sm:py-24 lg:py-28">
+      <section className="bg-white py-20 sm:py-24 lg:py-28">
         <Container size="reading">
           {faqGroups.map((group, index) => (
             <section
@@ -84,6 +84,6 @@ export default async function FaqPage() {
           </div>
         </Container>
       </section>
-    </div>
+    </>
   )
 }
