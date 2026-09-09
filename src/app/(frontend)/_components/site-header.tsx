@@ -166,7 +166,6 @@ export function SiteHeader() {
   const pathname = usePathname()
   const shouldReduceMotion = useReducedMotion()
 
-  const dialogRef = useRef<HTMLDialogElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const previousOverflowRef = useRef('')
@@ -188,19 +187,14 @@ export function SiteHeader() {
   }, [])
 
   const finishClosingMenu = useCallback(() => {
-    if (dialogRef.current?.open) {
-      dialogRef.current.close()
-    }
-
     document.body.style.overflow = previousOverflowRef.current
     menuButtonRef.current?.focus()
   }, [])
 
   const openMenu = () => {
-    const dialog = dialogRef.current
     const trigger = menuButtonRef.current
 
-    if (!dialog || !trigger || dialog.open) return
+    if (!trigger || menuOpen) return
 
     const rect = trigger.getBoundingClientRect()
     const x = rect.left + rect.width / 2
@@ -218,8 +212,6 @@ export function SiteHeader() {
 
     previousOverflowRef.current = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-
-    dialog.showModal()
     setMenuOpen(true)
   }
 
@@ -246,10 +238,17 @@ export function SiteHeader() {
       closeButtonRef.current?.focus()
     })
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeMenu()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
     return () => {
       window.cancelAnimationFrame(frame)
+      window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [menuOpen])
+  }, [menuOpen, closeMenu])
 
   useEffect(() => {
     closeMenu()
@@ -372,24 +371,14 @@ export function SiteHeader() {
         </div>
       </header>
 
-      <dialog
-        ref={dialogRef}
-        id="mobile-navigation"
-        aria-labelledby="mobile-navigation-title"
-        onCancel={(event) => {
-          event.preventDefault()
-          closeMenu()
-        }}
-        onClose={() => {
-          setMenuOpen(false)
-          document.body.style.overflow = previousOverflowRef.current
-        }}
-        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden border-0 bg-transparent p-0 backdrop:bg-transparent"
-      >
-        <AnimatePresence onExitComplete={finishClosingMenu}>
-          {menuOpen && (
-            <motion.div
-              key="mobile-menu"
+      <AnimatePresence onExitComplete={finishClosingMenu}>
+        {menuOpen && (
+          <motion.div
+            key="mobile-menu"
+            id="mobile-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-navigation-title"
               initial={shouldReduceMotion ? 'open' : 'closed'}
               animate="open"
               exit="closed"
@@ -409,7 +398,7 @@ export function SiteHeader() {
                   },
                 },
               }}
-              className="fixed inset-0 isolate overflow-hidden bg-[radial-gradient(circle_at_15%_10%,#7549e5_0%,#421c87_38%,#28104f_70%,#1b0b35_100%)] text-white"
+              className="fixed inset-0 z-[100] isolate h-dvh overflow-hidden bg-[radial-gradient(circle_at_15%_10%,#7549e5_0%,#421c87_38%,#28104f_70%,#1b0b35_100%)] text-white"
             >
               <div
                 aria-hidden="true"
@@ -532,10 +521,9 @@ export function SiteHeader() {
                   </Link>
                 </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </dialog>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

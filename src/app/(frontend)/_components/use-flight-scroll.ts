@@ -62,9 +62,7 @@ export function useFlightScroll() {
 
     if (!section || !viewport) return
 
-    const still = window.matchMedia(
-      '(prefers-reduced-motion: reduce), (max-height: 540px)',
-    )
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     const initialStyles = new Map(
       Object.values(layers.current).flatMap((node) =>
@@ -434,7 +432,9 @@ export function useFlightScroll() {
     resize?.observe(document.body)
 
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('touchmove', onScroll, { passive: true })
     window.addEventListener('resize', invalidate, { passive: true })
+    window.addEventListener('orientationchange', invalidate)
     window.addEventListener('pageshow', invalidate)
     window.addEventListener('load', invalidate)
 
@@ -456,7 +456,9 @@ export function useFlightScroll() {
       resize?.disconnect()
 
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('touchmove', onScroll)
       window.removeEventListener('resize', invalidate)
+      window.removeEventListener('orientationchange', invalidate)
       window.removeEventListener('pageshow', invalidate)
       window.removeEventListener('load', invalidate)
 
