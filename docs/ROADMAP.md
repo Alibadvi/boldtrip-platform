@@ -9,6 +9,15 @@ published records. Customer authentication/account views, services, embassy requ
 consultation booking, private local uploads and manual receipt review are implemented for the
 demo. Article publishing and the production hardening described below are still outstanding.
 
+## Render owner preview — 2026-09-12
+
+- Added an explicit restricted `DEPLOYMENT_MODE=preview` path for temporary UI review without
+  weakening the default production fail-closed configuration.
+- Authenticated routes now read request headers before Payload initialization, preventing the
+  production build from trying to connect to the dummy build-time database while prerendering.
+- The Docker build uses the preview service URL instead of compiling the public site URL as
+  localhost. Preview mode is not approved for real customer data or launch traffic.
+
 ## Session and demo-content fixes — 2026-09-07
 
 Branch: `fix/customer-admin-sessions`. Code reviewed against the installed Payload 3.88.0

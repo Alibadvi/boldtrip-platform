@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 const settings = z.object({
+  DEPLOYMENT_MODE: z.enum(['production', 'preview']).default('production'),
   STORAGE_MODE: z.enum(['local', 's3']).default('local'),
   S3_BUCKET: z.string().optional(),
   S3_REGION: z.string().default('us-east-1'),
@@ -19,7 +20,11 @@ const settings = z.object({
 
 export function parseProductionEnv(input: NodeJS.ProcessEnv) {
   const env = settings.parse(Object.fromEntries(Object.entries(input).filter(([, value]) => value !== '')))
-  if (input.NODE_ENV === 'production' && input.NEXT_PHASE !== 'phase-production-build') {
+  if (
+    input.NODE_ENV === 'production' &&
+    input.NEXT_PHASE !== 'phase-production-build' &&
+    env.DEPLOYMENT_MODE !== 'preview'
+  ) {
     if (env.STORAGE_MODE !== 's3' || !env.S3_BUCKET || !env.S3_ACCESS_KEY_ID || !env.S3_SECRET_ACCESS_KEY || !env.CLAMD_HOST || !env.RESEND_API_KEY || !env.EMAIL_FROM || env.STAFF_MFA_REQUIRED !== 'true' || !env.STAFF_MFA_ENCRYPTION_KEY || !input.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {
       throw new Error('Production requires HTTPS, private S3, ClamAV, email, staff MFA. See docs/DEPLOYMENT.md.')
     }

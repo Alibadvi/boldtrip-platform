@@ -4,7 +4,8 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --no-frozen-lockfile
 COPY . .
-RUN DATABASE_URL=postgresql://build:build@localhost/build PAYLOAD_SECRET=build-only-not-a-production-secret-123456 NEXT_PUBLIC_SITE_URL=http://localhost:3000 pnpm build
+ARG NEXT_PUBLIC_SITE_URL=https://boldtrip-platform.onrender.com
+RUN DATABASE_URL=postgresql://build:build@localhost/build PAYLOAD_SECRET=build-only-not-a-production-secret-123456 NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL} pnpm build
 
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production

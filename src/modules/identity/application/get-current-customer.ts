@@ -10,11 +10,14 @@ import { customerSessionHeaders } from './customer-session'
 
 export const getCurrentCustomer = cache(
   async (): Promise<CurrentCustomer | null> => {
+    // Read request-bound data first so Next.js marks authenticated pages as
+    // dynamic before Payload initializes a database connection during builds.
+    const requestHeaders = new Headers(await getHeaders())
     const payload = await getPayload({
       config: configPromise,
     })
 
-    const headers = customerSessionHeaders(new Headers(await getHeaders()))
+    const headers = customerSessionHeaders(requestHeaders)
     const { user } = await payload.auth({ headers })
 
     if (!isCustomerAuthUser(user)) {

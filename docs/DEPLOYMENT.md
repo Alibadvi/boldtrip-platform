@@ -17,6 +17,15 @@ Use `.env.example` as the variable list. Keep real values outside Git. Productio
 - MFA: generate `STAFF_MFA_ENCRYPTION_KEY` with `openssl rand -hex 32`. Run `pnpm staff:mfa --email=your-staff-address` from the trusted server terminal. Enter the displayed secret in an authenticator and confirm a code. Keep the one-use recovery codes offline. Enrollment invalidates existing staff sessions. First-admin creation or password recovery can use `BOOTSTRAP_STAFF_PASSWORD` supplied securely in the command environment. Never put it in shell history or Git. Staff password reset through the public API is disabled to avoid bypassing MFA.
 - Set `STAFF_MFA_REQUIRED=true` before serving production traffic. Enroll all staff before enabling traffic.
 
+## Restricted owner preview
+
+For a temporary owner-facing UI preview, set `DEPLOYMENT_MODE=preview`. This bypasses only the
+production integration gate so the application can run without S3, ClamAV, delivery email or
+staff MFA. Preview mode must not receive real customer accounts, passports, documents, payment
+receipts or production traffic. Use an empty disposable database and remove the preview service
+when review finishes. Omitting the variable, or setting it to `production`, keeps the fail-closed
+production requirements above.
+
 ## Database rollout
 
 `src/migrations` now includes the operational tables and security fields that were missing from the old production migration history. For a new empty production database, use `pnpm payload migrate` before opening traffic. For a database previously managed with development schema push, **do not blindly apply these CREATE TABLE migrations**: restore a backup to staging and reconcile its migration history/schema first. Never reset the user's existing database to make migrations pass.
