@@ -6,6 +6,8 @@ import { Container } from '@/shared/ui'
 import { AccountNavigation } from './_components/account-navigation'
 import { LogoutButton } from './_components/logout-button'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AccountLayout({
   children,
 }: {
