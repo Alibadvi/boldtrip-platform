@@ -14,4 +14,4 @@ RUN corepack enable
 COPY --from=build --chown=node:node /app /app
 USER node
 EXPOSE 3000
-CMD ["pnpm", "start"]
+CMD ["/bin/sh", "-c", "if [ \"$DEPLOYMENT_MODE\" = \"preview\" ]; then pnpm payload migrate; fi && exec pnpm start"]
