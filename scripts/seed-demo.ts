@@ -11,6 +11,8 @@ type DemoRecord = Record<string, unknown> & { id: ID }
 
 const today = new Date()
 const reviewedAt = today.toISOString()
+const contentOnly = process.argv.includes('--content-only')
+const seedIfEmpty = process.argv.includes('--if-empty')
 
 const countries = [
   {
@@ -187,11 +189,54 @@ function futureSlot(daysFromNow: number, hour: number): string {
 }
 
 async function seed() {
-  if (process.env.NODE_ENV === 'production')
+  const previewEmptySeed =
+    process.env.DEPLOYMENT_MODE === 'preview' &&
+    contentOnly &&
+    seedIfEmpty
+
+  if (
+    process.env.NODE_ENV === 'production' &&
+    !previewEmptySeed
+  ) {
     throw new Error('Demo seeding is disabled in production.')
+  }
+
   const { default: config } = await import('../src/payload.config')
   const payload = await getPayload({ config })
   payload.logger.info('Seeding BoldTrip showcase data...')
+
+  if (seedIfEmpty) {
+    const [existingCountries, existingServices] =
+      await Promise.all([
+        payload.find({
+          collection: 'countries',
+          limit: 1,
+          depth: 0,
+          draft: false,
+          overrideAccess: true,
+          pagination: false,
+        }),
+        payload.find({
+          collection: 'services',
+          limit: 1,
+          depth: 0,
+          draft: false,
+          overrideAccess: true,
+          pagination: false,
+        }),
+      ])
+
+    if (
+      existingCountries.docs.length > 0 ||
+      existingServices.docs.length > 0
+    ) {
+      payload.logger.info(
+        'Preview content already exists; skipping the guarded demo seed.',
+      )
+      await payload.destroy()
+      return
+    }
+  }
 
   await payload.updateGlobal({
     slug: 'homepage',
@@ -423,7 +468,7 @@ async function seed() {
     'Published 6 country/embassy guides, 18 visa pages and 5 services. Demo embassy requests are enabled.',
   )
 
-  if (process.argv.includes('--content-only')) {
+  if (contentOnly) {
     payload.logger.info(
       'Demo content complete. Restart the app and open /embassy-appointments/canada.',
     )

@@ -49,18 +49,18 @@ const menuContentVariants: Variants = {
   closed: {
     opacity: 0,
     transition: {
-      duration: 0.12,
+      duration: 0.1,
       when: 'afterChildren',
-      staggerChildren: 0.025,
+      staggerChildren: 0.015,
       staggerDirection: -1,
     },
   },
   open: {
     opacity: 1,
     transition: {
-      duration: 0.2,
-      delayChildren: 0.16,
-      staggerChildren: 0.055,
+      duration: 0.16,
+      delayChildren: 0.03,
+      staggerChildren: 0.025,
     },
   },
 }
@@ -68,13 +68,13 @@ const menuContentVariants: Variants = {
 const menuItemVariants: Variants = {
   closed: {
     opacity: 0,
-    y: 18,
+    y: 8,
   },
   open: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.36,
+      duration: 0.18,
       ease: [0.22, 1, 0.36, 1],
     },
   },
@@ -156,12 +156,6 @@ function MenuIcon({ staticState }: MenuIconProps) {
   )
 }
 
-type MenuCircle = {
-  x: number
-  y: number
-  radius: number
-}
-
 export function SiteHeader() {
   const pathname = usePathname()
   const shouldReduceMotion = useReducedMotion()
@@ -172,12 +166,6 @@ export function SiteHeader() {
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-
-  const [menuCircle, setMenuCircle] = useState<MenuCircle>({
-    x: 48,
-    y: 52,
-    radius: 1600,
-  })
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`)
@@ -192,23 +180,7 @@ export function SiteHeader() {
   }, [])
 
   const openMenu = () => {
-    const trigger = menuButtonRef.current
-
-    if (!trigger || menuOpen) return
-
-    const rect = trigger.getBoundingClientRect()
-    const x = rect.left + rect.width / 2
-    const y = rect.top + rect.height / 2
-
-    const farthestX = Math.max(x, window.innerWidth - x)
-    const farthestY = Math.max(y, window.innerHeight - y)
-    const radius = Math.hypot(farthestX, farthestY) + 80
-
-    setMenuCircle({
-      x,
-      y,
-      radius,
-    })
+    if (menuOpen) return
 
     previousOverflowRef.current = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -277,10 +249,6 @@ export function SiteHeader() {
       document.body.style.overflow = previousOverflowRef.current
     }
   }, [])
-
-  const closedClip = `circle(0px at ${menuCircle.x}px ${menuCircle.y}px)`
-  const openClip =
-    `circle(${menuCircle.radius}px at ${menuCircle.x}px ${menuCircle.y}px)`
 
   return (
     <>
@@ -380,41 +348,19 @@ export function SiteHeader() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="mobile-navigation-title"
-              initial={shouldReduceMotion ? 'open' : 'closed'}
-              animate="open"
-              exit="closed"
-              variants={{
-                closed: {
-                  clipPath: closedClip,
-                  transition: {
-                    duration: shouldReduceMotion ? 0.01 : 0.38,
-                    ease: [0.65, 0, 0.35, 1],
-                  },
-                },
-                open: {
-                  clipPath: openClip,
-                  transition: {
-                    duration: shouldReduceMotion ? 0.01 : 0.58,
-                    ease: [0.22, 1, 0.36, 1],
-                  },
-                },
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, y: -8 }
+              }
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 0.18,
+                ease: [0.22, 1, 0.36, 1],
               }}
-              className="fixed inset-0 z-[100] isolate h-dvh overflow-hidden bg-[radial-gradient(circle_at_15%_10%,#7549e5_0%,#421c87_38%,#28104f_70%,#1b0b35_100%)] text-white"
+              className="fixed inset-0 z-[100] h-dvh overflow-hidden bg-[linear-gradient(160deg,#4b249e_0%,#321568_46%,#1b0b35_100%)] text-white"
             >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-32 -left-32 size-80 rounded-full bg-accent-300/10 blur-3xl"
-              />
-
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute right-[-10rem] bottom-[-12rem] size-[28rem] rounded-full bg-brand-400/15 blur-3xl"
-              />
-
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,transparent_0%,rgb(255_255_255/4%)_45%,transparent_100%)]"
-              />
 
               <motion.div
                 variants={menuContentVariants}
@@ -472,7 +418,7 @@ export function SiteHeader() {
                       >
                         <Link
                           href={item.href}
-                  prefetch={true}
+                          prefetch={true}
                           onClick={closeMenu}
                           aria-current={active ? 'page' : undefined}
                           className={`group relative flex min-h-15 items-center gap-4 overflow-hidden rounded-2xl px-3 py-3 text-base font-bold transition-[color,background-color,transform] duration-300 sm:min-h-17 sm:px-4 sm:text-lg before:absolute before:top-1/2 before:right-0 before:h-8 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-accent-300 before:transition-transform before:duration-300 ${

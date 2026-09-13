@@ -17,6 +17,10 @@ demo. Article publishing and the production hardening described below are still 
   production build from trying to connect to the dummy build-time database while prerendering.
 - The Docker build uses the preview service URL instead of compiling the public site URL as
   localhost. Preview mode is not approved for real customer data or launch traffic.
+- Empty preview databases are populated once with clearly marked demo catalog/content records;
+  later deploys skip seeding when countries or services already exist, preserving CMS edits.
+- Mobile navigation uses a short opacity/translate transition instead of animating a full-screen
+  clip-path and blur stack, reducing GPU work on phones.
 
 ## Session and demo-content fixes — 2026-09-07
 

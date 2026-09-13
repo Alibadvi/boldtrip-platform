@@ -14,4 +14,4 @@ RUN corepack enable
 COPY --from=build --chown=node:node /app /app
 USER node
 EXPOSE 3000
-CMD ["/bin/sh", "-c", "if [ \"$DEPLOYMENT_MODE\" = \"preview\" ]; then ./node_modules/.bin/payload migrate; fi && exec ./node_modules/.bin/next start"]
+CMD ["/bin/sh", "-c", "if [ \"$DEPLOYMENT_MODE\" = \"preview\" ]; then ./node_modules/.bin/payload migrate && ./node_modules/.bin/tsx scripts/seed-demo.ts --content-only --if-empty; fi && exec ./node_modules/.bin/next start"]
