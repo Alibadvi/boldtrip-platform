@@ -1,6 +1,15 @@
 import configPromise from '@payload-config'
-import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
+
+function cachePublicQuery<Args extends unknown[], Result>(
+  query: (...args: Args) => Promise<Result>,
+): (...args: Args) => Promise<Result> {
+  return unstable_cache(query, [], {
+    revalidate: 60,
+    tags: ['consultation-page'],
+  })
+}
 
 import {
   isConsultationDeliveryMethod,
@@ -87,7 +96,7 @@ const fallbackContent: ConsultationPageData = {
     'قوانین لغو و جابه‌جایی جلسه باید پیش از فعال‌شدن رزرو توسط مدیریت BoldTrip مشخص شود.',
 }
 
-export const getConsultationPage = cache(
+export const getConsultationPage = cachePublicQuery(
   async (): Promise<ConsultationPageData> => {
     const payload = await getPayload({
       config: configPromise,

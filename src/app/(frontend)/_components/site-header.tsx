@@ -309,6 +309,7 @@ export function SiteHeader() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  prefetch={true}
                   aria-current={active ? 'page' : undefined}
                   className={`group relative px-3.5 py-3 text-sm font-bold transition-[color,transform] duration-300 after:absolute after:right-3 after:bottom-1 after:left-3 after:h-0.5 after:origin-center after:rounded-full after:bg-linear-to-l after:from-brand-700 after:via-brand-500 after:to-accent-500 after:content-[''] after:transition-transform after:duration-300 xl:px-4 ${
                     active
@@ -471,6 +472,7 @@ export function SiteHeader() {
                       >
                         <Link
                           href={item.href}
+                  prefetch={true}
                           onClick={closeMenu}
                           aria-current={active ? 'page' : undefined}
                           className={`group relative flex min-h-15 items-center gap-4 overflow-hidden rounded-2xl px-3 py-3 text-base font-bold transition-[color,background-color,transform] duration-300 sm:min-h-17 sm:px-4 sm:text-lg before:absolute before:top-1/2 before:right-0 before:h-8 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-accent-300 before:transition-transform before:duration-300 ${

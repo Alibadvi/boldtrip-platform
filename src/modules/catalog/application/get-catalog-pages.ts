@@ -1,6 +1,15 @@
 import configPromise from '@payload-config'
-import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
+
+function cachePublicQuery<Args extends unknown[], Result>(
+  query: (...args: Args) => Promise<Result>,
+): (...args: Args) => Promise<Result> {
+  return unstable_cache(query, [], {
+    revalidate: 60,
+    tags: ['public-catalog'],
+  })
+}
 
 import type {
   Country,
@@ -119,7 +128,7 @@ async function findCountry(slug: string): Promise<Country | null> {
   return record ? countryFromRecord(record) : null
 }
 
-export const getCountries = cache(
+export const getCountries = cachePublicQuery(
   async (): Promise<Country[]> => {
     const payload = await getPayload({
       config: configPromise,
@@ -142,7 +151,7 @@ export const getCountries = cache(
   },
 )
 
-export const getFeaturedCountries = cache(
+export const getFeaturedCountries = cachePublicQuery(
   async (): Promise<Country[]> => {
     const payload = await getPayload({
       config: configPromise,
@@ -174,7 +183,7 @@ export const getFeaturedCountries = cache(
   },
 )
 
-export const getEmbassyAppointmentCountries = cache(
+export const getEmbassyAppointmentCountries = cachePublicQuery(
   async (): Promise<Country[]> => {
     const payload = await getPayload({
       config: configPromise,
@@ -209,7 +218,7 @@ export const getEmbassyAppointmentCountries = cache(
   },
 )
 
-export const getEmbassyAppointmentPage = cache(
+export const getEmbassyAppointmentPage = cachePublicQuery(
   async (countrySlug: string): Promise<Country | null> => {
     const country = await findCountry(countrySlug)
 
@@ -221,7 +230,7 @@ export const getEmbassyAppointmentPage = cache(
   },
 )
 
-export const getCountryPage = cache(
+export const getCountryPage = cachePublicQuery(
   async (
     slug: string,
   ): Promise<CountryPageData | null> => {
@@ -264,7 +273,7 @@ export const getCountryPage = cache(
   },
 )
 
-export const getVisaPage = cache(
+export const getVisaPage = cachePublicQuery(
   async (
     countrySlug: string,
     visaSlug: string,

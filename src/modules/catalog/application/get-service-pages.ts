@@ -1,6 +1,15 @@
 import configPromise from '@payload-config'
-import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
+
+function cachePublicQuery<Args extends unknown[], Result>(
+  query: (...args: Args) => Promise<Result>,
+): (...args: Args) => Promise<Result> {
+  return unstable_cache(query, [], {
+    revalidate: 60,
+    tags: ['public-services'],
+  })
+}
 
 import { isCatalogSlug } from '../domain/catalog'
 import type {
@@ -42,7 +51,7 @@ function toServiceDetail(record: ServiceRecord): ServiceDetail {
   }
 }
 
-export const getServices = cache(async (): Promise<ServiceSummary[]> => {
+export const getServices = cachePublicQuery(async (): Promise<ServiceSummary[]> => {
   const payload = await getPayload({
     config: configPromise,
   })
@@ -61,7 +70,7 @@ export const getServices = cache(async (): Promise<ServiceSummary[]> => {
   return (result.docs).map(toServiceSummary)
 })
 
-export const getServicePage = cache(
+export const getServicePage = cachePublicQuery(
   async (slug: string): Promise<ServiceDetail | null> => {
     if (!isCatalogSlug(slug)) {
       return null

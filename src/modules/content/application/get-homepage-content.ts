@@ -1,4 +1,5 @@
 import configPromise from '@payload-config'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
 import { defaultHomepageContent, type HomepageContent } from '../domain/homepage-content'
@@ -46,7 +47,7 @@ function mergeWithDefaults(stored: StoredHomepage): HomepageContent {
   }
 }
 
-export async function getHomepageContent(): Promise<HomepageContent> {
+async function readHomepageContent(): Promise<HomepageContent> {
   try {
     const payload = await getPayload({ config: configPromise })
     const stored = await payload.findGlobal({
@@ -59,3 +60,12 @@ export async function getHomepageContent(): Promise<HomepageContent> {
     return defaultHomepageContent
   }
 }
+
+export const getHomepageContent = unstable_cache(
+  readHomepageContent,
+  ['homepage-content'],
+  {
+    revalidate: 60,
+    tags: ['homepage-content'],
+  },
+)
