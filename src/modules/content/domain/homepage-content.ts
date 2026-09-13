@@ -26,22 +26,19 @@ export type HomepageContent = {
     question: string
     showOnHomepage: boolean
   }>
- hero: {
-  kicker: '',
-  title: 'برای ویزا و وقت سفارت،',
-  accent: 'با اطمینان شروع کنید.',
-  description:
-    'از شناخت شرایط مقصد تا ارسال مدارک و پیگیری درخواست، همه‌چیز در یک مسیر روشن و قابل‌پیگیری کنار شماست.',
-  primaryActionLabel: 'بررسی مقصدها',
-  primaryActionHref: '/countries',
-  secondaryActionLabel: 'رزرو مشاوره',
-  secondaryActionHref: '/consultation/book',
-  highlights: [
-    { label: 'اطلاعات بازبینی‌شده' },
-    { label: 'ارسال امن مدارک' },
-    { label: 'پیگیری آنلاین پرونده' },
-  ],
-},
+  hero: {
+    accent: string
+    description: string
+    highlights: Array<{
+      label: string
+    }>
+    kicker: string
+    primaryActionHref: string
+    primaryActionLabel: string
+    secondaryActionHref: string
+    secondaryActionLabel: string
+    title: string
+  }
   process: {
     description: string
     kicker: string
@@ -76,19 +73,19 @@ export type HomepageContent = {
 
 export const defaultHomepageContent: HomepageContent = {
   hero: {
-    kicker: 'مسیر روشن خدمات ویزا',
+    kicker: '',
     title: 'برای ویزا و وقت سفارت،',
-    accent: 'سردرگم شروع نکنید.',
+    accent: 'با اطمینان شروع کنید.',
     description:
-      'شرایط کانادا و شینگن را بررسی کنید، خدمت مناسب را انتخاب کنید و ادامه مسیر را مرحله‌به‌مرحله در حساب خود پیگیری کنید.',
-    primaryActionLabel: 'مشاهده ویزاها',
+      'از شناخت شرایط مقصد تا ارسال مدارک و پیگیری درخواست، همه‌چیز در یک مسیر روشن و قابل‌پیگیری کنار شماست.',
+    primaryActionLabel: 'بررسی مقصدها',
     primaryActionHref: '/countries',
     secondaryActionLabel: 'رزرو مشاوره',
     secondaryActionHref: '/consultation/book',
     highlights: [
       { label: 'اطلاعات بازبینی‌شده' },
-      { label: 'ارسال خصوصی مدارک' },
-      { label: 'پیگیری شفاف پرونده' },
+      { label: 'ارسال امن مدارک' },
+      { label: 'پیگیری آنلاین پرونده' },
     ],
   },
   destinationIntro: {
