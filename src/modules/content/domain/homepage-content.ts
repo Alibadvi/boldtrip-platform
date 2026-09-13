@@ -26,17 +26,22 @@ export type HomepageContent = {
     question: string
     showOnHomepage: boolean
   }>
-  hero: {
-    accent: string
-    description: string
-    highlights: Array<{ label: string }>
-    kicker: string
-    primaryActionHref: string
-    primaryActionLabel: string
-    secondaryActionHref: string
-    secondaryActionLabel: string
-    title: string
-  }
+ hero: {
+  kicker: '',
+  title: 'برای ویزا و وقت سفارت،',
+  accent: 'با اطمینان شروع کنید.',
+  description:
+    'از شناخت شرایط مقصد تا ارسال مدارک و پیگیری درخواست، همه‌چیز در یک مسیر روشن و قابل‌پیگیری کنار شماست.',
+  primaryActionLabel: 'بررسی مقصدها',
+  primaryActionHref: '/countries',
+  secondaryActionLabel: 'رزرو مشاوره',
+  secondaryActionHref: '/consultation/book',
+  highlights: [
+    { label: 'اطلاعات بازبینی‌شده' },
+    { label: 'ارسال امن مدارک' },
+    { label: 'پیگیری آنلاین پرونده' },
+  ],
+},
   process: {
     description: string
     kicker: string

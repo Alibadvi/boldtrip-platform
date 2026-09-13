@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import Image from 'next/image'
 
 import { getFeaturedCountries } from '@/modules/catalog'
 import { getHomepageContent } from '@/modules/content'
@@ -9,6 +9,7 @@ import { FaqList } from './_components/faq-list'
 import { FlightScrollSection } from './_components/flight-scroll-section'
 import { Parallax, Reveal } from './_components/scroll-motion'
 import { TravelIcon } from './_components/travel-icon'
+import { HomeHero } from './_components/home-hero'
 
 export const dynamic = 'force-dynamic'
 
@@ -115,27 +116,41 @@ function SectionHeading({
   id,
   kicker,
   title,
+  tone = 'light',
 }: {
   description?: string
   id?: string
   kicker: string
   title: string
+  tone?: 'light' | 'dark'
 }) {
+  const dark = tone === 'dark'
+
   return (
     <div className="max-w-3xl">
-      <span className="mb-4 inline-flex items-center gap-3 text-sm font-black text-brand-600 before:h-px before:w-9 before:bg-current">
+      <span
+        className={`mb-4 inline-flex items-center gap-3 text-sm font-black before:h-px before:w-9 before:bg-current ${
+          dark ? 'text-accent-300' : 'text-brand-600'
+        }`}
+      >
         {kicker}
       </span>
 
       <h2
         id={id}
-        className="text-3xl font-black leading-[1.45] text-brand-950 sm:text-4xl lg:text-[2.65rem]"
+        className={`text-3xl font-black leading-[1.45] sm:text-4xl lg:text-[2.65rem] ${
+          dark ? 'text-white' : 'text-brand-950'
+        }`}
       >
         {title}
       </h2>
 
       {description && (
-        <p className="mt-4 max-w-2xl text-base leading-8 text-ink-700">
+        <p
+          className={`mt-4 max-w-2xl text-base leading-8 ${
+            dark ? 'text-white/68' : 'text-ink-700'
+          }`}
+        >
           {description}
         </p>
       )}
@@ -154,234 +169,29 @@ export default async function HomePage() {
     .slice(0, 5)
 
   return (
-    <>
-      <section className="relative isolate -mt-24 overflow-hidden pt-36 pb-18 sm:pt-40 sm:pb-24 lg:min-h-[850px] lg:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-30 bg-[linear-gradient(135deg,#fbf9ff_0%,#f2ebff_44%,#fff7df_100%)]"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute -top-40 -right-40 -z-20 size-[34rem] rounded-full bg-brand-300/25 blur-3xl"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-48 -left-40 -z-20 size-[32rem] rounded-full bg-accent-300/30 blur-3xl"
-        />
-
-        <div
-          aria-hidden="true"
-          className="absolute top-36 left-[44%] -z-10 hidden size-80 rounded-full border border-dashed border-brand-300/45 lg:block motion-safe:animate-orbit"
-        />
-
-        <Container className="grid items-center gap-12 lg:grid-cols-[0.94fr_1.06fr] lg:gap-8">
-          <Reveal className="relative z-10">
-            <span className="inline-flex items-center gap-3 rounded-full border border-white/90 bg-white/75 px-4 py-2 text-xs font-black text-brand-700 shadow-[0_8px_25px_rgb(36_19_63/7%)] backdrop-blur-xl sm:text-sm">
-              <span className="relative flex size-2.5">
-                <span className="absolute inset-0 rounded-full bg-success opacity-50 motion-safe:animate-ping" />
-                <span className="relative size-2.5 rounded-full bg-success" />
-              </span>
-
-              {content.hero.kicker}
-            </span>
-
-            <h1 className="mt-7 max-w-3xl text-[clamp(2.7rem,6vw,5.3rem)] font-black leading-[1.3] tracking-[-0.035em] text-brand-950">
-              {content.hero.title}
-
-              <span className="relative mt-1 block w-fit text-brand-600">
-                {content.hero.accent}
-
-                <span
-                  aria-hidden="true"
-                  className="absolute right-0 -bottom-1 -z-10 h-3 w-full -rotate-1 rounded-full bg-accent-300/55"
-                />
-              </span>
-            </h1>
-
-            <p className="mt-6 max-w-2xl text-base leading-9 text-ink-700 sm:text-lg">
-              {content.hero.description}
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link
-                href={content.hero.primaryActionHref}
-                className={buttonVariants({
-                  size: 'large',
-                  className:
-                    'group rounded-2xl bg-linear-to-l from-brand-700 to-brand-500 shadow-[0_18px_40px_rgb(91_52_196/28%)]',
-                })}
-              >
-                {content.hero.primaryActionLabel}
-
-                <TravelIcon
-                  name="arrow"
-                  className="size-5 transition-transform group-hover:-translate-x-1"
-                />
-              </Link>
-
-              <Link
-                href={content.hero.secondaryActionHref}
-                className={buttonVariants({
-                  variant: 'secondary',
-                  size: 'large',
-                  className:
-                    'group rounded-2xl border-white/90 bg-white/75 backdrop-blur-xl',
-                })}
-              >
-                <TravelIcon name="calendar" className="size-5" />
-                {content.hero.secondaryActionLabel}
-              </Link>
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
-              {content.hero.highlights.map((highlight) => (
-                <span
-                  key={highlight.label}
-                  className="inline-flex items-center gap-2 text-xs font-bold text-ink-600 sm:text-sm"
-                >
-                  <span className="grid size-5 place-items-center rounded-full bg-success-soft text-success">
-                    <TravelIcon name="shield" className="size-3" />
-                  </span>
-
-                  {highlight.label}
-                </span>
-              ))}
-            </div>
-          </Reveal>
-
-          <Parallax className="relative mx-auto w-full max-w-[680px]">
-            <div className="relative min-h-[410px] sm:min-h-[560px] lg:min-h-[630px]">
-              <div
-                aria-hidden="true"
-                className="absolute inset-[10%] rounded-full bg-white/45 blur-2xl"
-              />
-
-              <div
-                aria-hidden="true"
-                className="absolute inset-[12%] rounded-full border border-brand-300/35"
-              />
-
-              <div
-                aria-hidden="true"
-                className="absolute inset-[20%] rounded-full border border-dashed border-brand-400/45 motion-safe:animate-orbit"
-              />
-
-              <Image
-                src="/assets/boldtrip-hero-v2.png"
-                alt="کره زمین بنفش بولدتریپ همراه هواپیما و چمدان سفر"
-                fill
-                priority
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="z-10 object-contain drop-shadow-[0_35px_45px_rgb(56_24_117/25%)] motion-safe:animate-float-soft"
-              />
-
-              <div className="absolute top-[13%] right-[2%] z-20 rounded-2xl border border-white/80 bg-white/80 p-3 shadow-card backdrop-blur-xl sm:p-4 motion-safe:animate-float-reverse">
-                <div className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-canada-soft text-xl">
-                    🇨🇦
-                  </span>
-
-                  <span>
-                    <small className="block text-[0.65rem] text-ink-500">
-                      مقصد محبوب
-                    </small>
-
-                    <strong className="block text-sm text-brand-950">
-                      ویزای کانادا
-                    </strong>
-                  </span>
-                </div>
-              </div>
-
-              <div className="absolute bottom-[11%] left-[1%] z-20 max-w-55 rounded-2xl border border-white/80 bg-brand-950/90 p-4 text-white shadow-raised backdrop-blur-xl motion-safe:animate-float-soft">
-                <span className="flex items-center gap-2 text-xs font-bold text-accent-300">
-                  <TravelIcon name="document" className="size-4" />
-                  پرونده آنلاین
-                </span>
-
-                <strong className="mt-2 block text-sm leading-7">
-                  مدارک و وضعیت درخواست همیشه در دسترس شماست
-                </strong>
-              </div>
-            </div>
-          </Parallax>
-        </Container>
-
-        <Container className="relative z-20 mt-10 lg:-mt-5">
-          <div className="grid overflow-hidden rounded-[1.6rem] border border-white/90 bg-white/75 shadow-[0_20px_60px_rgb(36_19_63/10%)] backdrop-blur-xl md:grid-cols-3">
-            {[
-              {
-                href: '/countries',
-                icon: 'globe' as const,
-                title: 'مقصدتان مشخص است؟',
-                detail: 'شرایط کشورها و مسیرهای ویزا',
-              },
-              {
-                href: '/consultation/book',
-                icon: 'calendar' as const,
-                title: 'نیاز به راهنمایی دارید؟',
-                detail: 'انتخاب زمان و رزرو مشاوره',
-              },
-              {
-                href: '/account',
-                icon: 'document' as const,
-                title: 'درخواست ثبت کرده‌اید؟',
-                detail: 'ورود و پیگیری وضعیت پرونده',
-              },
-            ].map((item, index) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group relative flex items-center gap-4 border-b border-brand-100/70 px-5 py-5 transition-colors last:border-0 hover:bg-brand-50/80 sm:px-6 md:border-b-0 md:border-l md:last:border-l-0"
-              >
-                <span
-                  className={`grid size-12 shrink-0 place-items-center rounded-2xl ${
-                    index === 1
-                      ? 'bg-accent-100 text-warning'
-                      : 'bg-brand-100 text-brand-700'
-                  }`}
-                >
-                  <TravelIcon name={item.icon} className="size-6" />
-                </span>
-
-                <span className="min-w-0">
-                  <strong className="block text-sm font-black text-brand-950">
-                    {item.title}
-                  </strong>
-
-                  <small className="mt-1 block text-xs text-ink-500">
-                    {item.detail}
-                  </small>
-                </span>
-
-                <TravelIcon
-                  name="arrow"
-                  className="mr-auto size-5 shrink-0 text-brand-600 transition-transform group-hover:-translate-x-1"
-                />
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
-
+    <div className="bg-brand-50">
+      <HomeHero content={content.hero} />
       <section
         aria-labelledby="destinations-title"
-        className="relative overflow-hidden py-18 sm:py-24"
+        className="relative -mt-px overflow-hidden bg-[radial-gradient(circle_at_12%_18%,rgb(117_73_229/20%),transparent_34%),linear-gradient(180deg,#1b0b35_0%,#28104f_100%)] py-18 text-white sm:py-24"
       >
-        <Container>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-36 -left-28 size-96 rounded-full bg-accent-300/8 blur-3xl"
+        />
+        <Container className="relative z-10">
           <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <SectionHeading
               id="destinations-title"
               kicker={content.destinationIntro.kicker}
               title={content.destinationIntro.title}
               description={content.destinationIntro.description}
+              tone="dark"
             />
 
             <Link
               href="/countries"
-              className="group inline-flex shrink-0 items-center gap-3 text-sm font-black text-brand-700"
+              className="group inline-flex shrink-0 items-center gap-3 text-sm font-black text-accent-300"
             >
               مشاهده همه مقصدها
 
@@ -464,15 +274,16 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="services-title"
-        className="overflow-hidden bg-brand-50/55 py-18 sm:py-24"
+        className="relative -mt-px overflow-hidden bg-[radial-gradient(circle_at_88%_28%,rgb(99_54_209/22%),transparent_30%),linear-gradient(180deg,#28104f_0%,#17082f_100%)] py-18 text-white sm:py-24"
       >
-        <Container>
+        <Container className="relative z-10">
           <Reveal>
             <SectionHeading
               id="services-title"
               kicker={content.serviceIntro.kicker}
               title={content.serviceIntro.title}
               description={content.serviceIntro.description}
+              tone="dark"
             />
           </Reveal>
 
@@ -621,9 +432,14 @@ export default async function HomePage() {
         </section>
       </FlightScrollSection>
 
+      <div
+        aria-hidden="true"
+        className="-mt-px h-32 bg-linear-to-b from-[#4b249e] via-brand-100 to-canvas sm:h-40"
+      />
+
       <section
         aria-labelledby="trust-title"
-        className="py-18 sm:py-28"
+        className="relative -mt-px overflow-hidden bg-canvas py-18 sm:py-28"
       >
         <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal>
@@ -738,7 +554,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="py-8">
+      <section className="-mt-px bg-linear-to-b from-canvas to-brand-50 py-10">
         <Container>
           <Reveal className="relative isolate overflow-hidden rounded-[2.2rem] bg-[linear-gradient(120deg,#fff2c9_0%,#ffe39b_45%,#f7f4ff_100%)] p-7 shadow-[0_18px_55px_rgb(36_19_63/9%)] sm:p-12">
             <span
@@ -775,7 +591,7 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="faq-title"
-        className="py-18 sm:py-28"
+        className="-mt-px bg-linear-to-b from-brand-50 via-[#f5f1ff] to-[#eee8ff] py-18 sm:py-28"
       >
         <Container className="grid items-start gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-18">
           <Reveal className="lg:sticky lg:top-28">
@@ -813,6 +629,6 @@ export default async function HomePage() {
           </Reveal>
         </Container>
       </section>
-    </>
+    </div>
   )
 }

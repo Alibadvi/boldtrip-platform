@@ -16,25 +16,27 @@ export default async function CountriesPage() {
   const countries = await getCountries()
 
   return (
-    <>
-      <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-canvas py-20 sm:py-24">
+    <div className="bg-brand-50">
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#140728_0%,#28104f_48%,#4b249e_100%)] py-20 text-white sm:py-24">
         <div className="pointer-events-none absolute -top-24 right-1/4 size-80 rounded-full bg-brand-300/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-28 left-1/4 size-80 rounded-full bg-accent-300/20 blur-3xl" />
         <Container size="reading" className="relative z-10 text-center">
-          <span className="mb-3 inline-block text-sm font-extrabold text-brand-600">
+          <span className="mb-3 inline-block text-sm font-extrabold text-accent-300">
             انتخاب مقصد
           </span>
-          <h1 className="m-0 text-[clamp(2.6rem,7vw,4.5rem)] leading-tight font-black tracking-[-0.055em] text-brand-950">
+          <h1 className="m-0 text-[clamp(2.6rem,7vw,4.5rem)] leading-tight font-black tracking-[-0.055em] text-white">
             کشورها و مسیرهای ویزا
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-9 text-ink-700 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-9 text-white/68 sm:text-lg">
             مقصد را انتخاب کنید تا فقط اطلاعات منتشرشده، منبع رسمی و تاریخ آخرین بازبینی هر مسیر را
             ببینید.
           </p>
         </Container>
       </section>
 
-      <section className="bg-white py-20 sm:py-24 lg:py-28">
+      <div aria-hidden="true" className="h-24 bg-linear-to-b from-[#4b249e] to-[#faf8ff]" />
+
+      <section className="-mt-px bg-linear-to-b from-[#faf8ff] via-white to-brand-50 py-20 sm:py-24 lg:py-28">
         <Container>
           {countries.length ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -86,6 +88,6 @@ export default async function CountriesPage() {
           )}
         </Container>
       </section>
-    </>
+    </div>
   )
 }

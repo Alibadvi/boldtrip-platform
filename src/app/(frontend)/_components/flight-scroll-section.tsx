@@ -22,7 +22,7 @@ function FlightArtwork({
         width={640}
         height={427}
         loading="eager"
-        fetchPriority="low"
+        fetchPriority="high"
         decoding="async"
         draggable={false}
         className={`block h-auto w-full select-none ${mirrored ? '-scale-x-100' : ''}`}
@@ -53,11 +53,11 @@ export function FlightScrollSection({
         id={id}
         aria-labelledby={`${id}-title`}
         data-phase="clouds"
-        className="group/flight relative isolate h-[240svh] text-white [--plane-start-y:14svh] [overflow-anchor:none] motion-reduce:h-auto [@media(max-height:540px)]:h-auto [@media(max-height:700px)]:[--plane-start-y:23svh] [@media(scripting:none)]:h-auto"
+        className="group/flight relative isolate h-[240svh] text-white [--plane-start-y:14svh] [overflow-anchor:none] motion-reduce:h-auto [@media(max-height:700px)]:[--plane-start-y:23svh] [@media(scripting:none)]:h-auto"
       >
         <div
           ref={stage}
-          className="sticky top-0 isolate h-svh min-h-[540px] overflow-hidden [perspective:1000px] [@media(max-height:540px)]:relative [@media(max-height:540px)]:h-[600px]"
+          className="sticky top-0 isolate h-svh min-h-0 overflow-hidden [perspective:1000px] [@media(min-height:540px)]:min-h-[540px]"
         >
           <div
             aria-hidden="true"
@@ -125,7 +125,7 @@ export function FlightScrollSection({
             <div className="absolute inset-0 flex items-center justify-center [perspective:1000px]">
               <div
                 ref={bind('plane')}
-                className={`w-[94vw] max-w-[1100px] shrink-0 motion-reduce:[--plane-start-y:clamp(180px,30svh,300px)] [@media(max-height:540px)]:w-[min(72vw,600px)] [@media(max-height:540px)]:[--plane-start-y:180px] ${moving}`}
+                className={`w-[94vw] max-w-[1100px] shrink-0 motion-reduce:[--plane-start-y:clamp(180px,30svh,300px)] ${moving}`}
                 style={{
                   transform:
                     'translate3d(-19vw,var(--plane-start-y),-260px) rotateX(12deg) rotateY(-22deg) rotateZ(-12deg) scale(.7)',
@@ -229,7 +229,7 @@ export function FlightScrollSection({
           </div>
 
           <div
-            className="absolute inset-x-5 bottom-10 z-20 mx-auto max-w-2xl motion-reduce:hidden sm:bottom-14 [@media(max-height:540px)]:hidden [@media(scripting:none)]:hidden"
+            className="absolute inset-x-5 bottom-5 z-20 mx-auto max-w-2xl motion-reduce:hidden sm:bottom-14 [@media(max-height:540px)]:bottom-2 [@media(scripting:none)]:hidden"
             aria-hidden="true"
           >
             <div className="mb-4 flex items-center justify-between gap-3 text-[10px] text-white/55 sm:text-xs">
@@ -274,7 +274,7 @@ export function FlightScrollSection({
       <div
         id={nextSectionId}
         tabIndex={-1}
-        className="relative z-10 -mt-[40svh] scroll-mt-24 outline-none motion-reduce:mt-0 [@media(max-height:540px)]:mt-0 [@media(scripting:none)]:mt-0"
+        className="relative z-10 -mt-[40svh] scroll-mt-24 outline-none motion-reduce:mt-0 [@media(scripting:none)]:mt-0"
       >
         {children}
       </div>
