@@ -240,7 +240,14 @@ async function seed() {
 
   await payload.updateGlobal({
     slug: 'homepage',
-    data: defaultHomepageContent,
+    data: {
+      ...defaultHomepageContent,
+      hero: {
+        ...defaultHomepageContent.hero,
+        // The CMS requires this value, while the current visual hero intentionally does not render it.
+        kicker: 'معرفی بولدتریپ',
+      },
+    },
     overrideAccess: true,
   })
 
