@@ -19,16 +19,39 @@ const settings = z.object({
 })
 
 export function parseProductionEnv(input: NodeJS.ProcessEnv) {
-  const env = settings.parse(Object.fromEntries(Object.entries(input).filter(([, value]) => value !== '')))
-  if (
+  const env = settings.parse(
+    Object.fromEntries(Object.entries(input).filter(([, value]) => value !== '')),
+  )
+
+  const isRuntimeProduction =
     input.NODE_ENV === 'production' &&
     input.NEXT_PHASE !== 'phase-production-build' &&
     env.DEPLOYMENT_MODE !== 'preview'
-  ) {
-    if (env.STORAGE_MODE !== 's3' || !env.S3_BUCKET || !env.S3_ACCESS_KEY_ID || !env.S3_SECRET_ACCESS_KEY || !env.CLAMD_HOST || !env.RESEND_API_KEY || !env.EMAIL_FROM || env.STAFF_MFA_REQUIRED !== 'true' || !env.STAFF_MFA_ENCRYPTION_KEY || !input.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {
-      throw new Error('Production requires HTTPS, private S3, ClamAV, email, staff MFA. See docs/DEPLOYMENT.md.')
-    }
+
+  if (isRuntimeProduction && !input.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {
+    throw new Error('Production requires NEXT_PUBLIC_SITE_URL to use HTTPS.')
   }
+
+  if (
+    env.STORAGE_MODE === 's3' &&
+    (!env.S3_BUCKET || !env.S3_ACCESS_KEY_ID || !env.S3_SECRET_ACCESS_KEY)
+  ) {
+    throw new Error(
+      'S3 storage requires S3_BUCKET, S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY.',
+    )
+  }
+
+  const emailConfigured = Boolean(env.RESEND_API_KEY || env.EMAIL_FROM)
+  if (emailConfigured && (!env.RESEND_API_KEY || !env.EMAIL_FROM)) {
+    throw new Error('Email requires both RESEND_API_KEY and EMAIL_FROM.')
+  }
+
+  if (env.STAFF_MFA_REQUIRED === 'true' && !env.STAFF_MFA_ENCRYPTION_KEY) {
+    throw new Error(
+      'STAFF_MFA_REQUIRED=true requires STAFF_MFA_ENCRYPTION_KEY.',
+    )
+  }
+
   return env
 }
 
