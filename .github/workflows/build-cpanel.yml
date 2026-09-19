@@ -1,0 +1,78 @@
+name: Build cPanel artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: boldtrip_build
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d boldtrip_build"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      CI: true
+      NODE_ENV: production
+      DEPLOYMENT_MODE: production
+      STORAGE_MODE: local
+      STAFF_MFA_REQUIRED: false
+      NEXT_PUBLIC_SITE_URL: https://boldtrip.ir
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/boldtrip_build
+      PAYLOAD_SECRET: build-only-secret-not-used-in-production-1234567890abcdef
+      BOOKING_HOLD_MINUTES: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.0
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.21.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare build database
+        run: pnpm payload migrate
+
+      - name: Generate Payload artifacts
+        run: |
+          pnpm generate:types
+          pnpm generate:importmap
+
+      - name: Build
+        run: pnpm build
+
+      - name: Assemble cPanel runtime
+        run: |
+          mkdir -p .next/standalone/.next
+          cp -R .next/static .next/standalone/.next/static
+          cp -R public .next/standalone/public
+          mkdir -p .next/standalone/private-uploads/documents
+          tar -czf boldtrip-cpanel.tar.gz -C .next/standalone .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: boldtrip-cpanel
+          path: boldtrip-cpanel.tar.gz
+          if-no-files-found: error
+          retention-days: 7
