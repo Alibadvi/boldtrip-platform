@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- cPanel entry point is intentionally CommonJS */
 const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')

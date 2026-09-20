@@ -223,6 +223,8 @@ export function SiteHeader() {
   }, [menuOpen, closeMenu])
 
   useEffect(() => {
+    // Route transitions must close the modal navigation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     closeMenu()
   }, [pathname, closeMenu])
 
