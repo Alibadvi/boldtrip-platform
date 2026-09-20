@@ -17,49 +17,21 @@ export function BrandMark({
       href="/"
       onClick={onNavigate}
       aria-label="بولدتریپ؛ صفحه اصلی"
-      className="group inline-flex shrink-0 items-center gap-3 rounded-2xl focus-visible:outline-none"
+      className={`group inline-flex shrink-0 items-center rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300 focus-visible:ring-offset-2 ${
+        inverse ? 'bg-white/95 px-2.5 py-1.5 shadow-[0_12px_30px_rgb(0_0_0/18%)]' : ''
+      }`}
     >
-      <span className="relative grid size-14 shrink-0 place-items-center overflow-hidden rounded-[1.15rem] bg-linear-to-br from-brand-950 via-brand-800 to-brand-600 shadow-[0_12px_30px_rgb(74_42_150/25%)] ring-1 ring-white/20 sm:size-16">
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 bg-linear-to-tr from-transparent via-white/10 to-white/25"
-        />
-
-        <Image
-          src="/assets/boldtrip-logo.jpg"
-          alt=""
-          width={120}
-          height={120}
-          sizes="64px"
-          priority
-          className="relative size-[118%] max-w-none object-cover mix-blend-screen motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-2"
-        />
-
-        <span
-          aria-hidden="true"
-          className="absolute -top-2 -right-2 size-5 rounded-full bg-accent-300 shadow-[0_0_20px_rgb(255_212_111/80%)]"
-        />
-      </span>
-
-      {!compact && (
-        <span className="hidden flex-col sm:flex">
-          <strong
-            className={`text-lg font-black leading-6 ${
-              inverse ? 'text-white' : 'text-brand-950'
-            }`}
-          >
-            بولدتریپ
-          </strong>
-
-          <small
-            className={`mt-1 text-[0.67rem] font-medium ${
-              inverse ? 'text-white/60' : 'text-ink-500'
-            }`}
-          >
-            ویزا، مهاجرت و سفر
-          </small>
-        </span>
-      )}
+      <Image
+        src={compact ? '/assets/boldtrip-mark.png' : '/assets/boldtrip-logo.png'}
+        alt="بولدتریپ"
+        width={compact ? 72 : 246}
+        height={compact ? 72 : 82}
+        sizes={compact ? '64px' : '(max-width: 640px) 154px, 184px'}
+        priority
+        className={`h-auto object-contain motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.025] ${
+          compact ? 'w-14 sm:w-16' : 'w-[9.6rem] sm:w-[11.5rem]'
+        }`}
+      />
     </Link>
   )
 }

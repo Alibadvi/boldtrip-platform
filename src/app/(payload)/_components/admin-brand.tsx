@@ -1,21 +1,29 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 export function AdminIcon() {
   return (
-    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" role="img" aria-label="BoldTrip">
-      <rect width="40" height="40" rx="13" fill="#5b34c4" />
-      <path d="M27 7h6v6a6 6 0 0 1-6-6Z" fill="#f5b82e" />
-      <path d="M13 11h7a5 5 0 0 1 3 9 5 5 0 0 1-3 9h-7V11Z" stroke="white" strokeWidth="2.5" strokeLinejoin="round" />
-      <path d="M13 20h7" stroke="white" strokeWidth="2.5" />
-    </svg>
+    <Image
+      src="/assets/boldtrip-mark.png"
+      alt="BoldTrip"
+      width={40}
+      height={40}
+      className="bt:size-10 bt:object-contain"
+    />
   )
 }
 
 export function AdminLogo() {
   return (
     <div className="bt:flex bt:flex-col bt:items-center bt:gap-3 bt:py-4">
-      <AdminIcon />
-      <span dir="ltr" className="bt:text-3xl bt:font-bold bt:tracking-tight bt:text-[#24133f]">BoldTrip</span>
+      <Image
+        src="/assets/boldtrip-logo.png"
+        alt="BoldTrip"
+        width={246}
+        height={82}
+        className="bt:h-auto bt:w-[220px] bt:object-contain"
+        priority
+      />
       <span className="bt:text-sm bt:text-slate-500">پنل مدیریت خدمات و سفر</span>
     </div>
   )

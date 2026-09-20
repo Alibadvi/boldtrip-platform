@@ -20,10 +20,10 @@ const vazirmatn = localFont({
 export const metadata: Metadata = {
   icons: {
     icon: {
-      url: '/brand-icon.svg',
-      type: 'image/svg+xml',
+      url: '/assets/boldtrip-mark.png',
+      type: 'image/png',
     },
-    shortcut: '/brand-icon.svg',
+    shortcut: '/assets/boldtrip-mark.png',
   },
   title: {
     default: 'BoldTrip | خدمات ویزا، وقت سفارت و مشاوره',
