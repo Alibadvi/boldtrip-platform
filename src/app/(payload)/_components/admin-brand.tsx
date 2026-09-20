@@ -17,11 +17,11 @@ export function AdminLogo() {
   return (
     <div className="bt:flex bt:flex-col bt:items-center bt:gap-3 bt:py-4">
       <Image
-        src="/assets/boldtrip-logo.png"
+        src="/assets/boldtrip-logo.jpg"
         alt="BoldTrip"
         width={246}
         height={82}
-        className="bt:h-auto bt:w-[220px] bt:object-contain"
+        className="bt:h-auto bt:w-[220px] bt:rounded-xl bt:bg-black bt:object-contain"
         priority
       />
       <span className="bt:text-sm bt:text-slate-500">پنل مدیریت خدمات و سفر</span>
