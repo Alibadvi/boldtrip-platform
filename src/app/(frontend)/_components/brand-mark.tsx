@@ -16,13 +16,13 @@ export function BrandMark({
     <Link
       href="/"
       onClick={onNavigate}
-      aria-label="بولدتریپ؛ صفحه اصلی"
-      className={`group inline-flex shrink-0 items-center overflow-hidden rounded-xl bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300 focus-visible:ring-offset-2 ${
+      aria-label=" صفحه اصلی"
+      className={`group inline-flex shrink-0 items-center overflow-hidden rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300 focus-visible:ring-offset-2 ${
         inverse ? 'shadow-[0_12px_30px_rgb(0_0_0/28%)]' : 'shadow-[0_8px_24px_rgb(36_19_63/12%)]'
       }`}
     >
       <Image
-        src={compact ? '/assets/boldtrip-mark.png' : '/assets/boldtrip-logo.jpg'}
+        src={compact ? '/assets/boldtrip-mark.png' : '/assets/boldtrip-logo.png'}
         alt="بولدتریپ"
         width={compact ? 72 : 246}
         height={compact ? 72 : 82}

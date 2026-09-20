@@ -21,7 +21,7 @@ export function AdminLogo() {
         alt="BoldTrip"
         width={246}
         height={82}
-        className="bt:h-auto bt:w-[220px] bt:rounded-xl bt:bg-black bt:object-contain"
+        className="bt:h-auto bt:w-[220px] bt:rounded-xl bt:object-contain"
         priority
       />
       <span className="bt:text-sm bt:text-slate-500">پنل مدیریت خدمات و سفر</span>
