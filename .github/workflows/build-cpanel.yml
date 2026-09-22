@@ -2,6 +2,8 @@ name: Build cPanel artifact
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   build:
