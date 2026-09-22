@@ -21,6 +21,8 @@ export function isStaffRole(value: unknown): value is StaffRole {
 }
 
 export function getStaffRoles(user: unknown): StaffRole[] {
+  const mfaRequired = process.env.STAFF_MFA_REQUIRED === 'true'
+
   if (
     !user ||
     typeof user !== 'object' ||
@@ -28,7 +30,7 @@ export function getStaffRoles(user: unknown): StaffRole[] {
     user.collection !== 'staff' ||
     !('accountStatus' in user) ||
     user.accountStatus !== 'active' ||
-    (process.env.NODE_ENV === 'production' && (!('mfaEnabled' in user) || user.mfaEnabled !== true)) ||
+    (mfaRequired && (!('mfaEnabled' in user) || user.mfaEnabled !== true)) ||
     !('roles' in user)
   ) {
     return []
