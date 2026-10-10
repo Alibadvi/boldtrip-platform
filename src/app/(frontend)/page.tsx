@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import type { Metadata } from 'next'
 
 import { getFeaturedCountries } from '@/modules/catalog'
 import { getHomepageContent } from '@/modules/content'
@@ -7,9 +7,11 @@ import { buttonVariants, Container } from '@/shared/ui'
 
 import { FaqList } from './_components/faq-list'
 import { FlightScrollSection } from './_components/flight-scroll-section'
-import { Parallax, Reveal } from './_components/scroll-motion'
+import { Reveal } from './_components/scroll-motion'
 import { TravelIcon } from './_components/travel-icon'
 import { HomeHero } from './_components/home-hero'
+
+export const metadata: Metadata = { alternates: { canonical: '/' } }
 
 export const dynamic = 'force-dynamic'
 
@@ -203,7 +205,7 @@ export default async function HomePage() {
           </Reveal>
 
           {countries.length > 0 ? (
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
               {countries.map((country) => {
                 const theme = getCountryTheme(country.code)
 
@@ -211,7 +213,7 @@ export default async function HomePage() {
                   <Reveal key={country.id} className="h-full">
                     <Link
                       href={`/countries/${country.slug}`}
-                      className={`group relative flex h-full min-h-80 flex-col overflow-hidden rounded-[1.75rem] border border-white bg-linear-to-br p-7 shadow-[0_10px_35px_rgb(36_19_63/7%)] transition-all duration-500 hover:border-brand-200 hover:shadow-raised motion-safe:hover:-translate-y-2 ${theme.surface}`}
+                      className={`group relative flex h-full min-h-64 flex-col overflow-hidden rounded-[1.75rem] border border-white bg-linear-to-br p-4 shadow-[0_10px_35px_rgb(36_19_63/7%)] transition-all duration-500 hover:border-brand-200 hover:shadow-raised sm:min-h-72 sm:p-7 motion-safe:hover:-translate-y-2 ${theme.surface}`}
                     >
                       <span
                         aria-hidden="true"
@@ -226,7 +228,7 @@ export default async function HomePage() {
                       <div className="relative flex items-start justify-between">
                         <span
                           aria-hidden="true"
-                          className="grid size-17 place-items-center rounded-[1.35rem] border border-white/80 bg-white/70 text-5xl shadow-sm backdrop-blur"
+                          className="grid size-12 place-items-center rounded-[1.35rem] border border-white/80 bg-white/70 text-3xl shadow-sm backdrop-blur sm:size-17 sm:text-5xl"
                         >
                           {country.flag}
                         </span>
@@ -239,8 +241,8 @@ export default async function HomePage() {
                         </span>
                       </div>
 
-                      <div className="relative mt-auto pt-12">
-                        <h3 className="text-2xl font-black text-brand-950">
+                      <div className="relative mt-auto pt-8 sm:pt-12">
+                        <h3 className="text-lg font-black text-brand-950 sm:text-2xl">
                           {country.name}
                         </h3>
 
@@ -354,6 +356,7 @@ export default async function HomePage() {
               )
             })}
           </div>
+          <Link href="/services/boldtrip-pricing" className={buttonVariants({ className: 'mt-8 bg-accent-300 text-brand-950 hover:bg-accent-200' })}>مشاهده تعرفه خدمات</Link>
         </Container>
       </section>
 
@@ -441,7 +444,7 @@ export default async function HomePage() {
         aria-labelledby="trust-title"
         className="relative -mt-px overflow-hidden bg-canvas py-18 sm:py-28"
       >
-        <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <Container className="max-w-4xl">
           <Reveal>
             <SectionHeading
               id="trust-title"
@@ -463,94 +466,6 @@ export default async function HomePage() {
             </Link>
           </Reveal>
 
-          <Reveal className="relative">
-            <div
-              aria-hidden="true"
-              className="absolute inset-8 rounded-full bg-brand-300/25 blur-3xl"
-            />
-
-            <div className="relative overflow-hidden rounded-[2rem] border border-brand-100 bg-white p-5 shadow-raised sm:p-8">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
-                <div className="flex items-center gap-3">
-                  <span className="grid size-11 place-items-center rounded-2xl bg-brand-600 text-white">
-                    <TravelIcon name="shield" className="size-5" />
-                  </span>
-
-                  <span>
-                    <strong className="block text-sm font-black text-brand-950">
-                      پرونده ویزای شما
-                    </strong>
-
-                    <small className="text-xs text-ink-500">
-                      نمونه حساب کاربری
-                    </small>
-                  </span>
-                </div>
-
-                <span className="rounded-full bg-success-soft px-3 py-1 text-xs font-bold text-success">
-                  در حال بررسی
-                </span>
-              </div>
-
-              <div className="mt-6 grid gap-3">
-                {[
-                  {
-                    icon: 'document' as const,
-                    title: 'اطلاعات و مدارک',
-                    detail: '۴ مدرک با موفقیت بارگذاری شده',
-                    tone: 'bg-brand-100 text-brand-700',
-                    progress: 'w-full',
-                  },
-                  {
-                    icon: 'shield' as const,
-                    title: 'بررسی کارشناسی',
-                    detail: 'بررسی اولیه پرونده در حال انجام',
-                    tone: 'bg-success-soft text-success',
-                    progress: 'w-2/3',
-                  },
-                  {
-                    icon: 'calendar' as const,
-                    title: 'اقدام بعدی',
-                    detail: 'نتیجه بررسی در حساب شما نمایش داده می‌شود',
-                    tone: 'bg-accent-100 text-warning',
-                    progress: 'w-1/3',
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.title}
-                    className="rounded-2xl border border-border bg-canvas/60 p-4"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span
-                        className={`grid size-10 shrink-0 place-items-center rounded-xl ${item.tone}`}
-                      >
-                        <TravelIcon
-                          name={item.icon}
-                          className="size-5"
-                        />
-                      </span>
-
-                      <span className="min-w-0">
-                        <strong className="block text-sm font-black text-brand-950">
-                          {item.title}
-                        </strong>
-
-                        <small className="mt-1 block text-xs text-ink-500">
-                          {item.detail}
-                        </small>
-                      </span>
-                    </div>
-
-                    <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-brand-100">
-                      <span
-                        className={`block h-full rounded-full bg-linear-to-l from-brand-600 to-brand-400 ${item.progress}`}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Reveal>
         </Container>
       </section>
 

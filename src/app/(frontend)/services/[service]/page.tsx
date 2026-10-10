@@ -51,13 +51,14 @@ export async function generateMetadata({
 
   if (!service) {
     return {
-      title: 'خدمت پیدا نشد | BoldTrip',
+      title: 'خدمت پیدا نشد',
     }
   }
 
   return {
-    title: `${service.title} | BoldTrip`,
+    title: service.title.replace(/\s*\|\s*BoldTrip$/, ''),
     description: service.summary,
+    alternates: { canonical: `/services/${service.slug}` },
   }
 }
 

@@ -125,7 +125,7 @@ async function findCountry(slug: string): Promise<Country | null> {
 
   const record = result.docs[0]
 
-  return record ? countryFromRecord(record) : null
+  return record && record.code.toUpperCase() !== 'AE' && record.slug !== 'united-arab-emirates' ? countryFromRecord(record) : null
 }
 
 export const getCountries = cachePublicQuery(
@@ -145,9 +145,7 @@ export const getCountries = cachePublicQuery(
       where: publishedOnly,
     })
 
-    return (result.docs).map(
-      countryFromRecord,
-    )
+    return result.docs.filter((record) => record.code.toUpperCase() !== 'AE' && record.slug !== 'united-arab-emirates').map(countryFromRecord)
   },
 )
 
@@ -161,7 +159,7 @@ export const getFeaturedCountries = cachePublicQuery(
       collection: 'countries',
       depth: 0,
       draft: false,
-      limit: 4,
+      limit: 100,
       overrideAccess: true,
       pagination: false,
       sort: 'sortOrder',
@@ -177,9 +175,11 @@ export const getFeaturedCountries = cachePublicQuery(
       },
     })
 
-    return (result.docs).map(
-      countryFromRecord,
-    )
+    return result.docs
+      .filter((record) => record.code.toUpperCase() !== 'AE' && record.slug !== 'united-arab-emirates')
+      .sort((a, b) => (a.code.toUpperCase() === 'CA' ? -1 : b.code.toUpperCase() === 'CA' ? 1 : 0))
+      .slice(0, 12)
+      .map(countryFromRecord)
   },
 )
 
@@ -210,6 +210,7 @@ export const getEmbassyAppointmentCountries = cachePublicQuery(
     })
 
     return (result.docs)
+      .filter((record) => record.code.toUpperCase() !== 'AE' && record.slug !== 'united-arab-emirates')
       .map(countryFromRecord)
       .filter(
         (country) =>

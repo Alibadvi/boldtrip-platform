@@ -13,6 +13,7 @@ type SignUpPageProps = {
 export const metadata: Metadata = {
   title: 'ایجاد حساب کاربری',
   description: 'ساخت حساب مشتری BoldTrip برای رزرو و پیگیری خدمات.',
+  robots: { index: false },
 }
 
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {

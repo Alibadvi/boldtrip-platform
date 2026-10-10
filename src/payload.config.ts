@@ -18,6 +18,10 @@ import {
   Visas,
 } from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
+import { ContactSettings } from '@/modules/content/infrastructure/payload/contact.global'
+import { PricingEntries } from '@/modules/content/infrastructure/payload/pricing-entries.collection'
+import { Articles } from '@/modules/content/infrastructure/payload/articles.collection'
+import { CountryQuestions } from '@/modules/content/infrastructure/payload/country-questions.collection'
 import { CustomerDocuments } from '@/modules/documents'
 import { Customers, Staff } from '@/modules/identity'
 import { staffCookiePrefix } from '@/modules/identity/domain/session'
@@ -87,12 +91,16 @@ export default buildConfig({
     ConsultationSlots,
     ConsultationBookings,
     PaymentReceipts,
+    PricingEntries,
+    Articles,
+    CountryQuestions,
   ],
 
   globals: [
     Homepage,
     ConsultationPage,
     PaymentSettings,
+    ContactSettings,
   ],
 
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],

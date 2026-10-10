@@ -101,14 +101,14 @@ export function HomeHero({ content }: HomeHeroProps) {
 
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
             <Link
-              href={content.primaryActionHref}
+              href="/sign-up?next=/countries"
               className={buttonVariants({
                 size: 'large',
                 className:
                   'group rounded-full bg-accent-300 px-7 font-black text-brand-950 shadow-[0_18px_45px_rgb(255_196_61/20%)] transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-accent-200 hover:shadow-[0_22px_55px_rgb(255_196_61/28%)]',
               })}
             >
-              {content.primaryActionLabel}
+              ثبت‌نام و بررسی رایگان پرونده
 
               <TravelIcon
                 name="arrow"
@@ -117,7 +117,7 @@ export function HomeHero({ content }: HomeHeroProps) {
             </Link>
 
             <Link
-              href={content.secondaryActionHref}
+              href="/services/boldtrip-pricing"
               className="group inline-flex min-h-13 items-center justify-center gap-3 rounded-full bg-white/9 px-7 text-sm font-black text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/10%)] backdrop-blur-xl transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/18%)] sm:text-base"
             >
               <TravelIcon
@@ -125,7 +125,7 @@ export function HomeHero({ content }: HomeHeroProps) {
                 className="size-5 text-accent-300 transition-transform duration-300 group-hover:rotate-6"
               />
 
-              {content.secondaryActionLabel}
+              مشاهده تعرفه خدمات
             </Link>
           </div>
 

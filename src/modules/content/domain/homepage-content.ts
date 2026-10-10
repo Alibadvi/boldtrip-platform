@@ -1,3 +1,5 @@
+import { consultationCancellationPolicy } from './cancellation-policy'
+
 export const faqCategories = ['visa-services', 'documents', 'consultation-payment'] as const
 
 export type FaqCategory = (typeof faqCategories)[number]
@@ -70,7 +72,6 @@ export type HomepageContent = {
     title: string
   }
 }
-
 export const defaultHomepageContent: HomepageContent = {
   hero: {
     kicker: '',
@@ -236,7 +237,7 @@ export const defaultHomepageContent: HomepageContent = {
       showOnHomepage: false,
       question: 'آیا می‌توانم زمان مشاوره را تغییر دهم؟',
       answer:
-        'امکان تغییر یا لغو بر اساس قوانین رزرو و بازه زمانی اعلام‌شده برای جلسه خواهد بود. جزئیات پیش از نهایی‌کردن رزرو نمایش داده می‌شود.',
+        consultationCancellationPolicy,
     },
   ],
 }

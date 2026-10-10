@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
 import { defaultHomepageContent, type HomepageContent } from '../domain/homepage-content'
+import { consultationCancellationPolicy } from '../domain/cancellation-policy'
 
 type StoredHomepage = Partial<HomepageContent>
 
@@ -43,7 +44,17 @@ function mergeWithDefaults(stored: StoredHomepage): HomepageContent {
       ...defaultHomepageContent.faqIntro,
       ...stored.faqIntro,
     },
-    faqs: storedItemsOr(stored.faqs, defaultHomepageContent.faqs),
+    faqs: [
+      ...storedItemsOr(stored.faqs, defaultHomepageContent.faqs).filter((faq) =>
+        !(/(لغو|جابه‌جایی|تغییر).*(مشاوره|جلسه)|(مشاوره|جلسه).*(لغو|جابه‌جایی|تغییر)/.test(faq.question)),
+      ),
+      {
+        question: 'قانون لغو یا جابه‌جایی جلسه مشاوره چیست؟',
+        answer: consultationCancellationPolicy,
+        category: 'consultation-payment',
+        showOnHomepage: false,
+      },
+    ],
   }
 }
 

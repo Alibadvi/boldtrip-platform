@@ -4,9 +4,12 @@ import {
   ContentPage,
   ContentSection,
 } from '@/app/(frontend)/_components/content-page'
+import { consultationCancellationPolicy } from '@/modules/content/domain/cancellation-policy'
 
 export const metadata: Metadata = {
   title: 'قوانین لغو و استرداد',
+  description: 'قانون لغو و جابه‌جایی جلسه مشاوره و شرایط استرداد در بولدتریپ.',
+  alternates: { canonical: '/cancellation-policy' },
 }
 
 export default function CancellationPolicyPage() {
@@ -17,12 +20,7 @@ export default function CancellationPolicyPage() {
       title="لغو، جابه‌جایی و استرداد"
     >
       <ContentSection title="رزرو مشاوره">
-        <p>
-          درخواست لغو یا جابه‌جایی باید پیش از زمان
-          جلسه و از مسیر ارتباطی رسمی اعلام شود.
-          بازه دقیق مجاز باید پیش از انتشار نهایی توسط
-          مدیریت تعیین شود.
-        </p>
+        <p>{consultationCancellationPolicy}</p>
       </ContentSection>
 
       <ContentSection title="خدمات پرونده">

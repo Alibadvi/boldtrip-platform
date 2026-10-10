@@ -13,6 +13,7 @@ import { FaqList } from '../_components/faq-list'
 export const metadata: Metadata = {
   title: 'سوالات متداول',
   description: 'پاسخ سوالات متداول درباره ویزا، وقت سفارت، مشاوره، مدارک و پرداخت در بلدتریپ.',
+  alternates: { canonical: '/faq' },
 }
 
 export const dynamic = 'force-dynamic'

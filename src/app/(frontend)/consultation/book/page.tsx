@@ -14,6 +14,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'انتخاب زمان مشاوره',
+  robots: { index: false },
 }
 
 export const dynamic = 'force-dynamic'

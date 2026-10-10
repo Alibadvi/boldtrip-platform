@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: VisaPageProps): Promise<Metad
     ? {
         title: `${data.visa.title} ${data.country.name}`,
         description: data.visa.summary,
+        alternates: { canonical: `/countries/${data.country.slug}/visas/${data.visa.slug}` },
       }
     : { title: 'ویزای موردنظر پیدا نشد' }
 }

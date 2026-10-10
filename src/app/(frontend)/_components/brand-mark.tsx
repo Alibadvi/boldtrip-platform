@@ -22,14 +22,14 @@ export function BrandMark({
       }`}
     >
       <Image
-        src={compact ? '/assets/boldtrip-mark.png' : '/assets/boldtrip-logo.png'}
+        src="/assets/boldtrip-official.jpg"
         alt="بولدتریپ"
-        width={compact ? 72 : 246}
-        height={compact ? 72 : 82}
+        width={246}
+        height={82}
         sizes={compact ? '64px' : '(max-width: 640px) 154px, 184px'}
         priority
         className={`h-auto object-contain motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.02] ${
-          compact ? 'w-14 sm:w-16' : 'w-[10rem] sm:w-[11.5rem]'
+          compact ? 'w-16 sm:w-20' : 'w-[10rem] sm:w-[11.5rem]'
         }`}
       />
     </Link>
