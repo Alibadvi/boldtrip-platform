@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import { SiteFooter } from './_components/site-footer'
 import { SiteHeader } from './_components/site-header'
+import { MobileSignupCta } from './_components/mobile-signup-cta'
 
 import './globals.css'
 
@@ -18,15 +19,16 @@ const vazirmatn = localFont({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://boldtrip.ir'),
   icons: {
     icon: {
-      url: '/assets/boldtrip-mark.png',
-      type: 'image/png',
+      url: '/assets/boldtrip-official.jpg',
+      type: 'image/jpeg',
     },
-    shortcut: '/assets/boldtrip-mark.png',
+    shortcut: '/assets/boldtrip-official.jpg',
   },
   title: {
-    default: 'BoldTrip | خدمات ویزا، وقت سفارت و مشاوره',
+    default: 'خدمات ویزا، وقت سفارت و مشاوره | BoldTrip',
     template: '%s | BoldTrip',
   },
   description:
@@ -45,7 +47,7 @@ export default function FrontendLayout({
       data-scroll-behavior="smooth"
       className={`${vazirmatn.variable} bg-canvas motion-safe:scroll-smooth`}
     >
-      <body className="min-h-screen overflow-x-clip bg-canvas font-sans leading-8 text-ink-950 antialiased selection:bg-brand-100 selection:text-brand-950">
+      <body className="min-h-screen overflow-x-clip bg-canvas pb-18 font-sans leading-8 text-ink-950 antialiased selection:bg-brand-100 selection:text-brand-950 sm:pb-0">
         <a
           href="#main-content"
           className="sr-only fixed top-3 right-3 z-[100] rounded-xl bg-brand-950 px-5 py-3 font-bold text-white focus:not-sr-only"
@@ -60,6 +62,7 @@ export default function FrontendLayout({
         </main>
 
         <SiteFooter />
+        <MobileSignupCta />
       </body>
     </html>
   )

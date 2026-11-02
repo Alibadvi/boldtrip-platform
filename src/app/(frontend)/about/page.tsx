@@ -8,7 +8,8 @@ import {
 import { buttonVariants } from '@/shared/ui'
 
 export const metadata: Metadata = {
-  title: 'درباره BoldTrip',
+  title: 'درباره ما',
+  alternates: { canonical: '/about' },
 }
 
 export default function AboutPage() {

@@ -1,12 +1,19 @@
 import type { Metadata } from 'next'
+import { getPricingDestinations } from '@/modules/content/application/get-pricing-destinations'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { CatalogBreadcrumbs, getCountryPage } from '@/modules/catalog'
+import {
+  getPricingEntries,
+  getPublishedCountryQuestions,
+} from '@/modules/content/application/get-public-content'
+import { submitCountryQuestion } from '@/modules/content/application/submit-country-question'
 import { buttonVariants, Card, Container } from '@/shared/ui'
 
 type CountryPageProps = {
   params: Promise<{ country: string }>
+  searchParams: Promise<{ question?: string }>
 }
 
 export const dynamic = 'force-dynamic'
@@ -19,11 +26,12 @@ export async function generateMetadata({ params }: CountryPageProps): Promise<Me
     ? {
         title: `ویزاهای ${data.country.name}`,
         description: data.country.summary,
+        alternates: { canonical: `/countries/${data.country.slug}` },
       }
     : { title: 'مقصد پیدا نشد' }
 }
 
-export default async function CountryPage({ params }: CountryPageProps) {
+export default async function CountryPage({ params, searchParams }: CountryPageProps) {
   const { country: countrySlug } = await params
   const data = await getCountryPage(countrySlug)
 
@@ -32,6 +40,11 @@ export default async function CountryPage({ params }: CountryPageProps) {
   }
 
   const { country, visas } = data
+  const [pricing, questions] = await Promise.all([
+    getPricingEntries(country.code).then(getPricingDestinations),
+    getPublishedCountryQuestions(country.id),
+  ])
+  const questionState = (await searchParams).question
 
   return (
     <div className="bg-brand-50">
@@ -87,7 +100,64 @@ export default async function CountryPage({ params }: CountryPageProps) {
         </Container>
       </section>
 
-      <section className="-mt-px bg-linear-to-b from-white via-brand-50 to-[#f1ecff] py-20 sm:py-24" aria-labelledby="visa-list-title">
+      <section className="bg-white py-12 sm:py-16" aria-labelledby="country-pricing-title">
+        <Container>
+          <div className="rounded-3xl border border-brand-100 bg-brand-50 p-6 sm:p-9">
+            <h2 id="country-pricing-title" className="text-2xl font-black text-brand-950">
+              تعرفه خدمات {country.name}
+            </h2>
+            <p className="mt-2 text-sm leading-7 text-ink-700">
+              هزینه خدمات و هزینه‌های رسمی جداگانه اعلام می‌شوند.
+            </p>
+            {pricing.length ? (
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {pricing.map((entry) => (
+                  <div key={entry.id} className="rounded-2xl bg-white p-5 shadow-card">
+                    <h3 className="font-black text-brand-950">
+                      {entry.kind === 'visa'
+                        ? 'هزینه خدمات ویزا'
+                        : entry.kind === 'embassy'
+                          ? 'هزینه وقت سفارت'
+                          : entry.kind === 'appeal'
+                            ? 'هزینه اعتراض به ریجکتی'
+                            : entry.title}
+                    </h3>
+                    <p className="mt-2 text-sm">{entry.priceLabel || 'پس از بررسی اعلام می‌شود'}</p>
+                    {entry.officialCostNote && (
+                      <p className="mt-3 border-t border-border pt-3 text-xs">
+                        هزینه‌های رسمی جداگانه: {entry.officialCostNote}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-5 text-sm">
+                تعرفه این کشور هنوز منتشر نشده است؛ پیش از واریز هر مبلغ، جزئیات را از مدیریت دریافت
+                کنید.
+              </p>
+            )}
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href={
+                  pricing.find((entry) => entry.kind === 'visa')?.actionHref || '/assessment/apply'
+                }
+                className={buttonVariants({ variant: 'secondary' })}
+              >
+                درخواست این خدمت
+              </Link>
+              <Link href="/assessment/apply" className={buttonVariants()}>
+                بررسی رایگان مدارک
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <section
+        className="-mt-px bg-linear-to-b from-white via-brand-50 to-[#f1ecff] py-20 sm:py-24"
+        aria-labelledby="visa-list-title"
+      >
         <Container>
           <div className="mb-9">
             <span className="text-sm font-extrabold text-brand-600">مسیرهای منتشرشده</span>
@@ -136,6 +206,109 @@ export default async function CountryPage({ params }: CountryPageProps) {
               </p>
             </Card>
           )}
+        </Container>
+      </section>
+
+      <section className="bg-white py-16" aria-labelledby="country-questions-title">
+        <Container className="grid gap-8 lg:grid-cols-2">
+          <div>
+            <h2 id="country-questions-title" className="text-2xl font-black text-brand-950">
+              سؤال خود را بپرسید
+            </h2>
+            <p className="mt-2 text-sm text-ink-700">
+              اطلاعات تماس شما عمومی نمی‌شود. پرسش تنها پس از تأیید مدیریت منتشر خواهد شد.
+            </p>
+            {questionState === 'sent' && (
+              <p role="status" className="mt-4 rounded-xl bg-emerald-50 p-3 text-emerald-900">
+                پرسش شما دریافت شد و در انتظار بررسی است.
+              </p>
+            )}
+            {questionState === 'invalid' && (
+              <p role="alert" className="mt-4 rounded-xl bg-amber-50 p-3 text-amber-900">
+                اطلاعات پرسش کامل نیست؛ لطفاً دوباره بررسی کنید.
+              </p>
+            )}
+            {questionState === 'limited' && (
+              <p role="alert" className="mt-4 rounded-xl bg-amber-50 p-3 text-amber-900">
+                تعداد پرسش‌های ارسالی زیاد است. فردا دوباره تلاش کنید.
+              </p>
+            )}
+            <form action={submitCountryQuestion.bind(null, country.id)} className="mt-5 grid gap-3">
+              <label className="grid gap-1">
+                نام{' '}
+                <input
+                  name="firstName"
+                  required
+                  minLength={2}
+                  maxLength={80}
+                  className="rounded-xl border border-border p-3"
+                />
+              </label>
+              <label className="grid gap-1">
+                تلفن یا ایمیل{' '}
+                <input
+                  name="contact"
+                  required
+                  minLength={5}
+                  maxLength={200}
+                  dir="ltr"
+                  className="rounded-xl border border-border p-3"
+                />
+              </label>
+              <label className="grid gap-1">
+                متن سؤال{' '}
+                <textarea
+                  name="question"
+                  required
+                  minLength={10}
+                  maxLength={2000}
+                  rows={4}
+                  className="rounded-xl border border-border p-3"
+                />
+              </label>
+              <input
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+                aria-hidden="true"
+              />
+              <label className="flex items-center gap-2 text-sm">
+                <input name="consent" type="checkbox" required /> با{' '}
+                <Link href="/privacy" className="text-brand-700 underline">
+                  سیاست حریم خصوصی
+                </Link>{' '}
+                موافقم.
+              </label>
+              <button type="submit" className={buttonVariants({ className: 'justify-center' })}>
+                ارسال سؤال درباره {country.name}
+              </button>
+            </form>
+          </div>
+          <div className="space-y-4">
+            {questions.map((item) => (
+              <article
+                key={item.id}
+                className="rounded-2xl border border-brand-100 bg-brand-50 p-5"
+              >
+                <p className="text-xs font-bold text-brand-700">{item.firstName}</p>
+                <h3 className="mt-2 font-bold text-brand-950">{item.question}</h3>
+                {item.answer && (
+                  <p className="mt-3 border-t border-brand-100 pt-3 text-sm leading-8">
+                    {item.answer}
+                  </p>
+                )}
+                {item.answeredAt && (
+                  <time className="mt-2 block text-xs text-ink-500" dateTime={item.answeredAt}>
+                    {new Intl.DateTimeFormat('fa-IR', { dateStyle: 'long' }).format(
+                      new Date(item.answeredAt),
+                    )}
+                  </time>
+                )}
+              </article>
+            ))}
+          </div>
         </Container>
       </section>
 

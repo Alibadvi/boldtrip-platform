@@ -1,3 +1,5 @@
+import { consultationCancellationPolicy } from './cancellation-policy'
+
 export const faqCategories = ['visa-services', 'documents', 'consultation-payment'] as const
 
 export type FaqCategory = (typeof faqCategories)[number]
@@ -70,16 +72,15 @@ export type HomepageContent = {
     title: string
   }
 }
-
 export const defaultHomepageContent: HomepageContent = {
   hero: {
     kicker: '',
-    title: 'برای ویزا و وقت سفارت،',
-    accent: 'با اطمینان شروع کنید.',
+    title: 'ویزای تو در یک قدمی توست؛',
+    accent: 'رؤیایت را همین امروز شروع کن.',
     description:
-      'از شناخت شرایط مقصد تا ارسال مدارک و پیگیری درخواست، همه‌چیز در یک مسیر روشن و قابل‌پیگیری کنار شماست.',
-    primaryActionLabel: 'بررسی مقصدها',
-    primaryActionHref: '/countries',
+      'ارزیابی اولیه شرایط و مدارکت در بولدتریپ رایگان است.',
+    primaryActionLabel: 'ارزیابی رایگان شرایط و مدارک',
+    primaryActionHref: '/assessment/apply',
     secondaryActionLabel: 'رزرو مشاوره',
     secondaryActionHref: '/consultation/book',
     highlights: [
@@ -236,7 +237,7 @@ export const defaultHomepageContent: HomepageContent = {
       showOnHomepage: false,
       question: 'آیا می‌توانم زمان مشاوره را تغییر دهم؟',
       answer:
-        'امکان تغییر یا لغو بر اساس قوانین رزرو و بازه زمانی اعلام‌شده برای جلسه خواهد بود. جزئیات پیش از نهایی‌کردن رزرو نمایش داده می‌شود.',
+        consultationCancellationPolicy,
     },
   ],
 }

@@ -1,5 +1,13 @@
 # Roadmap
 
+## Assessment and preserved request destinations — 2026-11-02
+
+Added the free-assessment case flow, customer-visible replies, role-scoped admin notifications,
+pricing form/service/country mapping, private-page indexing rules, published-record sitemap and
+homepage Organization data. Automatic runtime migrations and implicit development schema push
+are disabled. See RELEASE-2026-11-ASSESSMENT.md for scope, deployment checks and limitations.
+Production schema comparison, recoverable backup rehearsal and live verification remain required.
+
 ## Current state
 
 Phase 0 architecture and the Phase 1 foundation are implemented. The public shell includes the
@@ -180,3 +188,10 @@ Handoff: see DEPLOYMENT.md. No production accounts or credentials were available
 - Native sticky scrolling uses stable viewport dimensions, event-driven animation frames and direct transform/opacity updates. No animation library, WebGL renderer, continuous render loop or database change.
 - The following process section remains available to keyboard users and enters over the closing scene without opacity/inert gating. Reduced-motion, short-landscape and no-script layouts use a static scene.
 - Source/asset review only. The preview browser blocked local/offline pages; device rendering and physical-device performance remain unverified. No full app build, typecheck or test suite was run, as requested.
+
+## BoldTrip editorial and public-site update — 2026-10-10
+
+- Added admin-managed contact details, pricing cards, articles, and moderated country questions. Existing bookings, customers, services, documents and receipts are unchanged.
+- Updated home CTAs and featured-country display, contact, privacy, cancellation policy, pricing and article routes; removed the sample case card. Manual bank transfer and receipt review remain the only payment path.
+- Generated an additive Payload migration. Before release: rehearse it against a restored copy of the actual production database, confirm no schema-push/migration-history divergence, run the cPanel artifact build, and test customer/admin flows on mobile and desktop.
+- Still requires editorial approval and entry of actual rates, banking details, article content, country-specific fees, official sources, and a verified restore point. Production 502 diagnosis and alert delivery require host access; source-only checks cannot certify uptime.

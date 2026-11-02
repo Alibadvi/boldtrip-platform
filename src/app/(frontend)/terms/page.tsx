@@ -7,6 +7,8 @@ import {
 
 export const metadata: Metadata = {
   title: 'شرایط استفاده',
+  description: 'شرایط استفاده از خدمات و درخواست‌های بولدتریپ.',
+  alternates: { canonical: '/terms' },
 }
 
 export default function TermsPage() {

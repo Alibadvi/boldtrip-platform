@@ -179,6 +179,12 @@ A database-backed idempotent worker is sufficient initially. Do not add a messag
 
 ## Accepted decisions
 
+- 2026-11-02: Free assessment is a tracked service-request type, reusing case ownership and private
+  document controls. Staff replies are separate from internal notes; free assessments cannot enter
+  paid states. In-app notifications store minimal record references and share team read status.
+- 2026-11-02: Schema migration is an explicit release operation. Production startup does not migrate;
+  development schema push requires `PAYLOAD_DB_PUSH=true` against a disposable database.
+
 - Next.js + Payload modular monolith.
 - PostgreSQL.
 - Manual transfer receipt with staff review; no payment gateway.
@@ -223,3 +229,7 @@ Staff MFA uses RFC 6238 codes, an AES-GCM-encrypted secret, a row-locked replay 
 Operational audit rows share the source mutation transaction and record IDs, status changes and changed field names without copying documents, bank numbers or internal notes. API roles cannot edit/delete history; database administrators still can. This is not externally tamper-proof audit storage.
 
 Slot reservation takes a slot lock and retains a unique reservation key. Expired unpaid holds release that key, while receipt review and confirmation retain it. Refunds preserve the approved payment receipt and use a separate finance workflow. Private storage, malware scanning and email are configured through deployment environment variables, with production checks that fail closed when required configuration is missing. Deployment and verification limitations are in DEPLOYMENT.md.
+
+## Public content and moderation — 2026-10-10
+
+Contact details, pricing and articles live in separate Payload collections/global so a content editor can maintain them without touching application code or existing service/booking records. Published items are the only items read publicly. Article images currently use editor-supplied HTTPS URLs; they do not share private customer-document storage. Country questions are created through a validated server action, throttled per contact, held as pending and published only with an expert answer. Contact information has field-level staff-only read access and is never rendered on public pages. These new tables are additive; the original data is not rewritten. PaymentSettings remains finance-only and must be edited by a staff account granted payment-review capability.

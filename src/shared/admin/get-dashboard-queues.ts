@@ -12,6 +12,7 @@ type QueueDefinition = {
 }
 
 export type DashboardQueue = QueueDefinition & {
+  id: string
   href: string
   total: number | null
   items: { id: string; title: string; detail: string; href: string }[]
@@ -43,6 +44,19 @@ export async function getDashboardQueues(
   const now = new Date()
   const until = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
   const definitions: QueueDefinition[] = [
+    {
+      collection: 'admin-notifications', title: 'اعلان‌های خوانده‌نشده',
+      description: 'اعلان‌های جدید را بررسی کنید و وضعیت آن‌ها را به خوانده‌شده تغییر دهید.',
+      empty: 'اعلان خوانده‌نشده‌ای ندارید.', tone: 'amber', where: { status: { equals: 'unread' } },
+      query: { 'where[status][equals]': 'unread' }, sort: '-createdAt',
+    },
+    {
+      collection: 'service-requests', title: 'ارزیابی‌های رایگان جدید',
+      description: 'شرایط و مدارک متقاضی را بررسی کنید و پاسخ قابل مشاهده برای مشتری بنویسید.',
+      empty: 'ارزیابی جدیدی در انتظار بررسی نیست.', tone: 'violet',
+      where: { and: [{ requestType: { equals: 'freeAssessment' } }, { status: { equals: 'submitted' } }] },
+      query: { 'where[requestType][equals]': 'freeAssessment', 'where[status][equals]': 'submitted' }, sort: 'submittedAt',
+    },
     {
       collection: 'payment-receipts',
       title: 'رسیدهای منتظر تأیید',
@@ -113,12 +127,13 @@ export async function getDashboardQueues(
 
     return {
       ...queue,
+      id: `${queue.collection}-${index}`,
       href: `${base}?${query}`,
       // A failed read is not an empty queue.
       total: result?.status === 'fulfilled' ? result.value.totalDocs : null,
       items: docs.map((doc) => ({
         id: String(doc.id),
-        title: text(doc.reference) || text(doc.label) || text(doc.filename) || 'مشاهده جزئیات',
+        title: text(doc.title) || text(doc.reference) || text(doc.label) || text(doc.filename) || 'مشاهده جزئیات',
         detail: queue.collection === 'consultation-bookings'
           ? `${sessionDate(doc.startsAt)} · ${text(doc.topic)}`
           : queue.collection === 'payment-receipts'

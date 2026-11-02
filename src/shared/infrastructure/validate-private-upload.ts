@@ -1,6 +1,7 @@
 import { productionEnv } from '@/shared/config/production-env'
 import { scanUpload } from './scan-upload'
 import { open, readFile } from 'node:fs/promises'
+import { randomUUID } from 'node:crypto'
 import { extname } from 'node:path'
 import { APIError, type CollectionBeforeOperationHook } from 'payload'
 
@@ -14,6 +15,10 @@ export const validatePrivateUpload: CollectionBeforeOperationHook = async ({ ope
       'برای حفظ سابقه، فایل اصلاح‌شده را به‌عنوان مدرک یا رسید جدید ثبت کنید.',
       400,
     )
+
+  if (process.env.NODE_ENV === 'production' && (productionEnv.STORAGE_MODE !== 's3' || !productionEnv.CLAMD_HOST)) {
+    throw new APIError('ارسال مدارک تا تکمیل تنظیمات ذخیره‌سازی خصوصی و بررسی امنیتی در دسترس نیست. با پشتیبانی تماس بگیرید.', 503)
+  }
 
   const file = req.file
   if (!file.size || file.size > maxSize) {
@@ -52,6 +57,7 @@ export const validatePrivateUpload: CollectionBeforeOperationHook = async ({ ope
   if (!isPDF && !isPNG && !isJPEG) {
     throw new APIError('محتوای فایل با فرمت PDF، JPG یا PNG مطابقت ندارد.', 400)
   }
+  file.name = `${randomUUID()}${extension}`
   if (productionEnv.CLAMD_HOST) {
     const bytes = file.tempFilePath ? await readFile(file.tempFilePath) : file.data
     if (!bytes.length || bytes.length > maxSize) throw new APIError('حجم فایل مجاز نیست.', 400)

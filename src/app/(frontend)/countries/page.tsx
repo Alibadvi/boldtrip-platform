@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: 'کشورها و مسیرهای ویزا',
   description:
     'کشور مقصد را انتخاب کنید و اطلاعات بازبینی‌شده انواع ویزا، مدارک و مراحل اقدام را ببینید.',
+  alternates: { canonical: '/countries' },
 }
 
 export const dynamic = 'force-dynamic'

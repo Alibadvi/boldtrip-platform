@@ -4,11 +4,11 @@ import Link from 'next/link'
 export function AdminIcon() {
   return (
     <Image
-      src="/assets/boldtrip-mark.png"
+      src="/assets/boldtrip-official.jpg"
       alt="BoldTrip"
-      width={40}
-      height={40}
-      className="bt:size-10 bt:object-contain"
+      width={96}
+      height={32}
+      className="bt:h-8 bt:w-24 bt:object-contain"
     />
   )
 }
@@ -17,7 +17,7 @@ export function AdminLogo() {
   return (
     <div className="bt:flex bt:flex-col bt:items-center bt:gap-3 bt:py-4">
       <Image
-        src="/assets/boldtrip-logo.jpg"
+        src="/assets/boldtrip-official.jpg"
         alt="BoldTrip"
         width={246}
         height={82}

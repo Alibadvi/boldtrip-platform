@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { getCountryPage } from '@/modules/catalog'
 
 import { requireCurrentCustomer } from '@/modules/identity'
 import {
@@ -14,12 +16,20 @@ import {
 
 export const metadata: Metadata = {
   title: 'انتخاب زمان مشاوره',
+  robots: { index: false, follow: false },
 }
 
 export const dynamic = 'force-dynamic'
 
-export default async function ConsultationBookPage() {
-  await requireCurrentCustomer('/consultation/book')
+export default async function ConsultationBookPage({ searchParams }: { searchParams: Promise<{ topic?: string; country?: string }> }) {
+  const query = await searchParams
+  const countryPage = query.country ? await getCountryPage(query.country) : null
+  if (query.country && !countryPage) notFound()
+  const selection = new URLSearchParams()
+  if (query.topic) selection.set('topic', query.topic.slice(0, 120))
+  if (countryPage) selection.set('country', countryPage.country.slug)
+  await requireCurrentCustomer(`/consultation/book${selection.size ? `?${selection}` : ''}`)
+  const initialTopic = `${query.topic?.slice(0, 120) || 'مشاوره'}${countryPage ? ` — ${countryPage.country.name}` : ''}`
   const slots = await getAvailableConsultationSlots()
 
   return (
@@ -50,6 +60,7 @@ export default async function ConsultationBookPage() {
           <div className="mt-8">
             <ConsultationBookingForm
               slots={slots}
+              initialTopic={initialTopic}
             />
           </div>
         </Card>

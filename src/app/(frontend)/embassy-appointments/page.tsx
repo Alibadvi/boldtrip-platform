@@ -10,7 +10,8 @@ import { Card } from '@/shared/ui/card'
 import { Container } from '@/shared/ui/container'
 
 export const metadata: Metadata = {
-  title: 'وقت سفارت | BoldTrip',
+  title: 'وقت سفارت',
+  alternates: { canonical: '/embassy-appointments' },
   description:
     'شرایط دریافت وقت سفارت کشورهای مختلف، مدارک موردنیاز و مراحل ثبت درخواست.',
 }

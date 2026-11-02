@@ -2,6 +2,7 @@ import path from 'node:path'
 import { APIError, type CollectionConfig, type PayloadRequest } from 'payload'
 import { lockWorkflowRecord } from '@/shared/infrastructure/lock-workflow-record'
 import { validatePrivateUpload } from '@/shared/infrastructure/validate-private-upload'
+import { limitCustomerSubmissions } from '@/shared/infrastructure/limit-submissions'
 
 import { can, getStaffRoles, isCustomerAuthUser } from '@/modules/identity'
 
@@ -57,7 +58,7 @@ export const CustomerDocuments: CollectionConfig = {
     mimeTypes: ['application/pdf', 'image/jpeg', 'image/png'],
   },
   hooks: {
-    beforeOperation: [validatePrivateUpload],
+    beforeOperation: [limitCustomerSubmissions, validatePrivateUpload],
     beforeValidate: [
       async ({ data, operation, originalDoc, req }) => {
         const next = { ...data }

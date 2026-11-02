@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { totpCode, verifyTotp, createTotpSecret } from '@/modules/identity/domain/totp'
 import { encryptMfaSecret, decryptMfaSecret, recoveryHash } from '@/modules/identity/infrastructure/mfa-secret'
-import { customerSessionHeaders } from '@/modules/identity/application/customer-session'
+import { customerApiRequest, customerSessionHeaders } from '@/modules/identity/application/customer-session'
 import { parseProductionEnv } from '@/shared/config/production-env'
 
 const secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'
@@ -34,6 +34,19 @@ it('never forwards the admin cookie or caller authorization to the customer API'
   expect(result.get('authorization')).toBe('JWT customer')
   expect(result.has('cookie')).toBe(false)
   expect(customerSessionHeaders(new Headers({ cookie: 'boldtrip-admin-token=staff' })).has('authorization')).toBe(false)
+})
+it('forwards a Next-style request without reading foreign private fields and preserves its body', async () => {
+  const original = new Request('http://localhost:3000/api/customer/customers', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', cookie: 'boldtrip-admin-token=staff; boldtrip-customer-token=customer' },
+    body: JSON.stringify({ name: 'Synthetic customer' }),
+  })
+  const proxied = new Proxy(original, { get(target, property) { return Reflect.get(target, property, target) } })
+  const forwarded = customerApiRequest(proxied, customerSessionHeaders(proxied.headers))
+  expect(forwarded.url).toBe(original.url)
+  expect(forwarded.method).toBe('POST')
+  expect(forwarded.headers.has('cookie')).toBe(false)
+  expect(forwarded.headers.get('authorization')).toBe('JWT customer')
+  expect(await forwarded.json()).toEqual({ name: 'Synthetic customer' })
 })
 it('refuses production with local storage or missing infrastructure', () => {
   expect(() => parseProductionEnv({ NODE_ENV: 'production' })).toThrow()

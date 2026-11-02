@@ -17,3 +17,14 @@ export function customerSessionHeaders(input: Headers): Headers {
 
   return headers
 }
+
+export function customerApiRequest(request: Request, headers: Headers): Request {
+  // NextRequest and Node's Request can come from different implementations/realms.
+  // Constructing from the Request instance can access incompatible private fields.
+  const init: RequestInit & { duplex?: 'half' } = { method: request.method, headers }
+  if (request.method !== 'GET' && request.method !== 'HEAD' && request.body) {
+    init.body = request.body
+    init.duplex = 'half'
+  }
+  return new Request(request.url, init)
+}

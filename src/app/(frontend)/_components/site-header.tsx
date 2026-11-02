@@ -256,7 +256,7 @@ export function SiteHeader() {
     <>
       <header className="sticky top-0 z-50 px-3 pt-3 motion-safe:animate-navbar-enter sm:px-5">
         <div
-          className={`mx-auto flex min-h-20 max-w-[78rem] items-center justify-between gap-4 px-3 backdrop-blur-2xl transition-[background-color,box-shadow,border-radius] duration-300 sm:px-4 ${
+          className={`mx-auto flex min-h-20 max-w-[78rem] items-center justify-between gap-2 px-3 backdrop-blur sm:gap-4-2xl transition-[background-color,box-shadow,border-radius] duration-300 sm:px-4 ${
             scrolled
               ? 'rounded-2xl bg-white/94 shadow-[0_16px_48px_rgb(36_19_63/14%)]'
               : 'rounded-[1.6rem] bg-white/80 shadow-[0_10px_35px_rgb(36_19_63/9%)]'
@@ -307,7 +307,7 @@ export function SiteHeader() {
                 className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5"
               />
 
-              حساب من
+              ورود / حساب کاربری
             </Link>
 
             <Link
@@ -327,6 +327,7 @@ export function SiteHeader() {
             </Link>
           </div>
 
+          <Link href="/account" className="ms-auto inline-flex min-h-11 shrink-0 items-center rounded-xl bg-brand-50 px-2 text-xs font-bold text-brand-800 lg:hidden">ورود / حساب</Link>
           <button
             ref={menuButtonRef}
             type="button"

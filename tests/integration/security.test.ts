@@ -1,3 +1,4 @@
+import { syntheticPdf } from '../fixtures/pdf'
 import { beforeAll, afterAll, expect, it } from 'vitest'
 import { getPayload, handleEndpoints, type Payload } from 'payload'
 import { handleCustomerRequest } from '@/modules/identity/infrastructure/payload/customer-api'
@@ -10,7 +11,7 @@ let a: Customer, b: Customer, staff: Staff, booking: ConsultationBooking
 const password = 'A-long-test-password-42'
 const origin = 'http://localhost:3000'
 const codeSecret = createTotpSecret()
-const pdf = { name: 'example.pdf', mimetype: 'application/pdf', data: Buffer.from('%PDF-1.4\nshowcase only\n%%EOF'), size: 30 }
+const pdf = { name: 'example.pdf', mimetype: 'application/pdf', data: syntheticPdf(), size: 30 }
 const asCustomer = (customer: Customer) => ({ ...customer, collection: 'customers' as const })
 const asStaff = () => ({ ...staff, collection: 'staff' as const })
 
@@ -43,7 +44,7 @@ it('requires MFA and keeps admin and customer sessions separate', async () => {
   const both = `${adminCookie}; ${customerCookie}`
   const me = await handleCustomerRequest(new Request(`${origin}/api/customer/customers/me`, { headers: { cookie: both } }), ['customers', 'me'], payload.config)
   expect((await me.json()).user.id).toBe(a.id)
-  const auth = await payload.auth({ headers: new Headers({ cookie: both }) })
+  const auth = await payload.auth({ headers: new Headers({ cookie: both, origin }) })
   expect(auth.user?.collection).toBe('staff')
   const replay = await handleEndpoints({ config: payload.config, path: '/api/staff/login', request: loginRequest({ email: staff.email, password, mfaCode: code }) })
   expect(replay.status).not.toBe(200)
@@ -77,4 +78,30 @@ it('rejects another customer’s document and denies its metadata', async () => 
   const doc = await payload.create({ collection: 'customer-documents', data: { customer: a.id, serviceRequest: request.id, label: 'Owned document', kind: 'other', status: 'pending' }, file: pdf, user: asCustomer(a), overrideAccess: false })
   await expect(payload.findByID({ collection: 'customer-documents', id: doc.id, user: asCustomer(b), overrideAccess: false })).rejects.toThrow()
   expect((await payload.findByID({ collection: 'customer-documents', id: doc.id, user: asCustomer(a), overrideAccess: false })).id).toBe(doc.id)
+})
+
+
+it('records a free assessment, private replies, document ownership and a minimal unread notification', async () => {
+  const assessment = { whatsapp: '09120000001', age: 30, maritalStatus: 'single' as const, education: 'Bachelor', occupation: 'Developer', travelHistory: 'None', refusals: 'None', destination: 'Canada', visaType: 'Tourist', budget: '5000 CAD', consent: true as const }
+  const data = { customer: a.id, reference: 'ignored', requestType: 'freeAssessment' as const, submittedAt: new Date().toISOString(), status: 'submitted' as const,
+    applicant: { fullName: 'Test applicant', mobile: '09120000001', email: a.email, nationality: 'Iran', applicantsCount: 1 }, assessment, customerMessage: 'Initial assessment request' }
+  await expect(payload.create({ collection: 'service-requests', data: { ...data, assessment: { ...assessment, consent: false } }, user: asCustomer(a), overrideAccess: false })).rejects.toThrow()
+  const request = await payload.create({ collection: 'service-requests', data: { ...data, quotedAmount: 999, staffNote: 'injected', customerReply: 'injected' }, user: asCustomer(a), overrideAccess: false })
+  expect(request.reference).toMatch(/^BT-/)
+  expect(request.quotedAmount).toBeNull()
+  expect(request.customerReply).toBeFalsy()
+  await expect(payload.findByID({ collection: 'service-requests', id: request.id, user: asCustomer(b), overrideAccess: false })).rejects.toThrow()
+  await expect(payload.update({ collection: 'service-requests', id: request.id, data: { quotedAmount: 100000, status: 'awaitingPayment' }, user: asStaff(), overrideAccess: false })).rejects.toThrow()
+  await payload.update({ collection: 'service-requests', id: request.id, data: { status: 'underReview', customerReply: 'Please add travel evidence.', staffNote: 'Internal review' }, user: asStaff(), overrideAccess: false })
+  const visible = await payload.findByID({ collection: 'service-requests', id: request.id, user: asCustomer(a), overrideAccess: false })
+  expect(visible.customerReply).toBe('Please add travel evidence.')
+  expect(visible.staffNote).toBeUndefined()
+  const notices = await payload.find({ collection: 'admin-notifications', where: { and: [{ targetCollection: { equals: 'service-requests' } }, { targetId: { equals: String(request.id) } }] }, user: asStaff(), overrideAccess: false })
+  expect(notices.totalDocs).toBe(1)
+  expect(notices.docs[0].status).toBe('unread')
+  expect(JSON.stringify(notices.docs[0])).not.toContain(a.email)
+  await expect(payload.find({ collection: 'admin-notifications', user: asCustomer(a), overrideAccess: false })).rejects.toThrow()
+  const doc = await payload.create({ collection: 'customer-documents', data: { customer: a.id, serviceRequest: request.id, label: 'Assessment document', kind: 'other', status: 'pending' }, file: pdf, user: asCustomer(a), overrideAccess: false })
+  await expect(payload.findByID({ collection: 'customer-documents', id: doc.id, user: asCustomer(b), overrideAccess: false })).rejects.toThrow()
+  await payload.update({ collection: 'service-requests', id: request.id, data: { status: 'completed' }, user: asStaff(), overrideAccess: false })
 })

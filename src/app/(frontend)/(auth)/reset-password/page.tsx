@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
           رمز عبور جدید
         </h1>
         <p className="mt-3 leading-8 text-ink-500">
-          یک رمز امن با حداقل ۸ کاراکتر انتخاب کنید.
+          یک رمز امن با حداقل ۱۲ کاراکتر انتخاب کنید.
         </p>
         <div className="mt-7">
           <Suspense>

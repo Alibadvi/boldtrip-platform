@@ -1,5 +1,11 @@
 # Production handoff
 
+## 2026-10-10 BoldTrip content rollout gate
+
+The `feat/boldtrip-client-updates` branch adds a generated migration for `pricing_entries`, `articles`, `country_questions` and `contact_settings`. Never unpack an artifact over the live directory or apply this migration directly to the only production database. First take a verified PostgreSQL dump and a copy of persistent `private-uploads`, restore into isolated staging, and start the new app there with `NODE_ENV=production` and the same application environment shape. Payload automatically runs configured `prodMigrations` on production startup; there is no separate migration step in the standalone cPanel artifact. Confirm the existing migration history is consistent before proceeding; older development `push` schemas can differ. Test admin login and existing countries/services/requests/bookings/receipts, question moderation, article/pricing publication, mobile and desktop routes, and one bank-transfer receipt. Then build the cPanel artifact from the exact reviewed commit, switch the app files without replacing `.env` or `private-uploads` in a maintenance window, restart Passenger and probe `/health`. The first production startup may change the schema. If staging migration fails, stop; do not reset the database. Roll back code to the previous artifact if necessary, but restore data only from the verified backup with a deliberate recovery decision—never run the destructive DOWN migration on live data.
+
+Editorial handoff: Content Editor can edit contact settings, 11 pricing topics, articles and country-question responses. A finance-capable role is needed to edit bank card/IBAN instructions in PaymentSettings. Do not publish unapproved numeric prices or link insecure images. The official supplied logo is committed as a local asset. The site contains no online gateway.
+
 This branch adds production integrations; it does not provision external accounts or certify a live deployment.
 
 ## Local development

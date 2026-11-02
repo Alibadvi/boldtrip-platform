@@ -11,6 +11,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17-alpine
@@ -40,7 +41,7 @@ jobs:
           package-manager-cache: false
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Payload types
         run: pnpm generate:types
@@ -57,9 +58,65 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
+      - name: Rehearse migrations with an existing record
+        run: pnpm exec tsx scripts/test-migration-preservation.ts
+
       - name: Database security flows
         run: pnpm test:integration
 
+      - name: Rehearse database backup and restore
+        env:
+          CI_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          backup_dir=$(mktemp -d)
+          trap 'rm -rf "$backup_dir"' EXIT
+          docker exec "$CI_POSTGRES_CONTAINER" pg_dump -U postgres -d boldtrip_ci -Fc > "$backup_dir/database.dump"
+          docker exec "$CI_POSTGRES_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c 'CREATE DATABASE boldtrip_ci_restore'
+          docker exec -i "$CI_POSTGRES_CONTAINER" pg_restore -U postgres -d boldtrip_ci_restore --no-owner --no-acl --exit-on-error < "$backup_dir/database.dump"
+          counts_sql='SELECT (SELECT count(*) FROM customers), (SELECT count(*) FROM service_requests), (SELECT count(*) FROM customer_documents), (SELECT count(*) FROM payment_receipts), (SELECT count(*) FROM admin_notifications);'
+          docker exec "$CI_POSTGRES_CONTAINER" psql -U postgres -d boldtrip_ci -Atc "$counts_sql" > "$backup_dir/before.txt"
+          docker exec "$CI_POSTGRES_CONTAINER" psql -U postgres -d boldtrip_ci_restore -Atc "$counts_sql" > "$backup_dir/after.txt"
+          cmp "$backup_dir/before.txt" "$backup_dir/after.txt"
+          echo 'Restored customer, request, document, receipt and notification counts match.'
+
+      - name: Prepare isolated browser fixtures
+        run: pnpm exec tsx scripts/seed-e2e.ts
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Desktop and mobile customer flows
+        run: pnpm exec playwright test
+
+      - name: Browser test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results
+          path: test-results/
+          retention-days: 3
+
       - name: Production build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://boldtrip.ir
         run: pnpm build
+
+      - name: Build explicit migration runtime
+        run: pnpm build:release-tools --standalone
+
+      - name: Verify packaged migration runner
+        run: |
+          cp -R .next/static .next/standalone/.next/static
+          cp -R public .next/standalone/public
+          cp scripts/ops/db-preflight.sh scripts/ops/backup-cpanel.sh docs/RELEASE-2026-11-ASSESSMENT.md .next/standalone/release-tools/
+          (cd .next/standalone && node release-tools/migrate.mjs --status)
+          tar -czf boldtrip-cpanel.tar.gz -C .next/standalone .
+
+      - name: Upload reviewed release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: boldtrip-cpanel-reviewed
+          path: boldtrip-cpanel.tar.gz
+          retention-days: 7
+          if-no-files-found: error
 

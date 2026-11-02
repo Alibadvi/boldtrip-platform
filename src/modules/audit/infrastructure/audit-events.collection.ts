@@ -17,7 +17,7 @@ export const AuditEvents: CollectionConfig = {
   ],
 }
 
-const trackedFields = ['status', 'quotedAmount', 'amount', 'roles', 'accountStatus', 'mfaEnabled', 'active', 'cardNumber', 'iban', 'reviewerNote', 'staffNote']
+const trackedFields = ['status', 'quotedAmount', 'amount', 'roles', 'accountStatus', 'mfaEnabled', 'active', 'cardNumber', 'iban', 'reviewerNote', 'staffNote', 'customerReply']
 export const recordChange: CollectionAfterChangeHook = async ({ doc, previousDoc, collection, operation, req }) => {
   const changedFields = trackedFields.filter((field) => JSON.stringify(doc[field]) !== JSON.stringify(previousDoc?.[field]))
   if (operation === 'update' && !changedFields.length) return doc

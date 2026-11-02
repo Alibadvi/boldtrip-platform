@@ -11,9 +11,10 @@ import { Card } from '@/shared/ui/card'
 import { Container } from '@/shared/ui/container'
 
 export const metadata: Metadata = {
-  title: 'خدمات مهاجرتی و ویزا | BoldTrip',
+  title: 'خدمات مهاجرتی و ویزا',
   description:
     'خدمات ویزا، وقت سفارت، بررسی مدارک و مشاوره تخصصی BoldTrip.',
+  alternates: { canonical: '/services' },
 }
 
 export const dynamic = 'force-dynamic'

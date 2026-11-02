@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { consultationCancellationPolicy } from '@/modules/content/domain/cancellation-policy'
 import Link from 'next/link'
 
 import {
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   title: 'رزرو مشاوره تخصصی',
   description:
     'رزرو جلسه مشاوره تخصصی برای بررسی شرایط، انتخاب نوع ویزا و مسیر مناسب اقدام.',
+  alternates: { canonical: '/consultation' },
 }
 
 export const dynamic = 'force-dynamic'
@@ -292,7 +294,7 @@ export default async function ConsultationPageRoute() {
             </h2>
 
             <p className="mt-4 leading-8 text-amber-950/70">
-              {content.cancellationPolicy}
+              {consultationCancellationPolicy}
             </p>
           </Card>
         </Container>

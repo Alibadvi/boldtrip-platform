@@ -62,7 +62,7 @@ export function ManualPaymentPanel({
             : approved
               ? 'پرداخت تأییدشده'
               : pending
-                ? 'در انتظار بررسی رسید'
+                ? 'در انتظار تأیید پرداخت'
                 : 'وضعیت پرداخت'}
         </h2>
         <p className="mt-2 leading-8 text-brand-900">{message}</p>

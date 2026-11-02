@@ -81,7 +81,7 @@ export function HomeHero({ content }: HomeHeroProps) {
 
       <Container className="relative grid items-center gap-1 pb-10 sm:gap-4 sm:pb-16 lg:min-h-[610px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-4 lg:pb-10">
         {/* Hero content */}
-        <div className="relative z-20 order-2 -mt-3 max-w-3xl motion-safe:animate-page-enter sm:mt-0 lg:order-1">
+        <div className="relative z-20 order-1 -mt-3 max-w-3xl motion-safe:animate-page-enter sm:mt-0 lg:order-1">
           <h1
             id="homepage-hero-title"
             className="text-[clamp(2.3rem,11vw,5.6rem)] font-black leading-[1.3] tracking-[-0.04em] text-white"
@@ -117,7 +117,7 @@ export function HomeHero({ content }: HomeHeroProps) {
             </Link>
 
             <Link
-              href={content.secondaryActionHref}
+              href="/services/boldtrip-pricing"
               className="group inline-flex min-h-13 items-center justify-center gap-3 rounded-full bg-white/9 px-7 text-sm font-black text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/10%)] backdrop-blur-xl transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/18%)] sm:text-base"
             >
               <TravelIcon
@@ -125,7 +125,7 @@ export function HomeHero({ content }: HomeHeroProps) {
                 className="size-5 text-accent-300 transition-transform duration-300 group-hover:rotate-6"
               />
 
-              {content.secondaryActionLabel}
+              مشاهده تعرفه خدمات
             </Link>
           </div>
 
@@ -149,7 +149,7 @@ export function HomeHero({ content }: HomeHeroProps) {
         </div>
 
         {/* Hero artwork */}
-        <div className="relative order-1 mx-auto h-[300px] w-full max-w-[28rem] sm:h-[460px] sm:max-w-[620px] lg:order-2 lg:h-[650px] lg:max-w-none">
+        <div className="relative order-2 mx-auto h-[220px] w-full max-w-[28rem] sm:h-[460px] sm:max-w-[620px] lg:order-2 lg:h-[650px] lg:max-w-none">
           {/* Artwork spotlight */}
           <div
             aria-hidden="true"

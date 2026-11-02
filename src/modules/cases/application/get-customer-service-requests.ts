@@ -2,6 +2,8 @@ import configPromise from '@payload-config'
 import { cache } from 'react'
 import { getPayload } from 'payload'
 
+import { assessmentSchema } from '../domain/assessment'
+
 import type { CustomerId } from '@/modules/identity'
 
 import type {
@@ -47,6 +49,8 @@ function toSummary(record: ServiceRequestRecord): ServiceRequestSummary {
 function toDetail(record: ServiceRequestRecord): ServiceRequestDetail {
   return {
     ...toSummary(record),
+    assessment: assessmentSchema.safeParse(record.assessment).success ? assessmentSchema.parse(record.assessment) : undefined,
+    customerReply: record.customerReply ?? undefined,
 
     applicant: {
       applicantsCount: record.applicant?.applicantsCount ?? 1,

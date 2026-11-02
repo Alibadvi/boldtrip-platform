@@ -42,19 +42,18 @@ export async function generateMetadata({
 
   if (!country?.embassyAppointment) {
     return {
-      title: 'اطلاعات وقت سفارت پیدا نشد | BoldTrip',
+      title: 'اطلاعات وقت سفارت پیدا نشد',
     }
   }
 
   const guide = country.embassyAppointment
 
   return {
-    title:
-      guide.title ||
-      `دریافت وقت سفارت ${country.name} | BoldTrip`,
+    title: (guide.title || `دریافت وقت سفارت ${country.name}`).replace(/\s*\|\s*BoldTrip$/, ''),
     description:
       guide.summary ||
       `شرایط و مدارک دریافت وقت سفارت ${country.name}`,
+    alternates: { canonical: `/embassy-appointments/${country.slug}` },
   }
 }
 

@@ -1,4 +1,5 @@
 import { Refunds } from '@/modules/payments/infrastructure/payload/refunds.collection'
+import { AdminNotifications, notifyNewSubmission } from '@/modules/notifications/infrastructure/admin-notifications.collection'
 import { privateStorage } from '@/modules/documents/infrastructure/private-storage'
 import { AuditEvents, recordChange, recordDelete } from '@/modules/audit/infrastructure/audit-events.collection'
 import { AuthRateLimits } from '@/modules/identity/infrastructure/payload/auth-rate-limits.collection'
@@ -18,10 +19,13 @@ import {
   Visas,
 } from '@/modules/catalog'
 import { Homepage } from '@/modules/content/infrastructure/payload/homepage.global'
+import { ContactSettings } from '@/modules/content/infrastructure/payload/contact.global'
+import { PricingEntries } from '@/modules/content/infrastructure/payload/pricing-entries.collection'
+import { Articles } from '@/modules/content/infrastructure/payload/articles.collection'
+import { CountryQuestions } from '@/modules/content/infrastructure/payload/country-questions.collection'
 import { CustomerDocuments } from '@/modules/documents'
 import { Customers, Staff } from '@/modules/identity'
 import { staffCookiePrefix } from '@/modules/identity/domain/session'
-import { migrations } from '@/migrations'
 import {
   PaymentReceipts,
   PaymentSettings,
@@ -38,6 +42,9 @@ const dirname = path.dirname(filename)
 
 for (const collection of [Staff, Customers, ServiceRequests, CustomerDocuments, ConsultationBookings, ConsultationSlots, PaymentReceipts, Refunds]) {
   collection.hooks = { ...collection.hooks, afterChange: [...(collection.hooks?.afterChange ?? []), recordChange], afterDelete: [...(collection.hooks?.afterDelete ?? []), recordDelete] }
+}
+for (const collection of [Customers, ServiceRequests, CustomerDocuments, ConsultationBookings, PaymentReceipts, CountryQuestions]) {
+  collection.hooks = { ...collection.hooks, afterChange: [...(collection.hooks?.afterChange ?? []), notifyNewSubmission] }
 }
 
 export default buildConfig({
@@ -74,6 +81,7 @@ export default buildConfig({
   },
 
   collections: [
+    AdminNotifications,
     Refunds,
     AuditEvents,
     AuthRateLimits,
@@ -87,23 +95,27 @@ export default buildConfig({
     ConsultationSlots,
     ConsultationBookings,
     PaymentReceipts,
+    PricingEntries,
+    Articles,
+    CountryQuestions,
   ],
 
   globals: [
     Homepage,
     ConsultationPage,
     PaymentSettings,
+    ContactSettings,
   ],
 
   cors: [serverEnv.NEXT_PUBLIC_SITE_URL],
   csrf: [serverEnv.NEXT_PUBLIC_SITE_URL],
 
   db: postgresAdapter({
-    prodMigrations: migrations,
     pool: {
       connectionString: serverEnv.DATABASE_URL,
     },
-    push: process.env.NODE_ENV !== 'production',
+    // Schema changes are an explicit deployment step, never a side effect of a request.
+    push: process.env.NODE_ENV !== 'production' && process.env.PAYLOAD_DB_PUSH === 'true',
   }),
 
   editor: lexicalEditor(),
@@ -111,6 +123,7 @@ export default buildConfig({
   serverURL: serverEnv.NEXT_PUBLIC_SITE_URL,
   sharp,
   telemetry: false,
+  upload: { limits: { fileSize: 10 * 1024 * 1024 }, abortOnLimit: true },
 
   typescript: {
     outputFile: path.resolve(

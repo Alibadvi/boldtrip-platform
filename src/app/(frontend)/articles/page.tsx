@@ -1,40 +1,55 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-
+import Image from 'next/image'
 import { ContentPage } from '@/app/(frontend)/_components/content-page'
-import { buttonVariants } from '@/shared/ui'
+import { getPublishedArticles } from '@/modules/content/application/get-public-content'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'مقالات ویزا',
-  description:
-    'راهنماهای بازبینی‌شده درباره ویزا و خدمات سفارت.',
+  description: 'مقالات بازبینی‌شده درباره مدارک ویزا و خدمات سفارت.',
+  alternates: { canonical: '/articles' },
 }
 
-export default function ArticlesPage() {
+export default async function ArticlesPage() {
+  const articles = await getPublishedArticles()
   return (
     <ContentPage
-      description="این بخش فقط میزبان مطالبی خواهد بود که منبع رسمی و تاریخ بازبینی مشخص دارند."
       eyebrow="مرکز راهنما"
       title="مقالات ویزا"
+      description="راهنماهای منتشرشده را بخوانید و تاریخ آخرین بازبینی و منبع رسمی را در هر مقاله بررسی کنید."
     >
-      <div className="rounded-3xl border border-dashed border-border bg-canvas p-8 text-center">
-        <h2 className="text-xl font-black text-brand-950">
-          مقاله‌ای منتشر نشده است
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl leading-8 text-ink-500">
-          تا آماده‌شدن مقالات تخصصی، اطلاعات
-          بازبینی‌شده هر مقصد و نوع ویزا را در بخش
-          کشورها مطالعه کنید.
+      {articles.length ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {articles.map((article) => (
+            <Link
+              key={article.id}
+              href={`/articles/${article.slug}`}
+              className="overflow-hidden rounded-2xl border border-brand-100 bg-brand-50 transition hover:border-brand-400"
+            >
+              {article.featuredImageUrl && (
+                <Image
+                  src={article.featuredImageUrl}
+                  alt=""
+                  width={960}
+                  height={540}
+                  unoptimized
+                  className="aspect-video w-full object-cover"
+                />
+              )}
+              <div className="p-5">
+                <span className="text-xs font-bold text-brand-600">{article.category}</span>
+                <h2 className="mt-2 text-xl font-black text-brand-950">{article.title}</h2>
+                <p className="mt-3 text-sm leading-7">{article.summary}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-2xl border border-dashed border-brand-200 p-6">
+          مقاله‌ای هنوز منتشر نشده است.
         </p>
-        <Link
-          className={buttonVariants({
-            className: 'mt-6',
-          })}
-          href="/countries"
-        >
-          مشاهده کشورها و ویزاها
-        </Link>
-      </div>
+      )}
     </ContentPage>
   )
 }

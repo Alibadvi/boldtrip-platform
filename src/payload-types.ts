@@ -68,6 +68,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'admin-notifications': AdminNotification;
     refunds: Refund;
     'audit-events': AuditEvent;
     'auth-rate-limits': AuthRateLimit;
@@ -81,6 +82,9 @@ export interface Config {
     'consultation-slots': ConsultationSlot;
     'consultation-bookings': ConsultationBooking;
     'payment-receipts': PaymentReceipt;
+    'pricing-entries': PricingEntry;
+    articles: Article;
+    'country-questions': CountryQuestion;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +92,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    'admin-notifications': AdminNotificationsSelect<false> | AdminNotificationsSelect<true>;
     refunds: RefundsSelect<false> | RefundsSelect<true>;
     'audit-events': AuditEventsSelect<false> | AuditEventsSelect<true>;
     'auth-rate-limits': AuthRateLimitsSelect<false> | AuthRateLimitsSelect<true>;
@@ -101,6 +106,9 @@ export interface Config {
     'consultation-slots': ConsultationSlotsSelect<false> | ConsultationSlotsSelect<true>;
     'consultation-bookings': ConsultationBookingsSelect<false> | ConsultationBookingsSelect<true>;
     'payment-receipts': PaymentReceiptsSelect<false> | PaymentReceiptsSelect<true>;
+    'pricing-entries': PricingEntriesSelect<false> | PricingEntriesSelect<true>;
+    articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    'country-questions': CountryQuestionsSelect<false> | CountryQuestionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -114,11 +122,13 @@ export interface Config {
     homepage: Homepage;
     'consultation-page': ConsultationPage;
     'payment-settings': PaymentSetting;
+    'contact-settings': ContactSetting;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'consultation-page': ConsultationPageSelect<false> | ConsultationPageSelect<true>;
     'payment-settings': PaymentSettingsSelect<false> | PaymentSettingsSelect<true>;
+    'contact-settings': ContactSettingsSelect<false> | ContactSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -165,6 +175,19 @@ export interface CustomerAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admin-notifications".
+ */
+export interface AdminNotification {
+  id: number;
+  title: string;
+  targetCollection: string;
+  targetId: string;
+  status: 'unread' | 'read';
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * ثبت بازپرداخت به‌معنی انتقال بانکی نیست. پس از واریز واقعی، شناسه بانکی را ثبت کنید.
@@ -258,7 +281,7 @@ export interface ServiceRequest {
   id: number;
   reference: string;
   customer: number | Customer;
-  requestType: 'service' | 'embassyAppointment';
+  requestType: 'service' | 'embassyAppointment' | 'freeAssessment';
   service?: (number | null) | Service;
   country?: (number | null) | Country;
   status:
@@ -273,6 +296,15 @@ export interface ServiceRequest {
     | 'rejected'
     | 'cancelled';
   submittedAt: string;
+  assessment?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   applicant: {
     fullName: string;
     mobile: string;
@@ -285,6 +317,7 @@ export interface ServiceRequest {
     applicantsCount: number;
   };
   customerMessage?: string | null;
+  customerReply?: string | null;
   /**
    * برای خدماتی که قیمت آن‌ها پس از بررسی اعلام می‌شود.
    */
@@ -599,6 +632,83 @@ export interface CustomerDocument {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pricing-entries".
+ */
+export interface PricingEntry {
+  id: number;
+  /**
+   * نوع فرم، خدمت و کشور را مشخص کنید. انتخاب مشتری تا بعد از ورود حفظ می‌شود.
+   */
+  actionType?: ('legacy' | 'assessment' | 'consultation' | 'embassy' | 'service') | null;
+  targetService?: (number | null) | Service;
+  targetCountry?: (number | null) | Country;
+  title: string;
+  description?: string | null;
+  /**
+   * قیمت را فقط پس از تأیید مدیریت وارد کنید؛ برای بررسی اولیه می‌توانید «رایگان» بنویسید.
+   */
+  priceLabel?: string | null;
+  /**
+   * هزینه سفارت، کارگزاری، ترجمه، بیومتریک، بیمه، دادگاه، وکیل یا پیکاپ را جدا از دستمزد خدمات توضیح دهید.
+   */
+  officialCostNote?: string | null;
+  /**
+   * برای نمایش در صفحه یک کشور، کد دوحرفی کشور مانند CA را وارد کنید. برای کارت عمومی خالی بگذارید.
+   */
+  countryCode?: string | null;
+  kind: 'visa' | 'embassy' | 'appeal' | 'other';
+  /**
+   * برای داده‌های قدیمی. مسیر مستقیم فرم را وارد کنید؛ از مسیر عمومی ثبت‌نام یا فهرست کشورها استفاده نکنید.
+   */
+  actionHref?: string | null;
+  sortOrder?: number | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string;
+  /**
+   * لینک HTTPS تصویر تأییدشده را وارد کنید.
+   */
+  featuredImageUrl?: string | null;
+  body: string;
+  category: string;
+  relatedCountry?: (number | null) | Country;
+  officialSourceUrl?: string | null;
+  lastReviewedAt?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "country-questions".
+ */
+export interface CountryQuestion {
+  id: number;
+  firstName: string;
+  contact: string;
+  question: string;
+  country: number | Country;
+  consent: boolean;
+  status: 'pending' | 'answered' | 'published' | 'rejected';
+  answer?: string | null;
+  answeredAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -621,6 +731,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'admin-notifications';
+        value: number | AdminNotification;
+      } | null)
     | ({
         relationTo: 'refunds';
         value: number | Refund;
@@ -672,6 +786,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'payment-receipts';
         value: number | PaymentReceipt;
+      } | null)
+    | ({
+        relationTo: 'pricing-entries';
+        value: number | PricingEntry;
+      } | null)
+    | ({
+        relationTo: 'articles';
+        value: number | Article;
+      } | null)
+    | ({
+        relationTo: 'country-questions';
+        value: number | CountryQuestion;
       } | null);
   globalSlug?: string | null;
   user:
@@ -724,6 +850,18 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admin-notifications_select".
+ */
+export interface AdminNotificationsSelect<T extends boolean = true> {
+  title?: T;
+  targetCollection?: T;
+  targetId?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -951,6 +1089,7 @@ export interface ServiceRequestsSelect<T extends boolean = true> {
   country?: T;
   status?: T;
   submittedAt?: T;
+  assessment?: T;
   applicant?:
     | T
     | {
@@ -962,6 +1101,7 @@ export interface ServiceRequestsSelect<T extends boolean = true> {
         applicantsCount?: T;
       };
   customerMessage?: T;
+  customerReply?: T;
   quotedAmount?: T;
   staffNote?: T;
   updatedAt?: T;
@@ -1051,6 +1191,62 @@ export interface PaymentReceiptsSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pricing-entries_select".
+ */
+export interface PricingEntriesSelect<T extends boolean = true> {
+  actionType?: T;
+  targetService?: T;
+  targetCountry?: T;
+  title?: T;
+  description?: T;
+  priceLabel?: T;
+  officialCostNote?: T;
+  countryCode?: T;
+  kind?: T;
+  actionHref?: T;
+  sortOrder?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  summary?: T;
+  featuredImageUrl?: T;
+  body?: T;
+  category?: T;
+  relatedCountry?: T;
+  officialSourceUrl?: T;
+  lastReviewedAt?: T;
+  metaTitle?: T;
+  metaDescription?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "country-questions_select".
+ */
+export interface CountryQuestionsSelect<T extends boolean = true> {
+  firstName?: T;
+  contact?: T;
+  question?: T;
+  country?: T;
+  consent?: T;
+  status?: T;
+  answer?: T;
+  answeredAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1239,6 +1435,20 @@ export interface PaymentSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-settings".
+ */
+export interface ContactSetting {
+  id: number;
+  instagram: string;
+  phone: string;
+  whatsapp: string;
+  telegram: string;
+  email: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
@@ -1385,6 +1595,20 @@ export interface PaymentSettingsSelect<T extends boolean = true> {
   bankName?: T;
   iban?: T;
   instructions?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-settings_select".
+ */
+export interface ContactSettingsSelect<T extends boolean = true> {
+  instagram?: T;
+  phone?: T;
+  whatsapp?: T;
+  telegram?: T;
+  email?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
