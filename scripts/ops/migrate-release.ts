@@ -25,3 +25,6 @@ try {
     console.log('Reviewed pending migrations completed. Compare record counts and test before reopening traffic.')
   }
 } finally { await payload.destroy() }
+
+// Standalone Payload scripts can retain adapter handles after cleanup.
+process.exit(0)

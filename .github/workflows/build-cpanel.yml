@@ -62,7 +62,7 @@ jobs:
         run: pnpm build
 
       - name: Build explicit migration runner
-        run: pnpm build:release-tools
+        run: pnpm build:release-tools --standalone
 
       - name: Assemble cPanel runtime
         run: |

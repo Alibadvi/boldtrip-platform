@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { normalizeRequestDestination } from '@/modules/content/domain/pricing-destination'
+import { getPricingDestinations } from '@/modules/content/application/get-pricing-destinations'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -41,7 +41,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
   const { country, visas } = data
   const [pricing, questions] = await Promise.all([
-    getPricingEntries(country.code),
+    getPricingEntries(country.code).then(getPricingDestinations),
     getPublishedCountryQuestions(country.id),
   ])
   const questionState = (await searchParams).question
@@ -140,7 +140,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href={
-                  normalizeRequestDestination(pricing.find((entry) => entry.kind === 'visa')?.actionHref) || '/assessment/apply'
+                  pricing.find((entry) => entry.kind === 'visa')?.actionHref || '/assessment/apply'
                 }
                 className={buttonVariants({ variant: 'secondary' })}
               >

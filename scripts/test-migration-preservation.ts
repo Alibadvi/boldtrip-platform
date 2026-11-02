@@ -21,3 +21,6 @@ try {
   assert.equal(repeats.rows[0].n, 1)
   console.log('Existing customer preserved; repeat migration run did not reapply the release.')
 } finally { await payload.destroy() }
+
+// Standalone Payload scripts can retain adapter handles after cleanup.
+process.exit(0)

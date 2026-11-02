@@ -20,3 +20,6 @@ try {
   ]) await payload.create({ collection: 'pricing-entries', data: { ...entry, targetCountry: country.id, published: true, priceLabel: 'Synthetic CI price' } })
   await payload.create({ collection: 'consultation-slots', data: { startsAt: new Date(Date.now() + 2 * 86400000).toISOString(), durationMinutes: 45, priceAmount: 500000, active: true, deliveryMethod: 'video' } })
 } finally { await payload.destroy() }
+
+// Standalone Payload scripts can retain adapter handles after cleanup.
+process.exit(0)

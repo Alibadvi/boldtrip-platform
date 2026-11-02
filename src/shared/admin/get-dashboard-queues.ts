@@ -12,6 +12,7 @@ type QueueDefinition = {
 }
 
 export type DashboardQueue = QueueDefinition & {
+  id: string
   href: string
   total: number | null
   items: { id: string; title: string; detail: string; href: string }[]
@@ -126,6 +127,7 @@ export async function getDashboardQueues(
 
     return {
       ...queue,
+      id: `${queue.collection}-${index}`,
       href: `${base}?${query}`,
       // A failed read is not an empty queue.
       total: result?.status === 'fulfilled' ? result.value.totalDocs : null,

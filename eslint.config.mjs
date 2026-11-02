@@ -24,6 +24,9 @@ const eslintConfig = [
   {
     ignores: [
       '.next/**',
+      'release-tools/**',
+      'test-results/**',
+      'playwright-report/**',
       'coverage/**',
       'src/app/(payload)/admin/importMap.js',
       'src/payload-types.ts',

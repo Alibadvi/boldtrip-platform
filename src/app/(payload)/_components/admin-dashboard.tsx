@@ -36,10 +36,10 @@ const shortcuts = [
 
 function QueueCard({ queue }: { queue: DashboardQueue }) {
   return (
-    <section aria-labelledby={`queue-${queue.collection}-${queue.sort}`} className="bt:flex bt:min-w-0 bt:flex-col bt:overflow-hidden bt:rounded-2xl bt:border bt:border-solid bt:border-slate-200 bt:bg-white bt:shadow-sm">
+    <section aria-labelledby={`queue-${queue.id}`} className="bt:flex bt:min-w-0 bt:flex-col bt:overflow-hidden bt:rounded-2xl bt:border bt:border-solid bt:border-slate-200 bt:bg-white bt:shadow-sm">
       <div className="bt:flex bt:items-start bt:justify-between bt:gap-4 bt:p-6">
         <div className="bt:min-w-0">
-          <h2 id={`queue-${queue.collection}-${queue.sort}`} className="bt:m-0 bt:text-lg bt:font-bold bt:leading-8 bt:text-[#24133f]">{queue.title}</h2>
+          <h2 id={`queue-${queue.id}`} className="bt:m-0 bt:text-lg bt:font-bold bt:leading-8 bt:text-[#24133f]">{queue.title}</h2>
           <p className="bt:mt-2 bt:mb-0 bt:text-sm bt:leading-7 bt:text-slate-500">{queue.description}</p>
         </div>
         <span className={`bt:flex bt:min-h-12 bt:min-w-12 bt:shrink-0 bt:items-center bt:justify-center bt:rounded-2xl bt:px-3 bt:text-xl bt:font-bold bt:tabular-nums bt:ring-1 bt:ring-inset ${tones[queue.tone]}`} aria-label={queue.total === null ? 'تعداد در دسترس نیست' : `${queue.total} مورد`}>
@@ -115,7 +115,7 @@ export async function AdminDashboard({ initPageResult }: AdminViewServerProps) {
 
         {queues.length > 0 && (
           <div className="bt:grid bt:gap-5 bt:xl:grid-cols-2">
-            {queues.map((queue) => <QueueCard key={`${queue.collection}-${queue.sort}`} queue={queue} />)}
+            {queues.map((queue) => <QueueCard key={queue.id} queue={queue} />)}
           </div>
         )}
 

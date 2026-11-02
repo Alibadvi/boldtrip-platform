@@ -52,6 +52,13 @@ export async function getPricingDestinations(entries: PricingEntry[]) {
       actionHref = `/services/${service.slug}/apply${country ? `?country=${country.slug}` : ''}`
     } else if (!entry.actionType || entry.actionType === 'legacy') {
       actionHref = normalizeRequestDestination(entry.actionHref)
+      if (actionHref) {
+        const destination = new URL(actionHref, 'https://boldtrip.ir')
+        const serviceSlug = destination.pathname.match(/^\/services\/([^/]+)\/apply$/)?.[1]
+        const embassySlug = destination.pathname.match(/^\/embassy-appointments\/([^/]+)\/apply$/)?.[1]
+        if (serviceSlug && !services.docs.some((item) => item.slug === serviceSlug)) actionHref = null
+        if (embassySlug && !countries.docs.some((item) => item.slug === embassySlug && item.embassyAppointment?.acceptingRequests)) actionHref = null
+      }
     }
     return { ...entry, actionHref }
   })
