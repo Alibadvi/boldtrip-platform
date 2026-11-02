@@ -1,6 +1,6 @@
 import { getPayload, handleEndpoints, type SanitizedConfig } from 'payload'
 
-import { customerSessionHeaders } from '../../application/customer-session'
+import { customerApiRequest, customerSessionHeaders } from '../../application/customer-session'
 import { isCustomerAuthUser } from '../../domain/customer'
 import { customerCookieName } from '../../domain/session'
 
@@ -78,7 +78,7 @@ export async function handleCustomerRequest(
   const response = await handleEndpoints({
     config,
     path: `${config.routes.api}/${slug.map(encodeURIComponent).join('/')}`,
-    request: new Request(request, { headers }),
+    request: customerApiRequest(request, headers),
   })
 
   // Preserve Payload's session creation, expiry and invalidation; rename only its cookie.
