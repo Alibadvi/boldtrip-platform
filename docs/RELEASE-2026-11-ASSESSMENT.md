@@ -97,6 +97,23 @@ For an application rollback, switch back to the old release and retain the addit
 new submissions. Do not roll the database back underneath new customer activity. A backup restore
 is disaster recovery and must account for all writes made after that backup.
 
+## Verification evidence
+
+- TypeScript and the local production build passed; ESLint has zero errors and pre-existing warnings.
+- 31 unit tests passed, including a regression for forwarding NextRequest without incompatible
+  private-field access. The API now reconstructs the forwarded request from URL/method/headers/body.
+- Five PostgreSQL integration tests passed: separate sessions/MFA replay protection, competing
+  bookings, competing receipt decisions, document ownership, and the free-assessment/reply/notification flow.
+- Migration rehearsal preserved an existing customer record; a second migration run did not reapply it.
+- A custom-format dump was restored into a new disposable database, with matching customer, request,
+  document, receipt and notification counts. This is synthetic CI evidence, not a backup of production.
+- Google Rich Results Test accepted one valid Organization item using the proposed code on 2026-11-02:
+  https://search.google.com/test/rich-results/result/r%2Forganization-info?id=lpT3kQG1NflvWQZT4MbEDg
+  The logo path was also confirmed against the current public site. The deployed URL still needs testing
+  after rollout; a code-input test does not verify Apache/CDN headers or production CMS values.
+- Desktop/mobile browser workflows and packaged-runtime verification must pass in the final CI run
+  before this candidate is used. See the PR checks for the current result.
+
 ## Separate work
 
 The larger lottery, multilingual Travel to Iran, read-only agent API/webhooks, GA4/Search Console/

@@ -16,6 +16,7 @@ if (process.argv.includes('--standalone')) {
   const destination = path.join(root, '.next/standalone')
   const { fileList } = await nodeFileTrace(['release-tools/migrate.mjs'], { base: root, processCwd: root })
   for (const file of fileList) {
+    if (file === '.env' || file.startsWith('.env.') || file.startsWith('private-uploads/')) continue
     if (file.startsWith('..')) throw new Error('Migration runtime dependency escaped the repository root.')
     const source = path.join(root, file)
     const target = path.join(destination, file)

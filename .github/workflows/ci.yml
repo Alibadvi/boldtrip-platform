@@ -97,6 +97,8 @@ jobs:
           retention-days: 3
 
       - name: Production build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://boldtrip.ir
         run: pnpm build
 
       - name: Build explicit migration runtime
