@@ -19,7 +19,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       <div className="min-w-0 space-y-2">
         <label htmlFor={id} className="block text-sm font-semibold text-ink-950">
           {label}
-          {required ? <span className="ms-1 text-danger">*</span> : null}
+          {required ? <span aria-hidden="true" className="ms-1 text-danger">*</span> : null}
         </label>
 
         {description ? (
