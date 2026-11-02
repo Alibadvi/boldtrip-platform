@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { getCurrentCustomer } from '@/modules/identity'
 
 import {
   CustomerAuthForm,
@@ -18,6 +20,7 @@ export const metadata: Metadata = {
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const query = await searchParams
   const nextPath = getSafeNextPath(query.next, '/account')
+  if (await getCurrentCustomer()) redirect(nextPath)
 
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-canvas py-16 sm:py-24">

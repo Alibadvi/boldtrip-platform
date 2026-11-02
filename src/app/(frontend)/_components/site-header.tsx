@@ -307,7 +307,7 @@ export function SiteHeader() {
                 className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5"
               />
 
-              حساب من
+              ورود / حساب کاربری
             </Link>
 
             <Link
@@ -327,6 +327,7 @@ export function SiteHeader() {
             </Link>
           </div>
 
+          <Link href="/account" className="ms-auto inline-flex min-h-11 shrink-0 items-center rounded-xl bg-brand-50 px-3 text-xs font-bold text-brand-800 lg:hidden">ورود / حساب</Link>
           <button
             ref={menuButtonRef}
             type="button"

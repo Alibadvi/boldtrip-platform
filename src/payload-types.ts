@@ -68,6 +68,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'admin-notifications': AdminNotification;
     refunds: Refund;
     'audit-events': AuditEvent;
     'auth-rate-limits': AuthRateLimit;
@@ -91,6 +92,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    'admin-notifications': AdminNotificationsSelect<false> | AdminNotificationsSelect<true>;
     refunds: RefundsSelect<false> | RefundsSelect<true>;
     'audit-events': AuditEventsSelect<false> | AuditEventsSelect<true>;
     'auth-rate-limits': AuthRateLimitsSelect<false> | AuthRateLimitsSelect<true>;
@@ -173,6 +175,19 @@ export interface CustomerAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admin-notifications".
+ */
+export interface AdminNotification {
+  id: number;
+  title: string;
+  targetCollection: string;
+  targetId: string;
+  status: 'unread' | 'read';
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * ثبت بازپرداخت به‌معنی انتقال بانکی نیست. پس از واریز واقعی، شناسه بانکی را ثبت کنید.
@@ -266,7 +281,7 @@ export interface ServiceRequest {
   id: number;
   reference: string;
   customer: number | Customer;
-  requestType: 'service' | 'embassyAppointment';
+  requestType: 'service' | 'embassyAppointment' | 'freeAssessment';
   service?: (number | null) | Service;
   country?: (number | null) | Country;
   status:
@@ -281,6 +296,15 @@ export interface ServiceRequest {
     | 'rejected'
     | 'cancelled';
   submittedAt: string;
+  assessment?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   applicant: {
     fullName: string;
     mobile: string;
@@ -293,6 +317,7 @@ export interface ServiceRequest {
     applicantsCount: number;
   };
   customerMessage?: string | null;
+  customerReply?: string | null;
   /**
    * برای خدماتی که قیمت آن‌ها پس از بررسی اعلام می‌شود.
    */
@@ -611,6 +636,12 @@ export interface CustomerDocument {
  */
 export interface PricingEntry {
   id: number;
+  /**
+   * نوع فرم، خدمت و کشور را مشخص کنید. انتخاب مشتری تا بعد از ورود حفظ می‌شود.
+   */
+  actionType?: ('legacy' | 'assessment' | 'consultation' | 'embassy' | 'service') | null;
+  targetService?: (number | null) | Service;
+  targetCountry?: (number | null) | Country;
   title: string;
   description?: string | null;
   /**
@@ -626,6 +657,9 @@ export interface PricingEntry {
    */
   countryCode?: string | null;
   kind: 'visa' | 'embassy' | 'appeal' | 'other';
+  /**
+   * برای داده‌های قدیمی. مسیر مستقیم فرم را وارد کنید؛ از مسیر عمومی ثبت‌نام یا فهرست کشورها استفاده نکنید.
+   */
   actionHref?: string | null;
   sortOrder?: number | null;
   published?: boolean | null;
@@ -697,6 +731,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'admin-notifications';
+        value: number | AdminNotification;
+      } | null)
     | ({
         relationTo: 'refunds';
         value: number | Refund;
@@ -812,6 +850,18 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admin-notifications_select".
+ */
+export interface AdminNotificationsSelect<T extends boolean = true> {
+  title?: T;
+  targetCollection?: T;
+  targetId?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1039,6 +1089,7 @@ export interface ServiceRequestsSelect<T extends boolean = true> {
   country?: T;
   status?: T;
   submittedAt?: T;
+  assessment?: T;
   applicant?:
     | T
     | {
@@ -1050,6 +1101,7 @@ export interface ServiceRequestsSelect<T extends boolean = true> {
         applicantsCount?: T;
       };
   customerMessage?: T;
+  customerReply?: T;
   quotedAmount?: T;
   staffNote?: T;
   updatedAt?: T;
@@ -1145,6 +1197,9 @@ export interface PaymentReceiptsSelect<T extends boolean = true> {
  * via the `definition` "pricing-entries_select".
  */
 export interface PricingEntriesSelect<T extends boolean = true> {
+  actionType?: T;
+  targetService?: T;
+  targetCountry?: T;
   title?: T;
   description?: T;
   priceLabel?: T;

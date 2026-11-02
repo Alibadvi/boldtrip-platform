@@ -16,6 +16,12 @@ export const PricingEntries: CollectionConfig = {
     read: ({ req }) => (canManageCatalog({ req }) ? true : { published: { equals: true } }),
   },
   fields: [
+    { name: 'actionType', type: 'select', label: 'فرم مقصد', defaultValue: 'legacy', options: [
+      { label: 'مسیر قبلی (نیازمند بررسی)', value: 'legacy' }, { label: 'ارزیابی رایگان', value: 'assessment' },
+      { label: 'مشاوره', value: 'consultation' }, { label: 'وقت سفارت', value: 'embassy' }, { label: 'خدمت مشخص', value: 'service' },
+    ], admin: { description: 'نوع فرم، خدمت و کشور را مشخص کنید. انتخاب مشتری تا بعد از ورود حفظ می‌شود.' } },
+    { name: 'targetService', type: 'relationship', relationTo: 'services', label: 'خدمت مرتبط' },
+    { name: 'targetCountry', type: 'relationship', relationTo: 'countries', label: 'کشور مرتبط' },
     { name: 'title', type: 'text', required: true, label: 'عنوان کارت' },
     { name: 'description', type: 'textarea', label: 'شرح خدمت' },
     {
@@ -70,7 +76,7 @@ export const PricingEntries: CollectionConfig = {
       name: 'actionHref',
       type: 'text',
       label: 'مسیر ثبت درخواست',
-      defaultValue: '/sign-up?next=/countries',
+      admin: { description: 'برای داده‌های قدیمی. مسیر مستقیم فرم را وارد کنید؛ از مسیر عمومی ثبت‌نام یا فهرست کشورها استفاده نکنید.' },
       validate: (value: unknown) =>
         !value ||
         (typeof value === 'string' && value.startsWith('/') && !value.startsWith('//')) ||

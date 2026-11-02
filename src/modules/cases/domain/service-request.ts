@@ -1,10 +1,12 @@
+import type { AssessmentInput } from './assessment'
 import type { CustomerId } from '@/modules/identity'
 
-export const serviceRequestTypes = ['service', 'embassyAppointment'] as const
+export const serviceRequestTypes = ['service', 'embassyAppointment', 'freeAssessment'] as const
 
 export type ServiceRequestType = (typeof serviceRequestTypes)[number]
 
 export const serviceRequestTypeLabels: Record<ServiceRequestType, string> = {
+  freeAssessment: 'ارزیابی رایگان شرایط و مدارک',
   service: 'درخواست خدمت',
   embassyAppointment: 'درخواست وقت سفارت',
 }
@@ -74,6 +76,8 @@ export type ServiceRequestSummary = {
 }
 
 export type ServiceRequestDetail = ServiceRequestSummary & {
+  assessment?: AssessmentInput
+  customerReply?: string
   applicant: ServiceRequestApplicant
   customerMessage?: string
   quotedAmount?: number
@@ -82,6 +86,7 @@ export type ServiceRequestDetail = ServiceRequestSummary & {
 export function getServiceRequestTitle(
   request: Pick<ServiceRequestSummary, 'countryName' | 'requestType' | 'serviceTitle'>,
 ): string {
+  if (request.requestType === 'freeAssessment') return serviceRequestTypeLabels.freeAssessment
   if (request.requestType === 'embassyAppointment' && request.countryName) {
     return `وقت سفارت ${request.countryName}`
   }

@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { limitCustomerSubmissions } from '@/shared/infrastructure/limit-submissions'
 import { validatePrivateUpload } from '@/shared/infrastructure/validate-private-upload'
 import {
   preparePaymentReceipt,
@@ -57,7 +58,7 @@ export const PaymentReceipts: CollectionConfig = {
     delete: () => false,
   },
   hooks: {
-    beforeOperation: [validatePrivateUpload],
+    beforeOperation: [limitCustomerSubmissions, validatePrivateUpload],
     beforeValidate: [preparePaymentReceipt],
     afterChange: [syncReceiptDecision],
   },

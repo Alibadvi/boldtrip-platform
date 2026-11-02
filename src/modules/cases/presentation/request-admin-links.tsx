@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth, useDocumentInfo } from '@payloadcms/ui'
+import { useAuth, useDocumentInfo, useFormFields } from '@payloadcms/ui'
 import { can } from '@/modules/identity/application/can'
 import { getStaffRoles } from '@/modules/identity/domain/staff-role'
 
 export function RequestAdminLinks() {
   const { id } = useDocumentInfo()
+  const requestType = useFormFields(([fields]) => fields.requestType?.value)
   const { user } = useAuth()
   if (!id) return <p>درخواست را ذخیره کنید تا مدارک و رسیدهای مرتبط در دسترس باشند.</p>
   const roles = getStaffRoles(user)
@@ -20,8 +21,7 @@ export function RequestAdminLinks() {
     >
       <p className="bt:m-0 bt:font-bold">اقدام بعدی کارشناس</p>
       <p className="bt:my-3 bt:text-sm bt:leading-7">
-        مدارک را بررسی کنید؛ سپس مبلغ و وضعیت «در انتظار پرداخت» را ثبت کنید. تأیید و رد پرداخت از
-        داخل رسید انجام می‌شود. برای بستن پرونده، وضعیت را تغییر دهید؛ سابقه حذف نمی‌شود.
+        {requestType === 'freeAssessment' ? 'این ارزیابی رایگان است. شرایط و مدارک را بررسی کنید، پاسخ قابل مشاهده برای مشتری بنویسید و وضعیت را به‌روز کنید. برای خدمات پولی پرونده جداگانه ایجاد کنید.' : 'مدارک را بررسی کنید؛ سپس مبلغ و وضعیت در انتظار پرداخت را ثبت کنید. تأیید و رد پرداخت از داخل رسید انجام می‌شود. برای بستن پرونده وضعیت را تغییر دهید؛ سابقه حذف نمی‌شود.'}
       </p>
       <div className="bt:flex bt:flex-wrap bt:gap-3">
         {can(roles, 'cases.manage') ? (

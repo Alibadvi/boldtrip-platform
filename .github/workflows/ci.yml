@@ -40,7 +40,7 @@ jobs:
           package-manager-cache: false
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Payload types
         run: pnpm generate:types
@@ -57,8 +57,28 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
+      - name: Rehearse migrations with an existing record
+        run: pnpm exec tsx scripts/test-migration-preservation.ts
+
       - name: Database security flows
         run: pnpm test:integration
+
+      - name: Prepare isolated browser fixtures
+        run: pnpm exec tsx scripts/seed-e2e.ts
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Desktop and mobile customer flows
+        run: pnpm exec playwright test
+
+      - name: Browser test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results
+          path: test-results/
+          retention-days: 3
 
       - name: Production build
         run: pnpm build

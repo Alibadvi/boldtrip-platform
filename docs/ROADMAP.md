@@ -1,5 +1,13 @@
 # Roadmap
 
+## Assessment and preserved request destinations — 2026-11-02
+
+Added the free-assessment case flow, customer-visible replies, role-scoped admin notifications,
+pricing form/service/country mapping, private-page indexing rules, published-record sitemap and
+homepage Organization data. Automatic runtime migrations and implicit development schema push
+are disabled. See RELEASE-2026-11-ASSESSMENT.md for scope, deployment checks and limitations.
+Production schema comparison, recoverable backup rehearsal and live verification remain required.
+
 ## Current state
 
 Phase 0 architecture and the Phase 1 foundation are implemented. The public shell includes the

@@ -4,6 +4,10 @@ import { lockWorkflowRecord } from '@/shared/infrastructure/lock-workflow-record
 import type { CollectionConfig, PayloadRequest } from 'payload'
 
 import { can, getStaffRoles, isCustomerAuthUser } from '@/modules/identity'
+import { isValidPhoneNumber } from '@/modules/identity/domain/customer'
+import { z } from 'zod'
+import { assessmentSchema } from '../../domain/assessment'
+import { limitCustomerSubmissions } from '@/shared/infrastructure/limit-submissions'
 
 import {
   serviceRequestStatuses,
@@ -72,6 +76,7 @@ export const ServiceRequests: CollectionConfig = {
   },
 
   hooks: {
+    beforeOperation: [limitCustomerSubmissions],
     beforeValidate: [
       async ({ data, operation, originalDoc, req }) => {
         if (operation === 'update') {
@@ -84,6 +89,12 @@ export const ServiceRequests: CollectionConfig = {
             req,
           })
           const next = { ...data }
+          if (current.requestType === 'freeAssessment') {
+            if (next.quotedAmount || ['quoted', 'awaitingPayment', 'paymentReview', 'inProgress'].includes(next.status ?? current.status)) {
+              throw new APIError('ارزیابی اولیه رایگان است؛ برای خدمات پولی درخواست جداگانه ایجاد کنید.', 400)
+            }
+            next.assessment = current.assessment
+          }
           if (
             next.status &&
             next.status !== current.status &&
@@ -99,7 +110,7 @@ export const ServiceRequests: CollectionConfig = {
             throw new APIError('مبلغ پرونده پس از ارسال رسید قابل تغییر نیست.', 400)
           }
           if (next.status === 'inProgress' && current.status !== 'inProgress' && !req.context.paymentReceiptTransition) throw new APIError('شروع کار نیازمند تأیید رسید پرداخت است.', 400)
-          if (next.status === 'completed' && !['inProgress', 'completed'].includes(current.status)) throw new APIError('پرونده ابتدا باید در حال انجام باشد.', 400)
+          if (next.status === 'completed' && current.requestType !== 'freeAssessment' && !['inProgress', 'completed'].includes(current.status)) throw new APIError('پرونده ابتدا باید در حال انجام باشد.', 400)
           const status = next.status ?? current.status
           const amount = next.quotedAmount === undefined ? current.quotedAmount : next.quotedAmount
           if (
@@ -134,6 +145,16 @@ export const ServiceRequests: CollectionConfig = {
           ...(data ?? {}),
         }
 
+        if (nextData.requestType === 'freeAssessment') {
+          const assessment = assessmentSchema.safeParse(nextData.assessment)
+          const applicant = z.object({ fullName: z.string().trim().min(2).max(100), mobile: z.string().refine(isValidPhoneNumber), email: z.email(), nationality: z.string().trim().min(2).max(80) }).safeParse(nextData.applicant)
+          if (!assessment.success || !applicant.success || typeof nextData.customerMessage !== 'string' || nextData.customerMessage.trim().length < 5) throw new APIError('اطلاعات ارزیابی ناقص یا نامعتبر است.', 400)
+          nextData.assessment = assessment.data
+          nextData.quotedAmount = null
+          nextData.country = null
+          nextData.service = null
+        } else nextData.assessment = null
+
         if (isCustomerAuthUser(req.user)) {
           nextData.customer = req.user.id
           nextData.reference = createReference()
@@ -141,7 +162,13 @@ export const ServiceRequests: CollectionConfig = {
           nextData.quotedAmount = null
           nextData.staffNote = null
           nextData.submittedAt = new Date().toISOString()
-          if (nextData.requestType === 'embassyAppointment') {
+          if (nextData.requestType === 'freeAssessment') {
+            const assessment = assessmentSchema.safeParse(nextData.assessment)
+            if (!assessment.success) throw new APIError('اطلاعات ارزیابی ناقص یا نامعتبر است.', 400)
+            nextData.assessment = assessment.data
+            nextData.country = null
+            nextData.service = null
+          } else if (nextData.requestType === 'embassyAppointment') {
             const country = await req.payload.findByID({
               collection: 'countries',
               id: nextData.country,
@@ -167,6 +194,10 @@ export const ServiceRequests: CollectionConfig = {
             })
             if (service._status !== 'published')
               throw new APIError('این خدمت در حال حاضر قابل درخواست نیست.', 400)
+            if (nextData.country) {
+              const country = await req.payload.findByID({ collection: 'countries', id: nextData.country, depth: 0, overrideAccess: false, req })
+              if (country._status !== 'published') throw new APIError('کشور انتخاب‌شده در دسترس نیست.', 400)
+            }
           } else {
             throw new APIError('نوع درخواست معتبر نیست.', 400)
           }
@@ -252,7 +283,7 @@ export const ServiceRequests: CollectionConfig = {
               relationTo: 'countries',
               label: 'کشور مقصد',
               admin: {
-                condition: (_, siblingData) => siblingData?.requestType === 'embassyAppointment',
+                condition: (_, siblingData) => siblingData?.requestType !== 'freeAssessment',
               },
               validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) => {
                 const data = siblingData as {
@@ -295,6 +326,10 @@ export const ServiceRequests: CollectionConfig = {
         {
           label: 'اطلاعات متقاضی',
           fields: [
+            {
+              name: 'assessment', type: 'json', label: 'پاسخ‌های ارزیابی رایگان',
+              admin: { condition: (_, data) => data?.requestType === 'freeAssessment', readOnly: true },
+            },
             {
               name: 'applicant',
               type: 'group',
@@ -355,6 +390,10 @@ export const ServiceRequests: CollectionConfig = {
         {
           label: 'بررسی کارشناس',
           fields: [
+            {
+              name: 'customerReply', type: 'textarea', label: 'پاسخ قابل مشاهده برای مشتری', maxLength: 4000,
+              access: { create: ({ req }) => staffCanManageCases(req), update: ({ req }) => staffCanManageCases(req) },
+            },
             {
               name: 'quotedAmount',
               access: {

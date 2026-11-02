@@ -56,7 +56,8 @@ export function getSafeNextPath(
     value.startsWith('//') ||
     value.includes('\\') ||
     value.includes('\r') ||
-    value.includes('\n')
+    value.includes('\n') ||
+    /%2f|%5c|%00|%0a|%0d/i.test(value.split(/[?#]/, 1)[0])
   ) {
     return fallback
   }

@@ -81,7 +81,7 @@ export function HomeHero({ content }: HomeHeroProps) {
 
       <Container className="relative grid items-center gap-1 pb-10 sm:gap-4 sm:pb-16 lg:min-h-[610px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-4 lg:pb-10">
         {/* Hero content */}
-        <div className="relative z-20 order-2 -mt-3 max-w-3xl motion-safe:animate-page-enter sm:mt-0 lg:order-1">
+        <div className="relative z-20 order-1 -mt-3 max-w-3xl motion-safe:animate-page-enter sm:mt-0 lg:order-1">
           <h1
             id="homepage-hero-title"
             className="text-[clamp(2.3rem,11vw,5.6rem)] font-black leading-[1.3] tracking-[-0.04em] text-white"
@@ -101,14 +101,14 @@ export function HomeHero({ content }: HomeHeroProps) {
 
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
             <Link
-              href="/sign-up?next=/countries"
+              href={content.primaryActionHref}
               className={buttonVariants({
                 size: 'large',
                 className:
                   'group rounded-full bg-accent-300 px-7 font-black text-brand-950 shadow-[0_18px_45px_rgb(255_196_61/20%)] transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-accent-200 hover:shadow-[0_22px_55px_rgb(255_196_61/28%)]',
               })}
             >
-              ثبت‌نام و بررسی رایگان پرونده
+              {content.primaryActionLabel}
 
               <TravelIcon
                 name="arrow"
@@ -149,7 +149,7 @@ export function HomeHero({ content }: HomeHeroProps) {
         </div>
 
         {/* Hero artwork */}
-        <div className="relative order-1 mx-auto h-[300px] w-full max-w-[28rem] sm:h-[460px] sm:max-w-[620px] lg:order-2 lg:h-[650px] lg:max-w-none">
+        <div className="relative order-2 mx-auto h-[220px] w-full max-w-[28rem] sm:h-[460px] sm:max-w-[620px] lg:order-2 lg:h-[650px] lg:max-w-none">
           {/* Artwork spotlight */}
           <div
             aria-hidden="true"

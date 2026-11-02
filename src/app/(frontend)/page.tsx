@@ -10,6 +10,8 @@ import { FlightScrollSection } from './_components/flight-scroll-section'
 import { Reveal } from './_components/scroll-motion'
 import { TravelIcon } from './_components/travel-icon'
 import { HomeHero } from './_components/home-hero'
+import { getContactSettings } from '@/modules/content/application/get-contact-settings'
+import { organizationSchema, safeJsonLd } from '@/modules/content/domain/organization'
 
 export const metadata: Metadata = { alternates: { canonical: '/' } }
 
@@ -161,9 +163,10 @@ function SectionHeading({
 }
 
 export default async function HomePage() {
-  const [content, countries] = await Promise.all([
+  const [content, countries, contact] = await Promise.all([
     getHomepageContent(),
     getFeaturedCountries(),
+    getContactSettings(),
   ])
 
   const faqs = content.faqs
@@ -172,6 +175,7 @@ export default async function HomePage() {
 
   return (
     <div className="bg-brand-50">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationSchema(contact)) }} />
       <HomeHero content={content.hero} />
       <section
         aria-labelledby="destinations-title"

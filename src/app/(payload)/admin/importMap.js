@@ -1,3 +1,4 @@
+import { NotificationTarget as NotificationTarget_2ec1f3c52fb0190ace4785e21641134f } from '../../../modules/notifications/presentation/notification-target'
 import { RequestAdminLinks as RequestAdminLinks_58a6d37a18b675c20faea568920793d7 } from '../../../modules/cases/presentation/request-admin-links'
 import { AdminIcon as AdminIcon_64ffbed64949957632509a595a3e6ed6 } from '../../../app/(payload)/_components/admin-brand'
 import { AdminLogo as AdminLogo_64ffbed64949957632509a595a3e6ed6 } from '../../../app/(payload)/_components/admin-brand'
@@ -9,6 +10,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/modules/notifications/presentation/notification-target#NotificationTarget": NotificationTarget_2ec1f3c52fb0190ace4785e21641134f,
   "/modules/cases/presentation/request-admin-links#RequestAdminLinks": RequestAdminLinks_58a6d37a18b675c20faea568920793d7,
   "/app/(payload)/_components/admin-brand#AdminIcon": AdminIcon_64ffbed64949957632509a595a3e6ed6,
   "/app/(payload)/_components/admin-brand#AdminLogo": AdminLogo_64ffbed64949957632509a595a3e6ed6,

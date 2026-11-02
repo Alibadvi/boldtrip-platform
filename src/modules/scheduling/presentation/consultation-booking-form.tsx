@@ -22,7 +22,7 @@ function formatTime(value: string): string {
   )
 }
 
-export function ConsultationBookingForm({ slots }: { slots: ConsultationSlot[] }) {
+export function ConsultationBookingForm({ slots, initialTopic = '' }: { slots: ConsultationSlot[]; initialTopic?: string }) {
   const router = useRouter()
   const [slotId, setSlotId] = useState(slots[0] ? String(slots[0].id) : '')
   const days = Array.from(
@@ -158,6 +158,7 @@ export function ConsultationBookingForm({ slots }: { slots: ConsultationSlot[] }
           className="min-h-12 rounded-2xl border border-border px-4 outline-none transition focus:border-brand-600"
           maxLength={200}
           name="topic"
+          defaultValue={initialTopic}
           placeholder="مثلاً بررسی مسیر ویزای تحصیلی کانادا"
           required
         />

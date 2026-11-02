@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getPricingEntries } from '@/modules/content/application/get-public-content'
 import { ContentPage } from '@/app/(frontend)/_components/content-page'
 import { buttonVariants } from '@/shared/ui'
+import { getPricingDestinations } from '@/modules/content/application/get-pricing-destinations'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
@@ -12,32 +13,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/services/boldtrip-pricing' },
 }
 
-const pricingTopics = [
-  'بررسی اولیه مدارک',
-  'مشاوره تخصصی ۴۵ دقیقه‌ای',
-  'بررسی کامل مدارک',
-  'چیدمان و آماده‌سازی پرونده',
-  'خدمات ویزای کانادا',
-  'خدمات شینگن',
-  'انگلیس',
-  'استرالیا',
-  'وقت سفارت',
-  'اعتراض به ریجکتی',
-  'خدمات تکمیلی',
-]
-
 export default async function PricingPage() {
   const published = await getPricingEntries()
-  const entries = published.length
-    ? published
-    : pricingTopics.map((title, index) => ({
-        id: `topic-${index}`,
-        title,
-        description: '',
-        priceLabel: index === 0 ? 'رایگان' : 'تعرفه پس از تأیید مدیریت اعلام می‌شود',
-        officialCostNote: '',
-        actionHref: '/sign-up?next=/countries',
-      }))
+  const entries = await getPricingDestinations(published)
   return (
     <ContentPage
       eyebrow="تعرفه‌ها"
@@ -62,15 +40,16 @@ export default async function PricingPage() {
                 هزینه‌های رسمی جداگانه: {entry.officialCostNote}
               </p>
             )}
-            <Link
+            {entry.actionHref ? <Link
               className={buttonVariants({ className: 'mt-auto w-full pt-3' })}
-              href={entry.actionHref || '/sign-up?next=/countries'}
+              href={entry.actionHref}
             >
               ثبت درخواست
-            </Link>
+            </Link> : <Link className={buttonVariants({ variant: 'secondary', className: 'mt-5 w-full' })} href="/contact">هماهنگی این خدمت با پشتیبانی</Link>}
           </article>
         ))}
       </div>
+      <Link href="/assessment/apply" className={buttonVariants({ size: 'large' })}>ارزیابی رایگان شرایط و مدارک</Link>
       <p className="rounded-2xl bg-white p-4 text-sm leading-8">
         هزینه‌های سفارت، کارگزاری، ترجمه، بیومتریک، بیمه، دادگاه، وکیل و پیکاپ در صورت وجود جدا از
         دستمزد خدمات هستند؛ پیش از پرداخت، مبلغ قابل پرداخت در پرونده شما اعلام می‌شود. درگاه پرداخت

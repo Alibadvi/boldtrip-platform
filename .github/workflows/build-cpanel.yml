@@ -61,12 +61,19 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Build explicit migration runner
+        run: pnpm build:release-tools
+
       - name: Assemble cPanel runtime
         run: |
           mkdir -p .next/standalone/.next
           cp -R .next/static .next/standalone/.next/static
           cp -R public .next/standalone/public
-          mkdir -p .next/standalone/private-uploads/documents
+          mkdir -p .next/standalone/release-tools
+          cp release-tools/migrate.mjs .next/standalone/release-tools/
+          cp scripts/ops/db-preflight.sh scripts/ops/backup-cpanel.sh .next/standalone/release-tools/
+          cp docs/RELEASE-2026-11-ASSESSMENT.md .next/standalone/release-tools/
+          (cd .next/standalone && node release-tools/migrate.mjs --status)
           tar -czf boldtrip-cpanel.tar.gz -C .next/standalone .
 
       - name: Upload artifact

@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import type { Metadata } from 'next'
+import { privateRobots } from '@/shared/config/indexing'
 
 import { requireCurrentCustomer } from '@/modules/identity'
 import { Container } from '@/shared/ui'
@@ -7,6 +9,7 @@ import { AccountNavigation } from './_components/account-navigation'
 import { LogoutButton } from './_components/logout-button'
 
 export const dynamic = 'force-dynamic'
+export const metadata: Metadata = { robots: privateRobots }
 
 export default async function AccountLayout({
   children,

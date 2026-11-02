@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { normalizeRequestDestination } from '@/modules/content/domain/pricing-destination'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -139,14 +140,13 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href={
-                  pricing.find((entry) => entry.kind === 'visa')?.actionHref ||
-                  '/sign-up?next=/countries'
+                  normalizeRequestDestination(pricing.find((entry) => entry.kind === 'visa')?.actionHref) || '/assessment/apply'
                 }
                 className={buttonVariants({ variant: 'secondary' })}
               >
                 درخواست این خدمت
               </Link>
-              <Link href="/sign-up?next=/countries" className={buttonVariants()}>
+              <Link href="/assessment/apply" className={buttonVariants()}>
                 بررسی رایگان مدارک
               </Link>
             </div>

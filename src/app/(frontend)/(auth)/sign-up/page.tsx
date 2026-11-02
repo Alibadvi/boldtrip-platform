@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { getCurrentCustomer } from '@/modules/identity'
 
 import {
   CustomerAuthForm,
@@ -13,12 +15,12 @@ type SignUpPageProps = {
 export const metadata: Metadata = {
   title: 'ایجاد حساب کاربری',
   description: 'ساخت حساب مشتری BoldTrip برای رزرو و پیگیری خدمات.',
-  robots: { index: false },
 }
 
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const query = await searchParams
   const nextPath = getSafeNextPath(query.next, '/account')
+  if (await getCurrentCustomer()) redirect(nextPath)
 
   return (
     <section className="relative overflow-hidden bg-linear-to-b from-brand-50 to-canvas py-16 sm:py-24">

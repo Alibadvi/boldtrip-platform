@@ -1,3 +1,4 @@
+import { assessmentLabels, maritalStatusLabels } from '@/modules/cases/domain/assessment'
 import { requestGuidance } from '@/modules/cases/domain/request-guidance'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -125,6 +126,8 @@ export default async function AccountRequestPage({ params }: AccountRequestPageP
         </Card>
       </div>
 
+      {request.assessment && <Card className="border-border bg-white p-6"><h2 className="text-xl font-black text-brand-950">اطلاعات ارزیابی</h2><dl className="mt-4 grid min-w-0 gap-4 sm:grid-cols-2">{Object.entries(request.assessment).filter(([key]) => key !== 'consent').map(([key, value]) => <div key={key} className="min-w-0"><dt className="text-sm text-ink-500">{assessmentLabels[key as keyof typeof assessmentLabels]}</dt><dd className="mt-1 whitespace-pre-line break-words">{key === 'maritalStatus' ? maritalStatusLabels[value as keyof typeof maritalStatusLabels] : String(value)}</dd></div>)}</dl></Card>}
+      {request.customerReply && <Card className="border-brand-100 bg-brand-50 p-6"><h2 className="text-xl font-black text-brand-950">پاسخ کارشناس بولدتریپ</h2><p className="mt-4 whitespace-pre-line break-words">{request.customerReply}</p></Card>}
       {request.customerMessage ? (
         <Card className="border-border bg-white p-7 shadow-card">
           <h2 className="text-xl font-black text-brand-950">توضیحات ثبت‌شده</h2>
@@ -138,13 +141,13 @@ export default async function AccountRequestPage({ params }: AccountRequestPageP
       <Card className="border-brand-100 bg-brand-50 p-6">
         <h2 className="font-black text-brand-950">ادامه این درخواست</h2>
 
-        <p className="mt-2 leading-8 text-brand-800">{requestGuidance[request.status]}</p>
+        <p className="mt-2 leading-8 text-brand-800">{request.requestType === 'freeAssessment' && request.status === 'submitted' ? 'ارزیابی رایگان شما ثبت شده است. می‌توانید مدارک اختیاری را اضافه کنید؛ نتیجه بررسی و پاسخ کارشناس در همین صفحه نمایش داده می‌شود. نیازی به پرداخت نیست.' : requestGuidance[request.status]}</p>
 
         <div className="mt-5 flex flex-wrap gap-3">
           <Link href={`/account/requests/${request.id}/documents`} className={buttonVariants()}>
             مدیریت مدارک
           </Link>
-          <Link
+          {request.requestType !== 'freeAssessment' && <Link
             href={`/account/requests/${request.id}/payment`}
             className={buttonVariants({
               variant: 'secondary',
@@ -153,7 +156,7 @@ export default async function AccountRequestPage({ params }: AccountRequestPageP
             {['quoted', 'awaitingPayment'].includes(request.status)
               ? 'پرداخت و ارسال رسید'
               : 'وضعیت و سوابق پرداخت'}
-          </Link>
+          </Link>}
         </div>
       </Card>
 

@@ -179,6 +179,12 @@ A database-backed idempotent worker is sufficient initially. Do not add a messag
 
 ## Accepted decisions
 
+- 2026-11-02: Free assessment is a tracked service-request type, reusing case ownership and private
+  document controls. Staff replies are separate from internal notes; free assessments cannot enter
+  paid states. In-app notifications store minimal record references and share team read status.
+- 2026-11-02: Schema migration is an explicit release operation. Production startup does not migrate;
+  development schema push requires `PAYLOAD_DB_PUSH=true` against a disposable database.
+
 - Next.js + Payload modular monolith.
 - PostgreSQL.
 - Manual transfer receipt with staff review; no payment gateway.

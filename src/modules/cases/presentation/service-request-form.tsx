@@ -20,6 +20,7 @@ type RequestSource =
       title: string
     }
   | {
+      countryId?: number | string
       requestType: 'service'
       serviceId: number | string
       title: string
@@ -119,6 +120,7 @@ export function ServiceRequestForm({
         ...(source.requestType === 'service'
           ? {
               service: source.serviceId,
+              country: source.countryId,
             }
           : {
               country: source.countryId,

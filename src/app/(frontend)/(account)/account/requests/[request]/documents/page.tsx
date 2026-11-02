@@ -57,6 +57,7 @@ export default async function RequestDocumentsPage({ params }: PageProps) {
                     <p className="mt-1 text-sm text-ink-500">
                       {documentKindLabels[document.kind]} · {document.filename}
                     </p>
+                    <a href={`/api/customer/customer-documents/file/${encodeURIComponent(document.filename)}`} className="mt-2 inline-block font-bold text-brand-700" target="_blank" rel="noopener noreferrer">مشاهده مدرک</a>
                     {document.reviewerNote ? (
                       <p className="mt-3 text-sm leading-7 text-ink-500">{document.reviewerNote}</p>
                     ) : null}

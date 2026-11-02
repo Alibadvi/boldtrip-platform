@@ -19,6 +19,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'ثبت درخواست وقت سفارت',
+  robots: { index: false, follow: false },
   description:
     'ثبت درخواست وقت سفارت و دریافت شماره پیگیری.',
 }
