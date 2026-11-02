@@ -84,3 +84,22 @@ jobs:
       - name: Production build
         run: pnpm build
 
+      - name: Build explicit migration runtime
+        run: pnpm build:release-tools --standalone
+
+      - name: Verify packaged migration runner
+        run: |
+          cp -R .next/static .next/standalone/.next/static
+          cp -R public .next/standalone/public
+          cp scripts/ops/db-preflight.sh scripts/ops/backup-cpanel.sh docs/RELEASE-2026-11-ASSESSMENT.md .next/standalone/release-tools/
+          (cd .next/standalone && node release-tools/migrate.mjs --status)
+          tar -czf boldtrip-cpanel.tar.gz -C .next/standalone .
+
+      - name: Upload reviewed release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: boldtrip-cpanel-reviewed
+          path: boldtrip-cpanel.tar.gz
+          retention-days: 7
+          if-no-files-found: error
+

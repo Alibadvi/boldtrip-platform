@@ -1,3 +1,4 @@
+import { syntheticPdf } from '../fixtures/pdf'
 import { beforeAll, afterAll, expect, it } from 'vitest'
 import { getPayload, handleEndpoints, type Payload } from 'payload'
 import { handleCustomerRequest } from '@/modules/identity/infrastructure/payload/customer-api'
@@ -10,7 +11,7 @@ let a: Customer, b: Customer, staff: Staff, booking: ConsultationBooking
 const password = 'A-long-test-password-42'
 const origin = 'http://localhost:3000'
 const codeSecret = createTotpSecret()
-const pdf = { name: 'example.pdf', mimetype: 'application/pdf', data: Buffer.from('%PDF-1.4\nshowcase only\n%%EOF'), size: 30 }
+const pdf = { name: 'example.pdf', mimetype: 'application/pdf', data: syntheticPdf(), size: 30 }
 const asCustomer = (customer: Customer) => ({ ...customer, collection: 'customers' as const })
 const asStaff = () => ({ ...staff, collection: 'staff' as const })
 
@@ -43,7 +44,7 @@ it('requires MFA and keeps admin and customer sessions separate', async () => {
   const both = `${adminCookie}; ${customerCookie}`
   const me = await handleCustomerRequest(new Request(`${origin}/api/customer/customers/me`, { headers: { cookie: both } }), ['customers', 'me'], payload.config)
   expect((await me.json()).user.id).toBe(a.id)
-  const auth = await payload.auth({ headers: new Headers({ cookie: both }) })
+  const auth = await payload.auth({ headers: new Headers({ cookie: both, origin }) })
   expect(auth.user?.collection).toBe('staff')
   const replay = await handleEndpoints({ config: payload.config, path: '/api/staff/login', request: loginRequest({ email: staff.email, password, mfaCode: code }) })
   expect(replay.status).not.toBe(200)

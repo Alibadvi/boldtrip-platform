@@ -1,5 +1,6 @@
 import { build } from 'esbuild'
-import { nodeFileTrace } from 'next/dist/compiled/@vercel/nft/index.js'
+import nft from 'next/dist/compiled/@vercel/nft/index.js'
+const { nodeFileTrace } = nft
 import { lstat, mkdir, copyFile, readlink, symlink } from 'node:fs/promises'
 import path from 'node:path'
 

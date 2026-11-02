@@ -1,3 +1,4 @@
+import { syntheticPdf } from '../fixtures/pdf'
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 const password = 'Synthetic-test-password-42'
@@ -57,7 +58,7 @@ test('assessment submits with a private document and shows its tracking referenc
   await page.getByLabel('سن', { exact: true }).fill('30')
   await page.getByLabel('وضعیت تأهل').selectOption('single')
   for (const [label, value] of [['تحصیلات', 'کارشناسی'], ['شغل', 'برنامه‌نویس'], ['کشور مقصد', 'کانادا'], ['نوع ویزا', 'توریستی'], ['بودجه تقریبی', '5000 CAD'], ['سابقه سفر', 'ندارم'], ['سابقه ریجکتی', 'ندارم'], ['توضیح شرایط', 'درخواست ارزیابی اولیه شرایط سفر']] as const) await page.getByLabel(label, { exact: true }).fill(value)
-  await page.locator('input[name="documents"]').setInputFiles({ name: 'synthetic.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\nSynthetic test document\n%%EOF') })
+  await page.locator('input[name="documents"]').setInputFiles({ name: 'synthetic.pdf', mimeType: 'application/pdf', buffer: syntheticPdf() })
   await page.locator('input[name="consent"]').check()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.getByRole('button', { name: 'ثبت ارزیابی رایگان و دریافت شماره پیگیری' }).click()
