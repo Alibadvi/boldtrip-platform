@@ -64,6 +64,21 @@ jobs:
       - name: Database security flows
         run: pnpm test:integration
 
+      - name: Rehearse database backup and restore
+        env:
+          CI_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          backup_dir=$(mktemp -d)
+          trap 'rm -rf "$backup_dir"' EXIT
+          docker exec "$CI_POSTGRES_CONTAINER" pg_dump -U postgres -d boldtrip_ci -Fc > "$backup_dir/database.dump"
+          docker exec "$CI_POSTGRES_CONTAINER" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c 'CREATE DATABASE boldtrip_ci_restore'
+          docker exec -i "$CI_POSTGRES_CONTAINER" pg_restore -U postgres -d boldtrip_ci_restore --no-owner --no-acl --exit-on-error < "$backup_dir/database.dump"
+          counts_sql='SELECT (SELECT count(*) FROM customers), (SELECT count(*) FROM service_requests), (SELECT count(*) FROM customer_documents), (SELECT count(*) FROM payment_receipts), (SELECT count(*) FROM admin_notifications);'
+          docker exec "$CI_POSTGRES_CONTAINER" psql -U postgres -d boldtrip_ci -Atc "$counts_sql" > "$backup_dir/before.txt"
+          docker exec "$CI_POSTGRES_CONTAINER" psql -U postgres -d boldtrip_ci_restore -Atc "$counts_sql" > "$backup_dir/after.txt"
+          cmp "$backup_dir/before.txt" "$backup_dir/after.txt"
+          echo 'Restored customer, request, document, receipt and notification counts match.'
+
       - name: Prepare isolated browser fixtures
         run: pnpm exec tsx scripts/seed-e2e.ts
 

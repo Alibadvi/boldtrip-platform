@@ -29,7 +29,7 @@ export function BrandMark({
         sizes={compact ? '64px' : '(max-width: 640px) 154px, 184px'}
         priority
         className={`h-auto object-contain motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.02] ${
-          compact ? 'w-16 sm:w-20' : 'w-[10rem] sm:w-[11.5rem]'
+          compact ? 'w-16 sm:w-20' : 'w-32 sm:w-[11.5rem]'
         }`}
       />
     </Link>

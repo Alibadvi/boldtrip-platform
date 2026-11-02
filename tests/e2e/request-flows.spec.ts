@@ -2,7 +2,7 @@ import { syntheticPdf } from '../fixtures/pdf'
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 const password = 'Synthetic-test-password-42'
-const origin = 'http://127.0.0.1:3000'
+const origin = 'http://localhost:3000'
 function identity() {
   const unique = `${Date.now()}${Math.floor(Math.random() * 1000)}`
   return { name: 'کاربر آزمایشی', email: `e2e-${unique}@example.test`, mobile: `09${unique.slice(-9)}`, password }
@@ -10,7 +10,7 @@ function identity() {
 async function register(request: APIRequestContext) {
   const user = identity()
   const response = await request.post('/api/customer/customers', { headers: { origin }, data: user })
-  expect(response.ok()).toBeTruthy()
+  expect(response.ok(), await response.text()).toBeTruthy()
   const login = await request.post('/api/customer/customers/login', { headers: { origin }, data: { email: user.email, password } })
   expect(login.ok()).toBeTruthy()
   return user
@@ -76,9 +76,9 @@ test('private pages are protected and noindexed while public content and brand d
     expect(response?.headers()['x-robots-tag']).toBe('noindex, nofollow')
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
   }
-  const account = await request.get('/account', { maxRedirects: 0 })
-  expect(account.status()).toBe(307)
-  expect(account.headers().location).toContain('/sign-in')
+  await page.goto('/account')
+  await expect(page).toHaveURL(/sign-in\?next=%2Faccount/)
+  await expect(page.getByRole('navigation', { name: 'منوی حساب کاربری' })).toHaveCount(0)
   const documents = await request.get('/api/customer/customer-documents')
   expect(documents.status()).toBe(401)
   const sitemap = await request.get('/sitemap.xml')
